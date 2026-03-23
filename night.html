@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — 3am</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      /* Night palette */
+      --night-bg:       #0E0C0A;
+      --night-surface:  #17140F;
+      --night-card:     #1E1A14;
+      --night-border:   rgba(196,168,130,0.1);
+      --night-border-h: rgba(196,168,130,0.22);
+      --moon:           #E8DCCF;
+      --moon-dim:       #9E8A7A;
+      --moon-muted:     #5C4F42;
+      --gold:           #D4A94A;
+      --gold-dim:       rgba(212,169,74,0.15);
+      --ember:          #C1654A;
+      --ember-dim:      rgba(193,101,74,0.12);
+      --sage-night:     #4A5E40;
+      --text-night:     #D6CAB8;
+      --text-night-dim: #7A6D60;
+
+      /* Day palette (fallback) */
+      --stone:       #C4A882;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --text-primary:#2C2420;
+      --text-muted:  #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+
+    body{
+      font-family:var(--font-b);
+      min-height:100vh;
+      overflow-x:hidden;
+      transition:background 1.5s ease, color 1.5s ease;
+    }
+
+    /* ── DAY MODE ── */
+    body.day{
+      background:var(--cream);
+      color:var(--text-primary);
+    }
+    body.day::before{
+      content:'';
+      position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── NIGHT MODE ── */
+    body.night{
+      background:var(--night-bg);
+      color:var(--text-night);
+    }
+    body.night::before{
+      content:'';
+      position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 60% 40% at 75% 15%, rgba(212,169,74,0.05) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 60% at 20% 85%, rgba(193,101,74,0.04) 0%, transparent 55%);
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── STARS canvas ── */
+    #star-canvas{
+      position:fixed;inset:0;
+      pointer-events:none;z-index:0;
+      opacity:0;
+      transition:opacity 2s ease;
+    }
+    body.night #star-canvas{opacity:1;}
+
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;
+      margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      min-height:100vh;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{
+      display:flex;align-items:center;gap:8px;
+      margin-bottom:2.5rem;
+    }
+    .back-nav button{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;
+      font-family:var(--font-b);
+      transition:color 0.2s;padding:0;
+    }
+    body.day .back-nav button{color:var(--text-muted);}
+    body.day .back-nav button:hover{color:var(--earth);}
+    body.night .back-nav button{color:var(--moon-muted);}
+    body.night .back-nav button:hover{color:var(--moon);}
+
+    .mode-badge{
+      margin-left:auto;
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 12px;
+      border-radius:999px;
+      font-size:0.7rem;
+      letter-spacing:0.07em;
+      transition:all 0.5s ease;
+    }
+    body.day .mode-badge{
+      background:rgba(196,168,130,0.15);
+      border:1px solid var(--border);
+      color:var(--text-muted);
+    }
+    body.night .mode-badge{
+      background:rgba(212,169,74,0.1);
+      border:1px solid rgba(212,169,74,0.2);
+      color:var(--gold);
+    }
+    .mode-dot{
+      width:6px;height:6px;border-radius:50%;
+      transition:background 0.5s;
+    }
+    body.day .mode-dot{background:var(--stone);}
+    body.night .mode-dot{background:var(--gold);}
+
+    /* ── TIME DISPLAY ── */
+    .time-display{
+      text-align:center;
+      margin-bottom:2rem;
+    }
+    .time-clock{
+      font-family:var(--font-d);
+      font-size:4rem;font-weight:300;
+      letter-spacing:-0.03em;
+      line-height:1;
+      margin-bottom:0.3rem;
+      transition:color 1s ease;
+    }
+    body.day .time-clock{color:var(--earth);}
+    body.night .time-clock{color:var(--moon);}
+
+    .time-label{
+      font-size:0.75rem;
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+      transition:color 1s ease;
+    }
+    body.day .time-label{color:var(--text-muted);}
+    body.night .time-label{color:var(--moon-muted);}
+    .time-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.8rem;}
+    .time-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.8rem;}
+
+    /* ── MOON / SUN SVG ── */
+    .celestial-wrap{
+      display:flex;justify-content:center;
+      margin-bottom:1.5rem;
+    }
+
+    /* ── MAIN MESSAGE ── */
+    .main-msg{
+      text-align:center;
+      margin-bottom:2rem;
+    }
+    .main-msg-title{
+      font-family:var(--font-d);
+      font-size:1.9rem;font-weight:300;
+      font-style:italic;
+      line-height:1.3;
+      margin-bottom:0.5rem;
+      transition:color 1s ease;
+    }
+    body.day .main-msg-title{color:var(--earth-deep);}
+    body.night .main-msg-title{color:var(--moon);}
+    .main-msg-title.ml{font-family:var(--font-ml);font-style:normal;font-size:1.45rem;}
+    .main-msg-title.hi{font-family:var(--font-hi);font-style:normal;font-size:1.45rem;}
+
+    .main-msg-sub{
+      font-size:0.85rem;line-height:1.7;
+      transition:color 1s ease;
+    }
+    body.day .main-msg-sub{color:var(--text-muted);}
+    body.night .main-msg-sub{color:var(--moon-muted);}
+    .main-msg-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .main-msg-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── NIGHT TOOLS ── */
+    .tools-grid{
+      display:flex;flex-direction:column;
+      gap:12px;margin-bottom:2rem;
+    }
+
+    .tool-card{
+      border-radius:16px;
+      padding:1.25rem 1.4rem;
+      cursor:pointer;
+      transition:all 0.3s var(--ease);
+      position:relative;overflow:hidden;
+    }
+
+    body.day .tool-card{
+      background:rgba(255,255,255,0.75);
+      border:1px solid var(--border);
+    }
+    body.day .tool-card:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.08);
+    }
+
+    body.night .tool-card{
+      background:var(--night-card);
+      border:1px solid var(--night-border);
+    }
+    body.night .tool-card:hover{
+      border-color:var(--night-border-h);
+      transform:translateY(-2px);
+      box-shadow:0 6px 28px rgba(0,0,0,0.4);
+    }
+
+    .tool-card-inner{display:flex;align-items:flex-start;gap:14px;}
+
+    .tool-icon{
+      width:38px;height:38px;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;font-size:17px;
+      transition:background 1s ease;
+    }
+    body.day .tool-icon{background:var(--cream-warm);}
+    body.night .tool-icon{background:rgba(212,169,74,0.1);}
+
+    .tool-text{flex:1;}
+    .tool-name{
+      font-size:0.95rem;font-weight:500;
+      display:block;margin-bottom:3px;
+      transition:color 1s ease;
+    }
+    body.day .tool-name{color:var(--text-primary);}
+    body.night .tool-name{color:var(--moon);}
+    .tool-name.ml{font-family:var(--font-ml);font-size:0.92rem;}
+    .tool-name.hi{font-family:var(--font-hi);font-size:0.92rem;}
+
+    .tool-desc{
+      font-size:0.78rem;line-height:1.5;
+      transition:color 1s ease;
+    }
+    body.day .tool-desc{color:var(--text-muted);}
+    body.night .tool-desc{color:var(--moon-muted);}
+    .tool-desc.ml{font-family:var(--font-ml);font-size:0.76rem;}
+    .tool-desc.hi{font-family:var(--font-hi);font-size:0.76rem;}
+
+    .tool-arrow{
+      font-size:13px;margin-top:3px;
+      transition:color 0.2s, transform 0.2s;
+      flex-shrink:0;
+    }
+    body.day .tool-arrow{color:var(--text-muted);}
+    body.night .tool-arrow{color:var(--moon-muted);}
+    .tool-card:hover .tool-arrow{transform:translateX(4px);}
+    body.night .tool-card:hover .tool-arrow{color:var(--gold);}
+
+    /* ── EXPANDED TOOL PANEL ── */
+    .tool-panel{
+      border-radius:16px;
+      padding:1.4rem;
+      margin-bottom:1rem;
+      display:none;
+      animation:fadeUp 0.4s var(--ease) both;
+    }
+    body.day .tool-panel{
+      background:rgba(255,255,255,0.9);
+      border:1px solid var(--border);
+    }
+    body.night .tool-panel{
+      background:var(--night-card);
+      border:1px solid var(--night-border);
+    }
+    .tool-panel.open{display:block;}
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(12px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .panel-title{
+      font-family:var(--font-d);
+      font-size:1.3rem;font-weight:400;
+      margin-bottom:1rem;
+      transition:color 1s;
+    }
+    body.day .panel-title{color:var(--earth);}
+    body.night .panel-title{color:var(--moon);}
+
+    /* 4-7-8 breath */
+    .breath-ring{
+      width:130px;height:130px;
+      border-radius:50%;
+      margin:0 auto 1rem;
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;
+      font-size:0.78rem;
+      transition:all 0.3s;
+      cursor:pointer;
+    }
+    body.day .breath-ring{
+      border:2px solid var(--stone);
+      color:var(--earth);
+    }
+    body.night .breath-ring{
+      border:2px solid var(--gold);
+      color:var(--gold);
+    }
+    .breath-ring.breathing{
+      animation:breathePulse 4s ease-in-out infinite;
+    }
+    @keyframes breathePulse{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.18);}
+    }
+    .breath-count{
+      font-family:var(--font-d);
+      font-size:2rem;font-weight:300;
+      display:block;
+    }
+    body.night .breath-count{color:var(--moon);}
+    .breath-word{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;}
+    body.night .breath-word{color:var(--moon-muted);}
+
+    .breath-instructions{
+      font-size:0.82rem;line-height:1.7;text-align:center;
+      margin-bottom:1rem;
+    }
+    body.day .breath-instructions{color:var(--text-muted);}
+    body.night .breath-instructions{color:var(--moon-muted);}
+
+    /* 5-4-3-2-1 grounding */
+    .grounding-list{
+      display:flex;flex-direction:column;gap:10px;
+    }
+    .ground-item{
+      display:flex;align-items:flex-start;gap:12px;
+      padding:10px 14px;
+      border-radius:10px;
+      transition:background 0.3s;
+    }
+    body.day .ground-item{background:var(--cream-warm);}
+    body.night .ground-item{background:rgba(212,169,74,0.06);}
+
+    .ground-num{
+      font-family:var(--font-d);
+      font-size:1.4rem;font-weight:300;
+      line-height:1;flex-shrink:0;
+      transition:color 1s;
+    }
+    body.day .ground-num{color:var(--stone);}
+    body.night .ground-num{color:var(--gold);}
+
+    .ground-text{font-size:0.83rem;line-height:1.5;padding-top:3px;}
+    body.day .ground-text{color:var(--text-secondary);}
+    body.night .ground-text{color:var(--moon-dim);}
+    .ground-text.ml{font-family:var(--font-ml);font-size:0.81rem;}
+    .ground-text.hi{font-family:var(--font-hi);font-size:0.81rem;}
+
+    /* Body scan */
+    .scan-steps{display:flex;flex-direction:column;gap:8px;}
+    .scan-step{
+      padding:10px 14px;
+      border-radius:10px;
+      font-size:0.83rem;line-height:1.5;
+      transition:all 0.3s;cursor:pointer;
+    }
+    body.day .scan-step{
+      background:var(--cream-warm);
+      color:var(--text-secondary);
+    }
+    body.night .scan-step{
+      background:rgba(212,169,74,0.06);
+      color:var(--moon-dim);
+    }
+    .scan-step.done{opacity:0.45;}
+    body.night .scan-step.done{opacity:0.3;}
+    .scan-step.active-scan{
+      font-weight:500;
+    }
+    body.day .scan-step.active-scan{
+      background:rgba(196,168,130,0.25);
+      color:var(--earth);
+    }
+    body.night .scan-step.active-scan{
+      background:rgba(212,169,74,0.14);
+      color:var(--gold);
+    }
+    .scan-step.ml{font-family:var(--font-ml);}
+    .scan-step.hi{font-family:var(--font-hi);}
+
+    /* Thoughts writing */
+    .thought-box{
+      width:100%;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:0.88rem;line-height:1.7;
+      resize:none;
+      border:1px solid;
+      font-family:var(--font-b);
+      outline:none;
+      transition:all 0.3s;
+    }
+    body.day .thought-box{
+      background:var(--cream-warm);
+      border-color:var(--border);
+      color:var(--text-primary);
+    }
+    body.day .thought-box:focus{border-color:var(--stone);}
+    body.night .thought-box{
+      background:rgba(212,169,74,0.04);
+      border-color:var(--night-border);
+      color:var(--text-night);
+    }
+    body.night .thought-box:focus{border-color:rgba(212,169,74,0.3);}
+    .thought-box.ml{font-family:var(--font-ml);}
+    .thought-box.hi{font-family:var(--font-hi);}
+
+    .thought-release{
+      margin-top:10px;
+      font-family:var(--font-hw);
+      font-size:0.95rem;
+      text-align:center;
+      padding:8px;
+      border-radius:8px;
+      cursor:pointer;
+      border:none;
+      width:100%;
+      transition:all 0.3s;
+    }
+    body.day .thought-release{
+      background:var(--cream-warm);
+      color:var(--earth);
+    }
+    body.night .thought-release{
+      background:rgba(212,169,74,0.08);
+      color:var(--gold);
+    }
+
+    /* ── NIGHT TRUTH ── */
+    .night-truth{
+      border-radius:14px;
+      padding:1.25rem 1.4rem;
+      margin-top:1rem;
+      text-align:center;
+    }
+    body.day .night-truth{
+      background:rgba(196,168,130,0.12);
+      border:1px solid var(--border);
+    }
+    body.night .night-truth{
+      background:rgba(212,169,74,0.07);
+      border:1px solid rgba(212,169,74,0.15);
+    }
+
+    .truth-hw{
+      font-family:var(--font-hw);
+      font-size:1.3rem;line-height:1.6;
+      display:block;margin-bottom:6px;
+    }
+    body.day .truth-hw{color:var(--earth);}
+    body.night .truth-hw{color:var(--gold);}
+    .truth-hw.ml{font-size:1.15rem;}
+    .truth-hw.hi{font-size:1.15rem;}
+
+    .truth-sub{
+      font-size:0.78rem;line-height:1.5;
+    }
+    body.day .truth-sub{color:var(--text-muted);}
+    body.night .truth-sub{color:var(--moon-muted);}
+    .truth-sub.ml{font-family:var(--font-ml);font-size:0.76rem;}
+    .truth-sub.hi{font-family:var(--font-hi);font-size:0.76rem;}
+
+    /* ── DAY NOTICE ── */
+    .day-notice{
+      border-radius:14px;
+      padding:1.25rem 1.4rem;
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    body.day .day-notice{
+      background:rgba(196,168,130,0.1);
+      border:1px solid var(--border);
+    }
+    body.night .day-notice{display:none;}
+
+    .day-notice-text{
+      font-size:0.85rem;line-height:1.7;
+      color:var(--text-muted);
+    }
+    .day-notice-text.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .day-notice-text.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── ACTION BTN ── */
+    .action-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:9px 18px;
+      border-radius:10px;
+      font-size:0.83rem;font-weight:500;
+      cursor:pointer;border:none;
+      font-family:var(--font-b);
+      transition:all 0.25s;margin-top:10px;
+    }
+    body.day .action-btn{
+      background:var(--earth);color:#FAF6F0;
+    }
+    body.day .action-btn:hover{background:var(--earth-deep);}
+    body.night .action-btn{
+      background:rgba(212,169,74,0.18);
+      color:var(--gold);
+      border:1px solid rgba(212,169,74,0.25);
+    }
+    body.night .action-btn:hover{background:rgba(212,169,74,0.28);}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .time-clock{font-size:3rem;}
+    }
+  </style>
+</head>
+<body class="day">
+
+<canvas id="star-canvas"></canvas>
+
+<div class="page">
+
+  <!-- Back nav -->
+  <div class="back-nav">
+    <button onclick="history.back()">← <span id="back-label">Back</span></button>
+    <div class="mode-badge">
+      <span class="mode-dot"></span>
+      <span id="mode-label">Day mode</span>
+    </div>
+  </div>
+
+  <!-- Time display -->
+  <div class="time-display">
+    <div class="time-clock" id="time-clock">--:--</div>
+    <div class="time-label" id="time-label">It is okay to be awake</div>
+  </div>
+
+  <!-- Celestial -->
+  <div class="celestial-wrap" id="celestial-wrap">
+    <!-- Injected by JS -->
+  </div>
+
+  <!-- Day notice -->
+  <div class="day-notice" id="day-notice">
+    <p class="day-notice-text" id="day-notice-text">This space is designed for late nights. Come back between 10pm and 5am and it will feel different — slower, quieter, made for 3am thoughts.</p>
+  </div>
+
+  <!-- Main message -->
+  <div class="main-msg">
+    <p class="main-msg-title" id="main-msg-title">"It is late. Nothing needs to be solved tonight."</p>
+    <p class="main-msg-sub" id="main-msg-sub">Your brain is tired. Tired brains make everything feel permanent. It is not.</p>
+  </div>
+
+  <!-- Tools -->
+  <div class="tools-grid" id="tools-grid"></div>
+
+  <!-- Night truth -->
+  <div class="night-truth">
+    <span class="truth-hw" id="truth-hw">Morning will come. It always does.</span>
+    <p class="truth-sub" id="truth-sub">You have survived every difficult night so far. This one too.</p>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════
+   STARS
+══════════════════════ */
+const starCanvas = document.getElementById('star-canvas');
+const sctx = starCanvas.getContext('2d');
+let stars = [];
+
+function resizeStars(){
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+  stars = [];
+  for(let i=0;i<120;i++){
+    stars.push({
+      x:Math.random()*starCanvas.width,
+      y:Math.random()*starCanvas.height*0.7,
+      r:Math.random()*1.2+0.2,
+      o:Math.random()*0.6+0.1,
+      twinkleSpeed:Math.random()*0.02+0.005,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+}
+resizeStars();
+window.addEventListener('resize',resizeStars);
+
+let starFrame=0;
+function animateStars(){
+  sctx.clearRect(0,0,starCanvas.width,starCanvas.height);
+  stars.forEach(s=>{
+    s.phase+=s.twinkleSpeed;
+    const opacity = s.o*(0.6+0.4*Math.sin(s.phase));
+    sctx.beginPath();
+    sctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    sctx.fillStyle=`rgba(232,220,207,${opacity})`;
+    sctx.fill();
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+/* ══════════════════════
+   CONTENT
+══════════════════════ */
+const CONTENT = {
+  en:{
+    back:'Back',
+    modeDay:'Day mode', modeNight:'Night mode',
+    timeLabel_day:'Good to see you here',
+    timeLabel_night:'It is okay to be awake',
+    msgTitle_day:'"These tools work any time. But tonight, come back."',
+    msgTitle_night:'"It is late. Nothing needs to be solved tonight."',
+    msgSub_day:'This space transforms after 10pm — slower, darker, quieter. Made for 3am thoughts.',
+    msgSub_night:'Your brain is tired. Tired brains make everything feel permanent. It is not.',
+    dayNotice:'This space is designed for late nights. Come back between 10pm and 5am and it will feel completely different — slower, quieter, made for 3am thoughts.',
+    truthHw:'Morning will come. It always does.',
+    truthSub:'You have survived every difficult night so far. This one too.',
+    tools:[
+      {
+        key:'breath',
+        icon:'○',
+        name:'4-7-8 breathing',
+        desc:'Activates your parasympathetic nervous system in minutes. Made for night anxiety.',
+        panelTitle:'Breathe with me',
+        instructions:'Inhale for 4 counts. Hold for 7. Exhale for 8. Tap the circle to begin.',
+      },
+      {
+        key:'ground',
+        icon:'◇',
+        name:'5-4-3-2-1 grounding',
+        desc:'Pulls your mind from spiraling thoughts back into your body and the present room.',
+        panelTitle:'Ground yourself here',
+        steps:[
+          '5 things you can see right now — even in the dark',
+          '4 things you can physically feel — the sheet, the pillow, the air',
+          '3 things you can hear — even the quietest sounds',
+          '2 things you can smell',
+          '1 thing you are grateful for right now, however small',
+        ]
+      },
+      {
+        key:'scan',
+        icon:'▽',
+        name:'Body scan',
+        desc:'Release physical tension you have been holding without knowing. Starts at your head.',
+        panelTitle:'Release the tension',
+        steps:[
+          'Close your eyes. Breathe slowly.',
+          'Notice your forehead and jaw. Let them soften.',
+          'Move to your shoulders. Drop them away from your ears.',
+          'Your chest — let it expand with each breath.',
+          'Your hands. Unclench your fingers.',
+          'Your stomach — release any holding.',
+          'Your legs and feet — let them feel heavy and still.',
+          'You have nowhere to be. Just here.',
+        ]
+      },
+      {
+        key:'thoughts',
+        icon:'✦',
+        name:'Empty your thoughts',
+        desc:'Write everything in your head right now. Every worry. Every fear. Then let it go.',
+        panelTitle:'What is in your head right now?',
+        placeholder:'Write everything — the worries, the what-ifs, the things you cannot stop thinking about...',
+        release:'I have written it. Let it rest until morning.',
+      }
+    ]
+  },
+  ml:{
+    back:'തിരിച്ചു',
+    modeDay:'പകൽ', modeNight:'രാത്രി',
+    timeLabel_day:'ഇവിടെ കണ്ടതിൽ സന്തോഷം',
+    timeLabel_night:'ഉണർന്നിരിക്കുന്നത് ശരിയാണ്',
+    msgTitle_day:'"രാത്രി 10 മുതൽ ഈ ഇടം വ്യത്യസ്തമാകും."',
+    msgTitle_night:'"ഇപ്പോൾ വൈകി. ഇന്ന് രാത്രി ഒന്നും പരിഹരിക്കേണ്ട."',
+    msgSub_day:'രാത്രി 10 നു ശേഷം ഇവിടെ വന്നാൽ — ഇരുണ്ട്, ശാന്തമായ, 3am-ലേക്ക് ഒരുക്കിയ ഇടം കാണും.',
+    msgSub_night:'മസ്തിഷ്കം ക്ഷീണിതമാണ്. ക്ഷീണിച്ച മസ്തിഷ്കം സ്ഥിരമെന്ന് തോന്നിക്കുന്നു. അല്ല.',
+    dayNotice:'ഈ ഇടം രാത്രിക്ക് വേണ്ടി ഒരുക്കിയതാണ്. രാത്രി 10 നും പുലർച്ചെ 5 നും ഇടയിൽ വന്നാൽ ഇത് തികച്ചും വ്യത്യസ്തമായി അനുഭവപ്പെടും.',
+    truthHw:'പ്രഭാതം വരും. എല്ലായ്പ്പോഴും വരും.',
+    truthSub:'ഇതുവരെ വന്ന ഓരോ ബുദ്ധിമുട്ടുള്ള രാത്രിയും നിങ്ങൾ അതിജീവിച്ചു. ഇതും.',
+    tools:[
+      {
+        key:'breath',
+        icon:'○',
+        name:'4-7-8 ശ്വസനം',
+        desc:'മിനിറ്റുകൾക്കുള്ളിൽ nervous system-നെ ശാന്തമാക്കുന്നു.',
+        panelTitle:'എന്നോടൊപ്പം ശ്വസിക്കൂ',
+        instructions:'4 നെണ്ണൽ ശ്വസിക്കൂ. 7 നെണ്ണൽ നിർത്തൂ. 8 നെണ്ണൽ വിടൂ. Circle tap ചെയ്ത് തുടങ്ങൂ.',
+      },
+      {
+        key:'ground',
+        icon:'◇',
+        name:'5-4-3-2-1 grounding',
+        desc:'ചിന്തകളിൽ നിന്ന് ശരീരത്തിലേക്ക്, ഇപ്പോഴത്തേക്ക് തിരിച്ചുവരൂ.',
+        panelTitle:'ഇവിടെ നങ്കൂരമിടൂ',
+        steps:[
+          '5 കാര്യങ്ങൾ ഇപ്പോൾ കാണാൻ കഴിയുന്നവ — ഇരുട്ടിലും',
+          '4 കാര്യങ്ങൾ ശാരീരികമായി അനുഭവിക്കുന്നവ — തലയണ, വായു',
+          '3 ശബ്ദങ്ങൾ കേൾക്കാൻ കഴിയുന്നവ — ഏറ്റവും ശാന്തമായവ പോലും',
+          '2 മണങ്ങൾ',
+          '1 ഇപ്പോൾ കൃതജ്ഞത തോന്നുന്ന ഒന്ന്, ചെറുതാണെങ്കിലും',
+        ]
+      },
+      {
+        key:'scan',
+        icon:'▽',
+        name:'ശരീര scan',
+        desc:'അറിയാതെ ശരീരത്തിൽ ഉള്ള tension release ചെയ്യൂ.',
+        panelTitle:'Tension വിടൂ',
+        steps:[
+          'കണ്ണടക്കൂ. ശ്വസിക്കൂ.',
+          'നെറ്റിയും താടിയും ശ്രദ്ധിക്കൂ. അവ soft ആകട്ടെ.',
+          'തോളുകൾ — ചെവിയിൽ നിന്ന് അകന്ന് ഇടൂ.',
+          'നെഞ്ച് — ഓരോ ശ്വാസത്തിലും വ്യാപിക്കട്ടെ.',
+          'കൈകൾ — വിരലുകൾ അഴിക്കൂ.',
+          'വയർ — hold ചെയ്തിരുന്നത് വിടൂ.',
+          'കാലുകൾ — ഭാരവും ശാന്തവുമായി ഇരിക്കട്ടെ.',
+          'നിങ്ങൾ ഇവിടെ മാത്രം. ഇപ്പോൾ മാത്രം.',
+        ]
+      },
+      {
+        key:'thoughts',
+        icon:'✦',
+        name:'ചിന്തകൾ ഒഴിക്കൂ',
+        desc:'മനസ്സിലുള്ളത് എഴുതൂ. ഓരോ ഭയവും. പിന്നെ വിടൂ.',
+        panelTitle:'ഇപ്പോൾ മനസ്സിലുള്ളത്?',
+        placeholder:'എല്ലാം എഴുതൂ — ഭയങ്ങൾ, what-ifs, തലയിൽ നിന്ന് മാറാത്ത ചിന്തകൾ...',
+        release:'എഴുതി. പ്രഭാതം വരെ ഇത് ഇവിടെ ഇരിക്കട്ടെ.',
+      }
+    ]
+  },
+  hi:{
+    back:'वापस',
+    modeDay:'दिन', modeNight:'रात',
+    timeLabel_day:'यहाँ देखकर अच्छा लगा',
+    timeLabel_night:'जागे रहना ठीक है',
+    msgTitle_day:'"रात 10 बजे के बाद यह जगह बदल जाती है।"',
+    msgTitle_night:'"देर हो गई है। आज रात कुछ सुलझाने की ज़रूरत नहीं।"',
+    msgSub_day:'रात 10 बजे के बाद आओ — यह जगह धीमी, अंधेरी, 3am के लिए बनी हुई मिलेगी।',
+    msgSub_night:'दिमाग थका हुआ है। थका दिमाग सब कुछ स्थायी बना देता है। है नहीं।',
+    dayNotice:'यह जगह देर रात के लिए बनाई गई है। रात 10 से सुबह 5 के बीच आओ — यह बिल्कुल अलग लगेगी।',
+    truthHw:'सुबह आएगी। हमेशा आती है।',
+    truthSub:'अब तक की हर मुश्किल रात से गुज़रे हो। इससे भी गुज़र जाओगे।',
+    tools:[
+      {
+        key:'breath',
+        icon:'○',
+        name:'4-7-8 साँस',
+        desc:'मिनटों में nervous system को शांत करता है। रात की चिंता के लिए।',
+        panelTitle:'मेरे साथ साँस लो',
+        instructions:'4 गिनकर साँस लो। 7 गिनकर रोको। 8 गिनकर छोड़ो। शुरू करने के लिए circle tap करो।',
+      },
+      {
+        key:'ground',
+        icon:'◇',
+        name:'5-4-3-2-1 grounding',
+        desc:'घुमते विचारों से वापस शरीर और इस कमरे में आओ।',
+        panelTitle:'यहाँ लंगर डालो',
+        steps:[
+          '5 चीज़ें जो अभी दिख रही हैं — अंधेरे में भी',
+          '4 चीज़ें जो शारीरिक रूप से महसूस हो रही हैं — चादर, हवा',
+          '3 आवाज़ें जो सुन सकते हो — सबसे धीमी भी',
+          '2 गंध',
+          '1 चीज़ जिसके लिए अभी शुक्रगुज़ार हो, चाहे छोटी हो',
+        ]
+      },
+      {
+        key:'scan',
+        icon:'▽',
+        name:'Body scan',
+        desc:'बिना जाने शरीर में जो tension है उसे छोड़ो।',
+        panelTitle:'Tension छोड़ो',
+        steps:[
+          'आँखें बंद करो। धीरे साँस लो।',
+          'माथे और जबड़े पर ध्यान दो। उन्हें नरम होने दो।',
+          'कंधे — उन्हें कानों से दूर गिरने दो।',
+          'सीना — हर साँस के साथ फैलने दो।',
+          'हाथ — उंगलियाँ खोलो।',
+          'पेट — जो रोक रखा है उसे छोड़ो।',
+          'पैर — भारी और स्थिर महसूस करने दो।',
+          'तुम्हें कहीं नहीं जाना। बस यहाँ।',
+        ]
+      },
+      {
+        key:'thoughts',
+        icon:'✦',
+        name:'विचार खाली करो',
+        desc:'दिमाग में जो है वो लिखो। हर डर। फिर जाने दो।',
+        panelTitle:'अभी दिमाग में क्या है?',
+        placeholder:'सब लिखो — चिंताएं, what-ifs, जो सोच नहीं रुकती...',
+        release:'लिख दिया। सुबह तक यहीं रहे।',
+      }
+    ]
+  }
+};
+
+/* ══════════════════════
+   CELESTIAL SVGs
+══════════════════════ */
+function moonSVG(){
+  return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+    <circle cx="40" cy="40" r="28" fill="#E8DCCF" opacity="0.12"/>
+    <circle cx="40" cy="40" r="20" fill="#E8DCCF" opacity="0.18"/>
+    <path d="M44 20 Q28 28 28 40 Q28 54 44 60 Q30 58 24 46 Q18 34 28 24 Q34 18 44 20Z" fill="#E8DCCF" opacity="0.7"/>
+    <circle cx="52" cy="32" r="2" fill="#E8DCCF" opacity="0.3"/>
+    <circle cx="48" cy="46" r="1.5" fill="#E8DCCF" opacity="0.2"/>
+  </svg>`;
+}
+
+function sunSVG(){
+  return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+    <circle cx="40" cy="40" r="18" fill="#C4A882" opacity="0.25"/>
+    <circle cx="40" cy="40" r="13" fill="#C4A882" opacity="0.5"/>
+    ${[0,45,90,135,180,225,270,315].map(a=>{
+      const r=a*Math.PI/180;
+      const x1=40+20*Math.cos(r), y1=40+20*Math.sin(r);
+      const x2=40+27*Math.cos(r), y2=40+27*Math.sin(r);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#C4A882" stroke-width="2" stroke-linecap="round" opacity="0.45"/>`;
+    }).join('')}
+  </svg>`;
+}
+
+/* ══════════════════════
+   TIME & MODE
+══════════════════════ */
+let lang = localStorage.getItem('horegallu-lang') || 'en';
+let isNight = false;
+
+function getIsNight(){
+  const h = new Date().getHours();
+  return h >= 22 || h < 5;
+}
+
+function updateClock(){
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('time-clock').textContent = h+':'+m;
+}
+
+function applyMode(){
+  const c = CONTENT[lang];
+  isNight = getIsNight();
+  const body = document.body;
+
+  body.classList.toggle('night', isNight);
+  body.classList.toggle('day', !isNight);
+
+  document.getElementById('mode-label').textContent = isNight ? c.modeNight : c.modeDay;
+  document.getElementById('time-label').textContent = isNight ? c.timeLabel_night : c.timeLabel_day;
+
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  document.getElementById('time-label').className = 'time-label ' + lc;
+
+  const mt = document.getElementById('main-msg-title');
+  mt.textContent = isNight ? c.msgTitle_night : c.msgTitle_day;
+  mt.className = 'main-msg-title ' + lc;
+
+  const ms = document.getElementById('main-msg-sub');
+  ms.textContent = isNight ? c.msgSub_night : c.msgSub_day;
+  ms.className = 'main-msg-sub ' + lc;
+
+  document.getElementById('day-notice').style.display = isNight ? 'none' : 'block';
+  const dn = document.getElementById('day-notice-text');
+  dn.textContent = c.dayNotice;
+  dn.className = 'day-notice-text ' + lc;
+
+  // Celestial
+  document.getElementById('celestial-wrap').innerHTML = isNight ? moonSVG() : sunSVG();
+
+  // Truth
+  const th = document.getElementById('truth-hw');
+  th.textContent = c.truthHw;
+  th.className = 'truth-hw ' + lc;
+  const ts = document.getElementById('truth-sub');
+  ts.textContent = c.truthSub;
+  ts.className = 'truth-sub ' + lc;
+}
+
+/* ══════════════════════
+   TOOLS
+══════════════════════ */
+let breathInterval = null;
+let breathPhase = 0;
+let breathCycle = 0;
+const BREATH_PHASES = [
+  {label_en:'Inhale', label_ml:'ശ്വസിക്കൂ', label_hi:'साँस लो', count:4},
+  {label_en:'Hold',   label_ml:'നിർത്തൂ',   label_hi:'रोको',    count:7},
+  {label_en:'Exhale', label_ml:'വിടൂ',       label_hi:'छोड़ो',    count:8},
+];
+
+function buildTools(){
+  const c = CONTENT[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const grid = document.getElementById('tools-grid');
+  grid.innerHTML = '';
+
+  c.tools.forEach(tool=>{
+    // Card
+    const card = document.createElement('div');
+    card.className = 'tool-card';
+    card.innerHTML = `
+      <div class="tool-card-inner">
+        <div class="tool-icon">${tool.icon}</div>
+        <div class="tool-text">
+          <span class="tool-name ${lc}">${tool.name}</span>
+          <span class="tool-desc ${lc}">${tool.desc}</span>
+        </div>
+        <span class="tool-arrow">→</span>
+      </div>
+    `;
+
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = 'tool-panel';
+    panel.id = 'panel-'+tool.key;
+    panel.innerHTML = buildPanel(tool, lc, c);
+
+    card.addEventListener('click',()=>{
+      const isOpen = panel.classList.contains('open');
+      document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('open'));
+      if(!isOpen) panel.classList.add('open');
+    });
+
+    grid.appendChild(card);
+    grid.appendChild(panel);
+  });
+
+  // Bind breath
+  const breathRing = document.getElementById('breath-ring');
+  if(breathRing) breathRing.addEventListener('click', toggleBreath);
+  bindThoughtRelease();
+  bindScanSteps();
+}
+
+function buildPanel(tool, lc, c){
+  if(tool.key==='breath'){
+    return `
+      <div class="panel-title">${tool.panelTitle}</div>
+      <div class="breath-ring" id="breath-ring">
+        <span class="breath-count" id="breath-count">4</span>
+        <span class="breath-word" id="breath-word">TAP</span>
+      </div>
+      <p class="breath-instructions">${tool.instructions}</p>
+    `;
+  }
+  if(tool.key==='ground'){
+    return `
+      <div class="panel-title">${tool.panelTitle}</div>
+      <div class="grounding-list">
+        ${tool.steps.map((s,i)=>`
+          <div class="ground-item">
+            <span class="ground-num">${5-i}</span>
+            <span class="ground-text ${lc}">${s}</span>
+          </div>`).join('')}
+      </div>
+    `;
+  }
+  if(tool.key==='scan'){
+    return `
+      <div class="panel-title">${tool.panelTitle}</div>
+      <div class="scan-steps" id="scan-steps">
+        ${tool.steps.map((s,i)=>`
+          <div class="scan-step ${lc}" data-idx="${i}" onclick="advanceScan(${i})">${s}</div>
+        `).join('')}
+      </div>
+      <button class="action-btn" onclick="resetScan()" style="margin-top:12px;">↺ Reset</button>
+    `;
+  }
+  if(tool.key==='thoughts'){
+    return `
+      <div class="panel-title">${tool.panelTitle}</div>
+      <textarea class="thought-box ${lc}" id="thought-box" rows="5" placeholder="${tool.placeholder}"></textarea>
+      <button class="thought-release" id="thought-release">${tool.release}</button>
+    `;
+  }
+  return '';
+}
+
+/* breath */
+function toggleBreath(){
+  const ring = document.getElementById('breath-ring');
+  if(!ring) return;
+  if(breathInterval){
+    clearInterval(breathInterval);
+    breathInterval=null;
+    ring.classList.remove('breathing');
+    document.getElementById('breath-count').textContent='4';
+    document.getElementById('breath-word').textContent='TAP';
+    breathPhase=0; breathCycle=0;
+    return;
+  }
+  ring.classList.add('breathing');
+  runBreath();
+}
+
+function runBreath(){
+  const phases = BREATH_PHASES;
+  let phase = breathPhase;
+  let remaining = phases[phase].count;
+  const wordEl = document.getElementById('breath-word');
+  const countEl = document.getElementById('breath-count');
+  if(!wordEl||!countEl) return;
+
+  const lp = lang==='ml'?'label_ml':lang==='hi'?'label_hi':'label_en';
+  wordEl.textContent = phases[phase][lp];
+  countEl.textContent = remaining;
+
+  breathInterval = setInterval(()=>{
+    remaining--;
+    if(remaining<=0){
+      phase=(phase+1)%3;
+      if(phase===0) breathCycle++;
+      remaining=phases[phase].count;
+      if(wordEl) wordEl.textContent=phases[phase][lp];
+    }
+    if(countEl) countEl.textContent=remaining;
+  },1000);
+}
+
+/* scan */
+let scanIdx = -1;
+function advanceScan(idx){
+  scanIdx=idx;
+  document.querySelectorAll('.scan-step').forEach((s,i)=>{
+    s.classList.remove('active-scan','done');
+    if(i<idx) s.classList.add('done');
+    if(i===idx) s.classList.add('active-scan');
+  });
+}
+function resetScan(){
+  scanIdx=-1;
+  document.querySelectorAll('.scan-step').forEach(s=>{
+    s.classList.remove('active-scan','done');
+  });
+}
+
+/* thoughts */
+function bindThoughtRelease(){
+  document.addEventListener('click',e=>{
+    if(e.target.id==='thought-release'){
+      const box=document.getElementById('thought-box');
+      if(box&&box.value.trim()){
+        box.value='';
+        box.placeholder=CONTENT[lang].tools[3].release+' ✓';
+        setTimeout(()=>{box.placeholder=CONTENT[lang].tools[3].placeholder;},3000);
+      }
+    }
+  });
+}
+function bindScanSteps(){ /* handled via inline onclick */ }
+
+/* ══════════════════════
+   INIT
+══════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  lang = localStorage.getItem('horegallu-lang')||'en';
+  document.getElementById('back-label').textContent = CONTENT[lang].back;
+  updateClock();
+  applyMode();
+  buildTools();
+  setInterval(updateClock,30000);
+  setInterval(()=>{
+    const nowNight=getIsNight();
+    if(nowNight!==isNight){ applyMode(); buildTools(); }
+  },60000);
+});
+</script>
+</body>
+</html>
