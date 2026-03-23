@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — The Unsent Letter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --cream-paper: #F7F0E6;
+      --gold:        #D4A94A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --gold-border: rgba(212,169,74,0.2);
+      --terracotta:  #C1654A;
+      --sage:        #7A8C6E;
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── SCREENS ── */
+    .screen{display:none;flex-direction:column;min-height:100vh;}
+    .screen.active{display:flex;animation:fadeUp 0.55s var(--ease) both;}
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(16px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      width:100%;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{
+      display:flex;align-items:center;
+      margin-bottom:2rem;
+    }
+    .back-btn-nav{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);transition:color 0.2s;padding:0;
+    }
+    .back-btn-nav:hover{color:var(--earth);}
+    .step-badge{
+      margin-left:auto;font-size:0.7rem;
+      color:var(--text-muted);letter-spacing:0.08em;
+    }
+
+    /* ── HEADER ── */
+    .section-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.12em;text-transform:uppercase;
+      margin-bottom:0.4rem;
+    }
+    .section-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+    .section-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+
+    .section-title{
+      font-family:var(--font-d);
+      font-size:2.1rem;font-weight:300;
+      color:var(--earth);line-height:1.2;
+      margin-bottom:0.4rem;
+    }
+    .section-title.ml{font-family:var(--font-ml);font-size:1.6rem;font-weight:400;}
+    .section-title.hi{font-family:var(--font-hi);font-size:1.6rem;font-weight:400;}
+
+    .section-sub{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.65;margin-bottom:2rem;
+    }
+    .section-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .section-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── SAFETY BADGE ── */
+    .safety-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 14px;
+      background:var(--gold-bg);
+      border:1px solid var(--gold-border);
+      border-radius:999px;
+      font-size:0.72rem;color:var(--stone-dark);
+      margin-bottom:1.75rem;
+      letter-spacing:0.04em;
+    }
+    .safety-badge.ml{font-family:var(--font-ml);font-size:0.75rem;}
+    .safety-badge.hi{font-family:var(--font-hi);font-size:0.75rem;}
+    .safety-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--gold);flex-shrink:0;
+    }
+
+    /* ── TO: FIELD ── */
+    .to-field{
+      display:flex;align-items:center;gap:10px;
+      margin-bottom:1rem;
+    }
+    .to-label{
+      font-family:var(--font-hw);
+      font-size:1.1rem;color:var(--stone-dark);
+      flex-shrink:0;
+    }
+    .to-input{
+      flex:1;
+      border:none;
+      border-bottom:1px solid var(--border);
+      background:transparent;
+      font-family:var(--font-hw);
+      font-size:1rem;color:var(--text-primary);
+      padding:4px 0;
+      outline:none;
+      transition:border-color 0.2s;
+    }
+    .to-input:focus{border-color:var(--stone);}
+    .to-input::placeholder{color:var(--text-muted);}
+    .to-input.ml{font-family:var(--font-ml);}
+    .to-input.hi{font-family:var(--font-hi);}
+
+    /* ── QUICK TO PILLS ── */
+    .to-pills{
+      display:flex;flex-wrap:wrap;gap:7px;
+      margin-bottom:1.5rem;
+    }
+    .to-pill{
+      padding:5px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,0.7);
+      font-size:0.75rem;color:var(--text-muted);
+      cursor:pointer;
+      transition:all 0.2s;
+      font-family:var(--font-b);
+    }
+    .to-pill.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .to-pill.hi{font-family:var(--font-hi);font-size:0.73rem;}
+    .to-pill:hover,.to-pill.active{
+      background:var(--cream-warm);
+      border-color:var(--stone);
+      color:var(--earth);
+    }
+
+    /* ── PAPER LETTER AREA ── */
+    .paper-wrap{
+      position:relative;
+      margin-bottom:1.25rem;
+    }
+
+    /* Paper texture lines */
+    .paper-lines{
+      position:absolute;
+      inset:0;
+      background-image:repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        rgba(139,111,82,0.06) 31px,
+        rgba(139,111,82,0.06) 32px
+      );
+      border-radius:14px;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    /* Left margin line */
+    .paper-margin{
+      position:absolute;
+      left:52px;top:0;bottom:0;
+      width:1px;
+      background:rgba(193,101,74,0.12);
+      pointer-events:none;
+      z-index:1;
+      border-radius:1px;
+    }
+
+    .letter-textarea{
+      width:100%;
+      min-height:320px;
+      background:var(--cream-paper);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:1.25rem 1.25rem 1.25rem 3.75rem;
+      font-family:var(--font-hw);
+      font-size:1.05rem;
+      line-height:2rem;
+      color:var(--text-primary);
+      resize:none;
+      outline:none;
+      position:relative;z-index:2;
+      transition:border-color 0.2s;
+    }
+    .letter-textarea:focus{border-color:var(--stone);}
+    .letter-textarea::placeholder{
+      color:var(--text-muted);
+      font-style:italic;
+    }
+    .letter-textarea.ml{font-family:var(--font-ml);font-size:0.95rem;line-height:2rem;}
+    .letter-textarea.hi{font-family:var(--font-hi);font-size:0.95rem;line-height:2rem;}
+
+    /* Word count */
+    .word-count{
+      text-align:right;
+      font-size:0.7rem;color:var(--text-muted);
+      margin-top:6px;margin-bottom:1.25rem;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .actions{
+      display:flex;flex-direction:column;gap:10px;
+      margin-bottom:1.5rem;
+    }
+
+    .btn-reflect{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:14px 18px;
+      background:var(--earth);border:none;
+      border-radius:13px;cursor:pointer;
+      color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.88rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+    }
+    .btn-reflect:hover{
+      background:var(--earth-deep);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.18);
+    }
+    .btn-reflect:disabled{
+      opacity:0.45;cursor:not-allowed;transform:none;
+      box-shadow:none;
+    }
+    .btn-reflect.ml{font-family:var(--font-ml);}
+    .btn-reflect.hi{font-family:var(--font-hi);}
+
+    .btn-burn{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:12px 18px;
+      background:transparent;
+      border:1px solid var(--border);
+      border-radius:13px;cursor:pointer;
+      color:var(--text-muted);
+      font-family:var(--font-b);font-size:0.85rem;
+      transition:all 0.3s var(--ease);
+    }
+    .btn-burn:hover{
+      border-color:var(--terracotta);
+      color:var(--terracotta);
+      background:rgba(193,101,74,0.05);
+    }
+    .btn-burn:disabled{opacity:0.4;cursor:not-allowed;}
+    .btn-burn.ml{font-family:var(--font-ml);}
+    .btn-burn.hi{font-family:var(--font-hi);}
+
+    /* ── REFLECTION PANEL ── */
+    .reflection-panel{
+      background:rgba(255,255,255,0.85);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:1.4rem;
+      margin-bottom:1.5rem;
+      display:none;
+    }
+    .reflection-panel.open{display:block;animation:fadeUp 0.4s var(--ease) both;}
+
+    .reflection-loading{
+      display:flex;align-items:center;gap:10px;
+      font-size:0.85rem;color:var(--text-muted);
+    }
+    .loading-dots{
+      display:flex;gap:4px;
+    }
+    .loading-dots span{
+      width:5px;height:5px;border-radius:50%;
+      background:var(--stone);
+      animation:dotPulse 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2){animation-delay:0.2s;}
+    .loading-dots span:nth-child(3){animation-delay:0.4s;}
+    @keyframes dotPulse{
+      0%,100%{opacity:0.3;transform:scale(0.8);}
+      50%{opacity:1;transform:scale(1);}
+    }
+
+    .reflection-label{
+      font-size:0.7rem;color:var(--gold);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.6rem;font-weight:500;
+    }
+    .reflection-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.74rem;}
+    .reflection-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.74rem;}
+
+    .reflection-text{
+      font-size:0.88rem;color:var(--text-secondary);
+      line-height:1.75;margin-bottom:1rem;
+    }
+    .reflection-text.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .reflection-text.hi{font-family:var(--font-hi);font-size:0.86rem;}
+
+    .reflection-questions{
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .reflection-q{
+      padding:10px 13px;
+      background:var(--cream-warm);
+      border-radius:10px;
+      font-size:0.82rem;color:var(--text-secondary);
+      line-height:1.5;
+      border-left:2px solid var(--gold);
+    }
+    .reflection-q.ml{font-family:var(--font-ml);font-size:0.8rem;}
+    .reflection-q.hi{font-family:var(--font-hi);font-size:0.8rem;}
+
+    .reflection-hw{
+      font-family:var(--font-hw);
+      font-size:1.05rem;color:var(--stone-dark);
+      margin-top:1rem;display:block;
+      line-height:1.5;
+    }
+
+    /* ── BURN SCREEN ── */
+    #screen-burn{
+      justify-content:center;align-items:center;
+      text-align:center;padding:3rem 2rem;
+    }
+    .burn-wrap{position:relative;margin-bottom:2rem;}
+    .burn-icon{
+      font-size:4rem;
+      display:block;
+      animation:burnFlicker 0.8s ease-in-out infinite alternate;
+    }
+    @keyframes burnFlicker{
+      from{transform:scale(1) rotate(-2deg);opacity:0.9;}
+      to{transform:scale(1.08) rotate(2deg);opacity:1;}
+    }
+    .burn-title{
+      font-family:var(--font-d);
+      font-size:2rem;font-weight:300;
+      color:var(--earth);margin-bottom:0.5rem;
+    }
+    .burn-title.ml{font-family:var(--font-ml);font-size:1.6rem;font-weight:400;}
+    .burn-title.hi{font-family:var(--font-hi);font-size:1.6rem;font-weight:400;}
+
+    .burn-sub{
+      font-size:0.88rem;color:var(--text-secondary);
+      line-height:1.7;max-width:300px;margin:0 auto 1.5rem;
+    }
+    .burn-sub.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .burn-sub.hi{font-family:var(--font-hi);font-size:0.86rem;}
+
+    .burn-hw{
+      font-family:var(--font-hw);
+      font-size:1.2rem;color:var(--stone-dark);
+      display:block;margin-bottom:2rem;
+    }
+
+    .burn-actions{display:flex;flex-direction:column;gap:10px;align-items:center;}
+
+    .btn-new{
+      padding:12px 28px;
+      background:var(--earth);border:none;
+      border-radius:13px;cursor:pointer;
+      color:#FAF6F0;font-family:var(--font-b);
+      font-size:0.88rem;font-weight:500;
+      transition:all 0.3s;
+    }
+    .btn-new:hover{background:var(--earth-deep);}
+    .btn-new.ml{font-family:var(--font-ml);}
+    .btn-new.hi{font-family:var(--font-hi);}
+
+    .btn-next{
+      display:flex;align-items:center;gap:8px;
+      padding:11px 22px;
+      background:transparent;
+      border:1px solid var(--border);
+      border-radius:13px;cursor:pointer;
+      color:var(--text-secondary);font-family:var(--font-b);
+      font-size:0.85rem;
+      transition:all 0.3s;
+    }
+    .btn-next:hover{
+      background:var(--cream-warm);
+      border-color:var(--stone);color:var(--earth);
+    }
+    .btn-next.ml{font-family:var(--font-ml);}
+    .btn-next.hi{font-family:var(--font-hi);}
+
+    /* ── PAPER FOLD ANIMATION ── */
+    @keyframes paperFold{
+      0%{transform:perspective(600px) rotateX(0deg);opacity:1;}
+      40%{transform:perspective(600px) rotateX(-20deg) scale(0.95);opacity:0.8;}
+      100%{transform:perspective(600px) rotateX(-90deg) scale(0.5);opacity:0;}
+    }
+    .paper-folding{animation:paperFold 0.8s var(--ease) forwards;}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .section-title{font-size:1.7rem;}
+      .letter-textarea{padding-left:1.25rem;}
+      .paper-margin{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ WRITING SCREEN ══ -->
+  <div class="screen active" id="screen-write">
+    <div class="page">
+
+      <!-- Back nav -->
+      <div class="back-nav">
+        <button class="back-btn-nav" onclick="history.back()">← <span id="back-label">Back</span></button>
+        <span class="step-badge" id="step-badge">Step 5 of 10</span>
+      </div>
+
+      <!-- Header -->
+      <p class="section-label" id="section-label">The unsent letter</p>
+      <h1 class="section-title" id="section-title">Say everything you cannot say out loud</h1>
+      <p class="section-sub" id="section-sub">Write to anyone — a professor, a patient's family, a friend who hurt you, yourself. Say it all. This letter will never be saved. Never sent. It is yours alone.</p>
+
+      <!-- Safety badge -->
+      <div class="safety-badge" id="safety-badge">
+        <span class="safety-dot"></span>
+        <span id="safety-text">Never saved · Never sent · Disappears when you close</span>
+      </div>
+
+      <!-- To: field -->
+      <div class="to-field">
+        <span class="to-label">To:</span>
+        <input class="to-input" id="to-input" type="text" placeholder="Who is this for?" autocomplete="off"/>
+      </div>
+
+      <!-- Quick to pills -->
+      <div class="to-pills" id="to-pills"></div>
+
+      <!-- Paper letter -->
+      <div class="paper-wrap" id="paper-wrap">
+        <div class="paper-lines"></div>
+        <div class="paper-margin"></div>
+        <textarea class="letter-textarea" id="letter-textarea" rows="12"
+          placeholder="Dear..."></textarea>
+      </div>
+
+      <!-- Word count -->
+      <p class="word-count" id="word-count">0 words</p>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn-reflect" id="btn-reflect" disabled onclick="getReflection()">
+          <span id="reflect-label">Read my letter & help me reflect</span>
+          <span>→</span>
+        </button>
+        <button class="btn-burn" id="btn-burn" disabled onclick="burnLetter()">
+          <span id="burn-label">🔥 Release this letter — let it go</span>
+        </button>
+      </div>
+
+      <!-- Reflection panel -->
+      <div class="reflection-panel" id="reflection-panel">
+        <div class="reflection-loading" id="reflection-loading">
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span id="reading-label">Reading your letter...</span>
+        </div>
+        <div id="reflection-content" style="display:none;"></div>
+      </div>
+
+      <!-- Next step -->
+      <button class="btn-next" id="btn-next-step" style="display:none;" onclick="goNext()">
+        <span id="next-label">Continue — hear from others who carried this</span>
+        <span>→</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ══ BURN SCREEN ══ -->
+  <div class="screen" id="screen-burn">
+    <div class="page" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:100vh;">
+      <div class="burn-wrap">
+        <span class="burn-icon">🔥</span>
+      </div>
+      <h2 class="burn-title" id="burn-title">It is released.</h2>
+      <p class="burn-sub" id="burn-sub">Your words existed. They were real. They mattered. And now they are gone — like every feeling that has ever passed through you.</p>
+      <span class="burn-hw" id="burn-hw">You said what needed to be said.</span>
+      <div class="burn-actions">
+        <button class="btn-new" id="btn-new" onclick="writeNew()">Write another letter</button>
+        <button class="btn-next" id="btn-next-burn" onclick="goNext()">
+          <span id="next-burn-label">Continue to peer wisdom</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ══════════════════════════════════
+   CONTENT
+══════════════════════════════════ */
+const C = {
+  en:{
+    back:'Back', step:'Step 5 of 10',
+    sLabel:'The unsent letter',
+    sTitle:'Say everything you cannot say out loud',
+    sSub:'Write to anyone — a professor, a patient\'s family, a friend who hurt you, yourself. Say it all. This letter will never be saved. Never sent. It is yours alone.',
+    safety:'Never saved · Never sent · Disappears when you close',
+    toPlaceholder:'Who is this for?',
+    letterPlaceholder:'Dear...',
+    wordCount:(n)=> n===1?'1 word':`${n} words`,
+    reflectLabel:'Read my letter & help me reflect',
+    burnLabel:'🔥 Release this letter — let it go',
+    readingLabel:'Reading your letter...',
+    reflectionLabel:'What your letter is telling you',
+    burnTitle:'It is released.',
+    burnSub:'Your words existed. They were real. They mattered. And now they are gone — like every feeling that has ever passed through you.',
+    burnHw:'You said what needed to be said.',
+    btnNew:'Write another letter',
+    nextLabel:'Continue — hear from others who carried this',
+    nextBurnLabel:'Continue to peer wisdom',
+    toPills:['My professor','A patient\'s family','A friend','My family','Myself','The situation'],
+    systemPrompt:`You are a compassionate, warm reflection guide for Horegallu — a stress relief app for nursing students and anyone carrying heavy emotions. 
+
+A user has written an unsent letter — something they could not say out loud. Your role is to:
+1. Acknowledge what they wrote with deep empathy (2-3 sentences). Do NOT repeat their words back.
+2. Help them identify what they actually need right now — not solutions, but needs (to be heard, to be forgiven, to forgive, to feel seen, to rest).
+3. Ask 2 gentle reflection questions to help them process further.
+4. End with one short, honest comfort statement.
+
+Keep your response warm, human, and under 200 words. Never be preachy. Never give advice they did not ask for. Speak like a trusted friend who happens to understand psychology.`,
+  },
+
+  ml:{
+    back:'തിരിച്ചു', step:'ഘട്ടം 5 / 10',
+    sLabel:'അയക്കാത്ത കത്ത്',
+    sTitle:'ഉറക്കെ പറയാൻ കഴിയാത്തതെല്ലാം എഴുതൂ',
+    sSub:'ആർക്കും എഴുതൂ — ഒരു പ്രൊഫസർക്ക്, രോഗിയുടെ കുടുംബത്തിന്, വേദനിപ്പിച്ച ഒരു സ്നേഹിതനു, സ്വയം. എല്ലാം പറയൂ. ഈ കത്ത് save ആകില്ല. അയക്കപ്പെടില്ല. ഇത് നിങ്ങൾക്ക് മാത്രം.',
+    safety:'Save ആകില്ല · അയക്കില്ല · Close ചെയ്താൽ അപ്രത്യക്ഷമാകും',
+    toPlaceholder:'ഇത് ആർക്ക് വേണ്ടി?',
+    letterPlaceholder:'പ്രിയ...',
+    wordCount:(n)=>`${n} വാക്ക്`,
+    reflectLabel:'എന്റെ കത്ത് വായിച്ച് reflect ചെയ്യാൻ സഹായിക്കൂ',
+    burnLabel:'🔥 ഈ കത്ത് വിടൂ — ഒഴിക്കൂ',
+    readingLabel:'കത്ത് വായിക്കുന്നു...',
+    reflectionLabel:'നിങ്ങളുടെ കത്ത് പറയുന്നത്',
+    burnTitle:'വിട്ടുകഴിഞ്ഞു.',
+    burnSub:'നിങ്ങളുടെ വാക്കുകൾ ഉണ്ടായിരുന്നു. അവ യഥാർഥമായിരുന്നു. പ്രധാനമായിരുന്നു. ഇപ്പോൾ അവ പോയി — ഇതുവരെ കടന്നുപോയ ഓരോ വികാരത്തെയും പോലെ.',
+    burnHw:'പറയേണ്ടത് പറഞ്ഞു.',
+    btnNew:'മറ്റൊരു കത്ത് എഴുതൂ',
+    nextLabel:'തുടരുക — ഇതേ ഭാരം വഹിച്ചവർ പറഞ്ഞത്',
+    nextBurnLabel:'Peer wisdom-ലേക്ക് തുടരൂ',
+    toPills:['എന്റെ അധ്യാപകൻ','രോഗിയുടെ കുടുംബം','ഒരു സ്നേഹിതൻ','എന്റെ കുടുംബം','എനിക്ക് തന്നെ','ഈ സ്ഥിതിക്ക്'],
+    systemPrompt:`നിങ്ങൾ Horegallu-യുടെ compassionate reflection guide ആണ് — nursing students-നും ഭാരം വഹിക്കുന്ന എല്ലാവർക്കും വേണ്ടി.
+
+ഒരു user അയക്കാത്ത ഒരു കത്ത് എഴുതിയിരിക്കുന്നു. Malayalam-ൽ respond ചെയ്യൂ:
+1. Deep empathy-യോടെ acknowledge ചെയ്യൂ (2-3 sentences). അവരുടെ വാക്കുകൾ repeat ചെയ്യരുത്.
+2. ഇപ്പോൾ അവർക്ക് യഥാർഥത്തിൽ എന്ത് ആവശ്യമാണ് — solutions അല്ല, needs ആണ്.
+3. 2 gentle reflection questions ചോദിക്കൂ.
+4. ഒരു ചെറിയ, സത്യസന്ധമായ comfort statement-ൽ അവസാനിപ്പിക്കൂ.
+
+200 വാക്കിൽ കൂടരുത്. Warm, human ആയിരിക്കൂ.`,
+  },
+
+  hi:{
+    back:'वापस', step:'चरण 5 / 10',
+    sLabel:'न भेजा गया खत',
+    sTitle:'वो सब लिखो जो ज़ोर से नहीं कह सकते',
+    sSub:'किसी को भी लिखो — एक professor को, मरीज़ के परिवार को, दोस्त को, खुद को। सब कहो। यह खत कभी save नहीं होगा। कभी भेजा नहीं जाएगा। यह सिर्फ तुम्हारा है।',
+    safety:'Save नहीं होगा · भेजा नहीं जाएगा · बंद करने पर मिट जाएगा',
+    toPlaceholder:'यह किसके लिए है?',
+    letterPlaceholder:'प्रिय...',
+    wordCount:(n)=>`${n} शब्द`,
+    reflectLabel:'मेरा खत पढ़ो और reflect करने में मदद करो',
+    burnLabel:'🔥 यह खत छोड़ दो — जाने दो',
+    readingLabel:'खत पढ़ा जा रहा है...',
+    reflectionLabel:'तुम्हारा खत क्या कह रहा है',
+    burnTitle:'छूट गया।',
+    burnSub:'तुम्हारे शब्द थे। वो असली थे। उनका महत्व था। और अब वो गए — जैसे हर वो भावना जो तुमसे गुज़री है।',
+    burnHw:'जो कहना था वो कह दिया।',
+    btnNew:'एक और खत लिखो',
+    nextLabel:'आगे बढ़ें — इसी बोझ को उठाने वालों की बात',
+    nextBurnLabel:'Peer wisdom की तरफ आगे बढ़ें',
+    toPills:['मेरे professor','मरीज़ का परिवार','एक दोस्त','मेरा परिवार','खुद को','इस स्थिति को'],
+    systemPrompt:`तुम Horegallu के compassionate reflection guide हो — nursing students और बोझ उठाने वाले हर इंसान के लिए।
+
+एक user ने एक न भेजा गया खत लिखा है। Hindi में respond करो:
+1. गहरी empathy के साथ acknowledge करो (2-3 sentences)। उनके शब्द repeat मत करो।
+2. उन्हें अभी क्या चाहिए — solutions नहीं, needs बताओ।
+3. 2 gentle reflection questions पूछो।
+4. एक छोटे, सच्चे comfort statement से खत्म करो।
+
+200 शब्दों से कम रखो। Warm और human रहो।`,
+  }
+};
+
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang')||'en';
+let letterText = '';
+let reflectionDone = false;
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderUI();
+  bindTextarea();
+});
+
+function renderUI(){
+  const c = C[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  document.getElementById('back-label').textContent = c.back;
+  document.getElementById('step-badge').textContent = c.step;
+
+  const sl=document.getElementById('section-label');
+  sl.textContent=c.sLabel; sl.className='section-label '+lc;
+  const st=document.getElementById('section-title');
+  st.textContent=c.sTitle; st.className='section-title '+lc;
+  const ss=document.getElementById('section-sub');
+  ss.textContent=c.sSub; ss.className='section-sub '+lc;
+
+  const sb=document.getElementById('safety-badge');
+  sb.className='safety-badge '+lc;
+  document.getElementById('safety-text').textContent=c.safety;
+
+  const ti=document.getElementById('to-input');
+  ti.placeholder=c.toPlaceholder;
+  ti.className='to-input '+lc;
+
+  const ta=document.getElementById('letter-textarea');
+  ta.placeholder=c.letterPlaceholder;
+  ta.className='letter-textarea '+lc;
+
+  document.getElementById('reflect-label').textContent=c.reflectLabel;
+  document.getElementById('btn-reflect').className='btn-reflect '+lc;
+  document.getElementById('burn-label').textContent=c.burnLabel;
+  document.getElementById('btn-burn').className='btn-burn '+lc;
+  document.getElementById('reading-label').textContent=c.readingLabel;
+  document.getElementById('burn-title').textContent=c.burnTitle;
+
+  const bsub=document.getElementById('burn-sub');
+  bsub.textContent=c.burnSub; bsub.className='burn-sub '+lc;
+  document.getElementById('burn-hw').textContent=c.burnHw;
+
+  const btnNew=document.getElementById('btn-new');
+  btnNew.textContent=c.btnNew; btnNew.className='btn-new '+lc;
+
+  document.getElementById('next-label').textContent=c.nextLabel;
+  const btnNext=document.getElementById('btn-next-step');
+  btnNext.className='btn-next '+lc;
+
+  document.getElementById('next-burn-label').textContent=c.nextBurnLabel;
+  const btnNextBurn=document.getElementById('btn-next-burn');
+  btnNextBurn.className='btn-next '+lc;
+
+  // To pills
+  const pillsEl=document.getElementById('to-pills');
+  pillsEl.innerHTML='';
+  c.toPills.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.className='to-pill '+lc;
+    btn.textContent=p;
+    btn.onclick=()=>{
+      document.querySelectorAll('.to-pill').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('to-input').value=p;
+    };
+    pillsEl.appendChild(btn);
+  });
+
+  // Word count
+  updateWordCount('');
+}
+
+/* ══════════════════════════════════
+   TEXTAREA
+══════════════════════════════════ */
+function bindTextarea(){
+  const ta=document.getElementById('letter-textarea');
+  ta.addEventListener('input',()=>{
+    letterText=ta.value;
+    const words=countWords(letterText);
+    updateWordCount(letterText);
+    const hasContent=words>5;
+    document.getElementById('btn-reflect').disabled=!hasContent;
+    document.getElementById('btn-burn').disabled=!hasContent;
+  });
+}
+
+function countWords(text){
+  return text.trim()===''?0:text.trim().split(/\s+/).length;
+}
+
+function updateWordCount(text){
+  const c=C[lang];
+  const n=countWords(text);
+  document.getElementById('word-count').textContent=c.wordCount(n);
+}
+
+/* ══════════════════════════════════
+   AI REFLECTION
+══════════════════════════════════ */
+async function getReflection(){
+  const c=C[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const panel=document.getElementById('reflection-panel');
+  const loading=document.getElementById('reflection-loading');
+  const content=document.getElementById('reflection-content');
+  const toName=document.getElementById('to-input').value||'someone';
+
+  panel.classList.add('open');
+  loading.style.display='flex';
+  content.style.display='none';
+
+  // Scroll to panel
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+
+  try{
+    const response = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: c.systemPrompt,
+        messages:[{
+          role:'user',
+          content:`The letter is addressed to: ${toName}\n\nThe letter:\n${letterText}`
+        }]
+      })
+    });
+
+    const data=await response.json();
+    const text=data.content?.[0]?.text||'';
+
+    loading.style.display='none';
+    content.style.display='block';
+
+    // Parse and display
+    const paras=text.split('\n').filter(p=>p.trim());
+    const questions=paras.filter(p=>p.includes('?'));
+    const nonQ=paras.filter(p=>!p.includes('?'));
+    const lastLine=nonQ[nonQ.length-1]||'';
+    const mainText=nonQ.slice(0,-1).join(' ');
+
+    content.innerHTML=`
+      <p class="reflection-label ${lc}">${c.reflectionLabel}</p>
+      <p class="reflection-text ${lc}">${mainText}</p>
+      ${questions.length?`
+        <div class="reflection-questions">
+          ${questions.map(q=>`<p class="reflection-q ${lc}">${q}</p>`).join('')}
+        </div>`:''
+      }
+      ${lastLine?`<span class="reflection-hw">${lastLine}</span>`:''}
+    `;
+
+    reflectionDone=true;
+    document.getElementById('btn-next-step').style.display='flex';
+
+  } catch(err){
+    loading.style.display='none';
+    content.style.display='block';
+    content.innerHTML=`<p class="reflection-text ${lc}">${
+      lang==='ml'?'ഒരു നിമിഷം. ഇത് വീണ്ടും ശ്രമിക്കൂ.':
+      lang==='hi'?'एक पल। दोबारा कोशिश करो।':
+      'Something went quiet. Please try again.'
+    }</p>`;
+  }
+}
+
+/* ══════════════════════════════════
+   BURN LETTER
+══════════════════════════════════ */
+function burnLetter(){
+  const paperWrap=document.getElementById('paper-wrap');
+  paperWrap.classList.add('paper-folding');
+  setTimeout(()=>{
+    document.getElementById('letter-textarea').value='';
+    letterText='';
+    showScreen('screen-burn');
+  },800);
+}
+
+function writeNew(){
+  document.getElementById('letter-textarea').value='';
+  document.getElementById('to-input').value='';
+  document.querySelectorAll('.to-pill').forEach(b=>b.classList.remove('active'));
+  letterText='';
+  reflectionDone=false;
+  updateWordCount('');
+  document.getElementById('btn-reflect').disabled=true;
+  document.getElementById('btn-burn').disabled=true;
+  document.getElementById('reflection-panel').classList.remove('open');
+  document.getElementById('btn-next-step').style.display='none';
+  const paperWrap=document.getElementById('paper-wrap');
+  paperWrap.classList.remove('paper-folding');
+  showScreen('screen-write');
+}
+
+function goNext(){
+  window.location.href='peer-wisdom.html';
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById(id);
+  if(t){t.classList.add('active');window.scrollTo(0,0);}
+}
+</script>
+</body>
+</html>
