@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — Peer Wisdom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --gold-border: rgba(212,169,74,0.2);
+      --terracotta:  #C1654A;
+      --terra-bg:    rgba(193,101,74,0.08);
+      --sage:        #7A8C6E;
+      --sage-bg:     rgba(122,140,110,0.1);
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      min-height:100vh;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{display:flex;align-items:center;margin-bottom:2rem;}
+    .back-btn-nav{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);transition:color 0.2s;padding:0;
+    }
+    .back-btn-nav:hover{color:var(--earth);}
+    .step-badge{margin-left:auto;font-size:0.7rem;color:var(--text-muted);letter-spacing:0.08em;}
+
+    /* ── HEADER ── */
+    .section-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.4rem;
+    }
+    .section-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+    .section-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+
+    .section-title{
+      font-family:var(--font-d);font-size:2rem;font-weight:300;
+      color:var(--earth);line-height:1.2;margin-bottom:0.4rem;
+    }
+    .section-title.ml{font-family:var(--font-ml);font-size:1.55rem;font-weight:400;}
+    .section-title.hi{font-family:var(--font-hi);font-size:1.55rem;font-weight:400;}
+
+    .section-sub{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.65;margin-bottom:2rem;
+    }
+    .section-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .section-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── FILTER PILLS ── */
+    .filter-row{
+      display:flex;flex-wrap:wrap;gap:7px;
+      margin-bottom:1.75rem;
+    }
+    .filter-pill{
+      padding:6px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,0.7);
+      font-size:0.75rem;color:var(--text-muted);
+      cursor:pointer;transition:all 0.22s;
+      font-family:var(--font-b);
+    }
+    .filter-pill.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .filter-pill.hi{font-family:var(--font-hi);font-size:0.73rem;}
+    .filter-pill:hover{border-color:var(--stone);color:var(--earth);}
+    .filter-pill.active{
+      background:var(--earth);border-color:var(--earth);color:#FAF6F0;
+    }
+
+    /* ── FEATURED WISDOM CARD ── */
+    .featured-card{
+      background:rgba(255,255,255,0.88);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:2rem 1.75rem;
+      margin-bottom:1.25rem;
+      position:relative;overflow:hidden;
+      min-height:180px;
+      display:flex;flex-direction:column;justify-content:space-between;
+    }
+    .featured-card::before{
+      content:'';
+      position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(to right,var(--gold),var(--stone),var(--gold));
+      border-radius:20px 20px 0 0;
+    }
+
+    /* Kintsugi accent */
+    .featured-card::after{
+      content:'"';
+      position:absolute;right:20px;top:12px;
+      font-family:var(--font-d);
+      font-size:5rem;color:rgba(196,168,130,0.12);
+      line-height:1;pointer-events:none;
+    }
+
+    .wisdom-text{
+      font-family:var(--font-hw);
+      font-size:1.45rem;
+      color:var(--earth-deep);
+      line-height:1.5;
+      margin-bottom:1.25rem;
+      transition:opacity 0.4s ease;
+    }
+    .wisdom-text.ml{font-family:var(--font-ml);font-size:1.2rem;}
+    .wisdom-text.hi{font-family:var(--font-hi);font-size:1.2rem;}
+    .wisdom-text.fading{opacity:0;}
+
+    .wisdom-meta{
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .wisdom-from{
+      font-size:0.75rem;color:var(--text-muted);
+      letter-spacing:0.04em;
+    }
+    .wisdom-from.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .wisdom-from.hi{font-family:var(--font-hi);font-size:0.73rem;}
+
+    .wisdom-tag{
+      padding:3px 10px;
+      border-radius:999px;
+      font-size:0.68rem;letter-spacing:0.06em;
+    }
+    .wisdom-tag.exam{background:var(--gold-bg);color:var(--stone-dark);}
+    .wisdom-tag.clinical{background:var(--terra-bg);color:var(--terracotta);}
+    .wisdom-tag.enough{background:var(--sage-bg);color:var(--sage);}
+    .wisdom-tag.exhausted{background:rgba(139,111,82,0.1);color:var(--stone-dark);}
+    .wisdom-tag.relationship{background:rgba(193,101,74,0.06);color:var(--terracotta);}
+    .wisdom-tag.unknown{background:rgba(196,168,130,0.12);color:var(--stone-dark);}
+    .wisdom-tag.ml{font-family:var(--font-ml);}
+    .wisdom-tag.hi{font-family:var(--font-hi);}
+
+    /* ── NAVIGATION ── */
+    .wisdom-nav{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:2rem;
+    }
+    .nav-btn{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:8px 16px;
+      border:1px solid var(--border);border-radius:10px;
+      background:rgba(255,255,255,0.7);
+      cursor:pointer;font-size:0.8rem;color:var(--text-secondary);
+      font-family:var(--font-b);transition:all 0.22s;
+    }
+    .nav-btn:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);color:var(--earth);
+    }
+    .nav-btn.ml{font-family:var(--font-ml);}
+    .nav-btn.hi{font-family:var(--font-hi);}
+
+    .wisdom-counter{
+      font-size:0.75rem;color:var(--text-muted);
+      letter-spacing:0.06em;
+    }
+
+    /* ── AUTO ROTATE INDICATOR ── */
+    .rotate-bar{
+      height:2px;
+      background:rgba(139,111,82,0.12);
+      border-radius:1px;
+      margin-bottom:2rem;
+      overflow:hidden;
+    }
+    .rotate-fill{
+      height:100%;
+      background:var(--gold);
+      border-radius:1px;
+      width:0%;
+      transition:width linear;
+    }
+
+    /* ── WISDOM GRID ── */
+    .grid-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.9rem;
+    }
+    .grid-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+    .grid-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+
+    .wisdom-grid{
+      display:flex;flex-direction:column;
+      gap:9px;margin-bottom:2rem;
+    }
+
+    .wisdom-card{
+      background:rgba(255,255,255,0.72);
+      border:1px solid var(--border);
+      border-radius:13px;
+      padding:1rem 1.2rem;
+      transition:all 0.25s var(--ease);
+      cursor:pointer;
+      position:relative;overflow:hidden;
+      opacity:0;transform:translateY(8px);
+      animation:none;
+    }
+    .wisdom-card.visible{
+      animation:cardIn 0.4s var(--ease) forwards;
+    }
+    @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+
+    .wisdom-card::before{
+      content:'';
+      position:absolute;left:0;top:0;bottom:0;
+      width:3px;background:var(--stone);
+      transform:scaleY(0);
+      transition:transform 0.2s;
+      border-radius:3px 0 0 3px;
+    }
+    .wisdom-card:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateX(4px);
+    }
+    .wisdom-card:hover::before{transform:scaleY(1);}
+
+    .card-wisdom-text{
+      font-family:var(--font-hw);
+      font-size:1.05rem;color:var(--earth-deep);
+      line-height:1.5;display:block;margin-bottom:6px;
+    }
+    .card-wisdom-text.ml{font-family:var(--font-ml);font-size:0.95rem;}
+    .card-wisdom-text.hi{font-family:var(--font-hi);font-size:0.95rem;}
+
+    .card-meta{
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .card-from{font-size:0.7rem;color:var(--text-muted);}
+    .card-from.ml{font-family:var(--font-ml);}
+    .card-from.hi{font-family:var(--font-hi);}
+
+    .card-heart{
+      font-size:0.75rem;color:var(--text-muted);
+      cursor:pointer;transition:color 0.2s;
+      background:none;border:none;
+      font-family:var(--font-b);padding:0;
+    }
+    .card-heart:hover{color:var(--terracotta);}
+    .card-heart.liked{color:var(--terracotta);}
+
+    /* ── SHARE YOUR OWN ── */
+    .share-section{
+      background:var(--gold-bg);
+      border:1px solid var(--gold-border);
+      border-radius:16px;
+      padding:1.4rem;
+      margin-bottom:1.5rem;
+    }
+    .share-title{
+      font-family:var(--font-d);
+      font-size:1.3rem;font-weight:400;
+      color:var(--earth);margin-bottom:0.4rem;
+    }
+    .share-title.ml{font-family:var(--font-ml);font-size:1.1rem;font-weight:400;}
+    .share-title.hi{font-family:var(--font-hi);font-size:1.1rem;font-weight:400;}
+
+    .share-sub{
+      font-size:0.8rem;color:var(--text-muted);
+      line-height:1.6;margin-bottom:1rem;
+    }
+    .share-sub.ml{font-family:var(--font-ml);font-size:0.78rem;}
+    .share-sub.hi{font-family:var(--font-hi);font-size:0.78rem;}
+
+    .share-input{
+      width:100%;
+      border:1px solid var(--border);border-radius:10px;
+      padding:10px 13px;
+      font-family:var(--font-hw);font-size:1rem;
+      color:var(--text-primary);
+      background:rgba(255,255,255,0.8);
+      outline:none;resize:none;
+      transition:border-color 0.2s;
+      margin-bottom:10px;
+    }
+    .share-input:focus{border-color:var(--stone);}
+    .share-input::placeholder{color:var(--text-muted);font-style:italic;}
+    .share-input.ml{font-family:var(--font-ml);font-size:0.92rem;}
+    .share-input.hi{font-family:var(--font-hi);font-size:0.92rem;}
+
+    .share-meta-row{
+      display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;
+    }
+    .share-select{
+      flex:1;min-width:120px;
+      border:1px solid var(--border);border-radius:8px;
+      padding:7px 10px;
+      font-size:0.78rem;color:var(--text-secondary);
+      background:rgba(255,255,255,0.8);
+      outline:none;font-family:var(--font-b);
+      cursor:pointer;
+    }
+    .share-select.ml{font-family:var(--font-ml);}
+    .share-select.hi{font-family:var(--font-hi);}
+
+    .share-btn{
+      width:100%;padding:11px;
+      background:var(--earth);border:none;border-radius:10px;
+      color:#FAF6F0;font-family:var(--font-b);
+      font-size:0.85rem;font-weight:500;
+      cursor:pointer;transition:all 0.25s;
+    }
+    .share-btn:hover{background:var(--earth-deep);}
+    .share-btn:disabled{opacity:0.45;cursor:not-allowed;}
+    .share-btn.ml{font-family:var(--font-ml);}
+    .share-btn.hi{font-family:var(--font-hi);}
+
+    .share-confirm{
+      text-align:center;font-family:var(--font-hw);
+      font-size:1rem;color:var(--stone-dark);
+      padding:8px;display:none;
+    }
+
+    /* ── NEXT BTN ── */
+    .next-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:15px 20px;
+      background:var(--earth);border:none;border-radius:14px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+    }
+    .next-btn:hover{
+      background:var(--earth-deep);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.18);
+    }
+    .next-btn.ml{font-family:var(--font-ml);}
+    .next-btn.hi{font-family:var(--font-hi);}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .section-title{font-size:1.65rem;}
+      .wisdom-text{font-size:1.2rem;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Back nav -->
+  <div class="back-nav">
+    <button class="back-btn-nav" onclick="history.back()">← <span id="back-label">Back</span></button>
+    <span class="step-badge" id="step-badge">Step 6 of 10</span>
+  </div>
+
+  <!-- Header -->
+  <p class="section-label" id="section-label">Peer wisdom</p>
+  <h1 class="section-title" id="section-title">Words left on the stone</h1>
+  <p class="section-sub" id="section-sub">Real words from real people who sat here before you. Not quotes. Not advice. Just what they wish someone had told them.</p>
+
+  <!-- Filter -->
+  <div class="filter-row" id="filter-row"></div>
+
+  <!-- Featured card -->
+  <div class="featured-card" id="featured-card">
+    <p class="wisdom-text" id="featured-text"></p>
+    <div class="wisdom-meta">
+      <span class="wisdom-from" id="featured-from"></span>
+      <span class="wisdom-tag" id="featured-tag"></span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="wisdom-nav">
+    <button class="nav-btn" id="prev-btn" onclick="prevWisdom()">← <span id="prev-label">Previous</span></button>
+    <span class="wisdom-counter" id="wisdom-counter">1 / 1</span>
+    <button class="nav-btn" id="next-nav-btn" onclick="nextWisdom()"><span id="next-nav-label">Next</span> →</button>
+  </div>
+
+  <!-- Auto rotate bar -->
+  <div class="rotate-bar"><div class="rotate-fill" id="rotate-fill"></div></div>
+
+  <!-- More wisdom grid -->
+  <p class="grid-label" id="grid-label">More from this stone</p>
+  <div class="wisdom-grid" id="wisdom-grid"></div>
+
+  <!-- Share your own -->
+  <div class="share-section">
+    <h3 class="share-title" id="share-title">Leave your word on the stone</h3>
+    <p class="share-sub" id="share-sub">One line. Anonymous. For the next person who sits here.</p>
+    <textarea class="share-input" id="share-input" rows="2" maxlength="160"></textarea>
+    <div class="share-meta-row">
+      <select class="share-select" id="share-category"></select>
+      <select class="share-select" id="share-from-select"></select>
+    </div>
+    <button class="share-btn" id="share-btn" onclick="submitWisdom()" disabled>
+      <span id="share-btn-label">Leave this on the stone</span>
+    </button>
+    <p class="share-confirm" id="share-confirm"></p>
+  </div>
+
+  <!-- Next -->
+  <button class="next-btn" id="next-btn" onclick="goNext()">
+    <span id="next-label">Continue — find what you actually need right now</span>
+    <span>→</span>
+  </button>
+
+</div>
+<script>
+/* ══════════════════════════════════
+   WISDOM DATA
+══════════════════════════════════ */
+const WISDOM = {
+  en:[
+    {text:"I cried in the hospital bathroom twice and still graduated.",from:"Nursing student, 3rd year",category:"clinical"},
+    {text:"The guilt goes away. The compassion stays.",from:"Graduate nurse",category:"clinical"},
+    {text:"You are not behind. You are on your own timeline.",from:"Final year student",category:"exam"},
+    {text:"Rest is not quitting. Rest is how you keep going.",from:"Working nurse, 5 years",category:"exhausted"},
+    {text:"The patients remember kindness long after they forget the medication.",from:"ICU nurse",category:"clinical"},
+    {text:"Asking for help is the most professional thing you can do.",from:"Senior resident",category:"enough"},
+    {text:"That exam you think you failed? You probably passed.",from:"2nd year student",category:"exam"},
+    {text:"Being sensitive is not a weakness in this field. It is the whole point.",from:"Palliative care nurse",category:"clinical"},
+    {text:"Everyone in that room felt like a fraud at some point. Even the ones teaching you.",from:"Lecturer",category:"enough"},
+    {text:"You will not always fix it. Sometimes you just sit with it. That is enough.",from:"Emergency nurse",category:"clinical"},
+    {text:"The relationship that hurt you taught you what you will not accept next time.",from:"Anonymous",category:"relationship"},
+    {text:"Not knowing what you feel is also a feeling. Let it be.",from:"Counsellor",category:"unknown"},
+    {text:"Some nights are just hard. They do not mean anything about tomorrow.",from:"Night shift nurse",category:"exhausted"},
+    {text:"Your empathy is not your weakness. It is your greatest clinical tool.",from:"Nurse educator",category:"enough"},
+    {text:"I thought I was the only one struggling. Everyone was struggling. Nobody said it.",from:"Final year student",category:"unknown"},
+    {text:"One patient at a time. One breath at a time. One shift at a time.",from:"ICU nurse, 10 years",category:"exhausted"},
+    {text:"The version of you who finishes this will be someone you are proud of.",from:"Graduate",category:"exam"},
+    {text:"Missing home does not mean you made the wrong choice.",from:"International student",category:"relationship"},
+  ],
+  ml:[
+    {text:"ഹോസ്പിറ്റൽ ബാത്ത്‌റൂമിൽ രണ്ടുതവണ കരഞ്ഞു. എന്നിട്ടും graduate ആയി.",from:"Nursing student, 3rd year",category:"clinical"},
+    {text:"കുറ്റബോധം പോകും. കരുണ നിൽക്കും.",from:"Graduate nurse",category:"clinical"},
+    {text:"നിങ്ങൾ പിന്നിലല്ല. നിങ്ങളുടേതായ timeline-ൽ ആണ്.",from:"Final year student",category:"exam"},
+    {text:"വിശ്രമം quit ചെയ്യലല്ല. തുടരാനുള്ള ഊർജ്ജം നേടലാണ്.",from:"Working nurse, 5 years",category:"exhausted"},
+    {text:"Medication മറന്നാലും, ദയ രോഗി ഓർക്കും.",from:"ICU nurse",category:"clinical"},
+    {text:"സഹായം ചോദിക്കുന്നതാണ് ഏറ്റവും professional ആയ കാര്യം.",from:"Senior resident",category:"enough"},
+    {text:"തോറ്റെന്ന് തോന്നിയ ആ പരീക്ഷ? Probably pass ആയിട്ടുണ്ടാകും.",from:"2nd year student",category:"exam"},
+    {text:"Sensitive ആയിരിക്കുന്നത് ഈ തൊഴിലിൽ ദൗർബല്യമല്ല. അതാണ് ഇതിന്റെ കാതൽ.",from:"Palliative care nurse",category:"clinical"},
+    {text:"ആ room-ൽ ഉള്ള ഓരോരുത്തരും ഒരു ഘട്ടത്തിൽ fraud ആണെന്ന് തോന്നിയിട്ടുണ്ട്. Teachers പോലും.",from:"Lecturer",category:"enough"},
+    {text:"ചിലപ്പോൾ fix ചെയ്യേണ്ടതില്ല. ഒപ്പം ഇരുന്നാൽ മതി. അത് മതി.",from:"Emergency nurse",category:"clinical"},
+    {text:"വേദനിപ്പിച്ച ബന്ധം, അടുത്ത തവണ എന്ത് സ്വീകരിക്കില്ല എന്ന് പഠിപ്പിച്ചു.",from:"Anonymous",category:"relationship"},
+    {text:"എന്ത് തോന്നുന്നു എന്ന് അറിയാത്തതും ഒരു തോന്നലാണ്. അത് ആകട്ടെ.",from:"Counsellor",category:"unknown"},
+    {text:"ചില രാത്രികൾ കഠിനമാണ്. അത് നാളെയെ കുറിച്ച് ഒന്നും അർഥമാക്കുന്നില്ല.",from:"Night shift nurse",category:"exhausted"},
+    {text:"നിങ്ങളുടെ empathy ദൗർബല്യമല്ല. ഏറ്റവും വലിയ clinical tool ആണ്.",from:"Nurse educator",category:"enough"},
+    {text:"ഞാൻ മാത്രമാണ് struggle ചെയ്യുന്നതെന്ന് കരുതി. എല്ലാവരും ചെയ്യുന്നുണ്ടായിരുന്നു. ആരും പറഞ്ഞില്ല.",from:"Final year student",category:"unknown"},
+    {text:"ഒരു രോഗി. ഒരു ശ്വാസം. ഒരു shift. അത്രമതി.",from:"ICU nurse, 10 years",category:"exhausted"},
+    {text:"ഇത് തീർക്കുന്ന നിങ്ങൾ, ഇന്നത്തെ നിങ്ങൾ അഭിമാനിക്കുന്ന ആളാകും.",from:"Graduate",category:"exam"},
+    {text:"വീടിനെ miss ചെയ്യുന്നത് തെറ്റ് ചെയ്തു എന്നല്ല.",from:"International student",category:"relationship"},
+  ],
+  hi:[
+    {text:"Hospital bathroom में दो बार रोया। फिर भी graduate हुआ।",from:"Nursing student, 3rd year",category:"clinical"},
+    {text:"अपराधबोध जाएगा। करुणा रहेगी।",from:"Graduate nurse",category:"clinical"},
+    {text:"तुम पीछे नहीं हो। तुम अपनी timeline पर हो।",from:"Final year student",category:"exam"},
+    {text:"आराम करना छोड़ना नहीं है। यही आगे बढ़ने का तरीका है।",from:"Working nurse, 5 years",category:"exhausted"},
+    {text:"दवाई भूल जाएंगे। दयालुता याद रहेगी।",from:"ICU nurse",category:"clinical"},
+    {text:"मदद माँगना सबसे professional काम है।",from:"Senior resident",category:"enough"},
+    {text:"जो exam fail समझा? शायद pass हो गए।",from:"2nd year student",category:"exam"},
+    {text:"इस field में sensitive होना कमज़ोरी नहीं। यही तो पूरा मकसद है।",from:"Palliative care nurse",category:"clinical"},
+    {text:"उस कमरे में हर कोई कभी न कभी खुद को fraud समझ चुका है। teachers भी।",from:"Lecturer",category:"enough"},
+    {text:"हर बार fix नहीं होता। कभी बस साथ बैठ जाओ। काफी है।",from:"Emergency nurse",category:"clinical"},
+    {text:"जिस रिश्ते ने तकलीफ दी, उसने बताया अगली बार क्या नहीं चलेगा।",from:"Anonymous",category:"relationship"},
+    {text:"क्या महसूस हो रहा है न पता होना — यह भी एक feeling है। रहने दो।",from:"Counsellor",category:"unknown"},
+    {text:"कुछ रातें बस मुश्किल होती हैं। इसका कल से कोई लेना-देना नहीं।",from:"Night shift nurse",category:"exhausted"},
+    {text:"तुम्हारी empathy कमज़ोरी नहीं। सबसे बड़ा clinical tool है।",from:"Nurse educator",category:"enough"},
+    {text:"लगा सिर्फ मैं struggle कर रहा हूँ। सब कर रहे थे। किसी ने कहा नहीं।",from:"Final year student",category:"unknown"},
+    {text:"एक मरीज़। एक साँस। एक shift। बस।",from:"ICU nurse, 10 years",category:"exhausted"},
+    {text:"यह पूरा करने वाले तुम, आज के तुमसे बेहतर होगे।",from:"Graduate",category:"exam"},
+    {text:"घर याद आना गलत choice का मतलब नहीं।",from:"International student",category:"relationship"},
+  ]
+};
+
+/* ══════════════════════════════════
+   UI STRINGS
+══════════════════════════════════ */
+const UI = {
+  en:{
+    back:'Back', step:'Step 6 of 10',
+    sLabel:'Peer wisdom',
+    sTitle:'Words left on the stone',
+    sSub:'Real words from real people who sat here before you. Not quotes. Not advice. Just what they wish someone had told them.',
+    gridLabel:'More from this stone',
+    prev:'Previous', next:'Next',
+    shareTitle:'Leave your word on the stone',
+    shareSub:'One line. Anonymous. For the next person who sits here.',
+    sharePlaceholder:'What do you wish someone had told you?',
+    shareBtn:'Leave this on the stone',
+    shareConfirm:'Your word is on the stone now. Thank you.',
+    nextLabel:'Continue — find what you actually need right now',
+    filters:{
+      all:'All',exam:'Study',clinical:'Clinical',
+      enough:'Self-worth',exhausted:'Burnout',
+      relationship:'Relationships',unknown:'Just overwhelmed'
+    },
+    categories:{
+      exam:'Study',clinical:'Clinical',enough:'Self-worth',
+      exhausted:'Burnout',relationship:'Relationships',unknown:'Overwhelmed'
+    },
+    fromOptions:['A nursing student','A graduate nurse','An international student','A night shift nurse','Anonymous','Someone who made it through'],
+  },
+  ml:{
+    back:'തിരിച്ചു', step:'ഘട്ടം 6 / 10',
+    sLabel:'Peer wisdom',
+    sTitle:'കല്ലിൽ ബാക്കിവെച്ച വാക്കുകൾ',
+    sSub:'ഇവിടെ ഇരുന്നവർ ബാക്കിവെച്ച യഥാർഥ വാക്കുകൾ. Quotes അല്ല. ഉപദേശമല്ല. ആരെങ്കിലും പറഞ്ഞിരുന്നെങ്കിൽ എന്ന് ആഗ്രഹിച്ചത്.',
+    gridLabel:'ഈ കല്ലിൽ നിന്ന് കൂടുതൽ',
+    prev:'മുൻപ്', next:'അടുത്തത്',
+    shareTitle:'കല്ലിൽ നിങ്ങളുടെ വാക്ക് ബാക്കിവെക്കൂ',
+    shareSub:'ഒരു വരി. Anonymous. ഇനി ഇവിടെ ഇരിക്കുന്നവർക്ക് വേണ്ടി.',
+    sharePlaceholder:'ആരെങ്കിലും നിങ്ങളോട് പറഞ്ഞിരുന്നെങ്കിൽ എന്ന് ആഗ്രഹിച്ചത്?',
+    shareBtn:'കല്ലിൽ ഇത് ബാക്കിവെക്കൂ',
+    shareConfirm:'നിങ്ങളുടെ വാക്ക് ഇപ്പോൾ കല്ലിലുണ്ട്. നന്ദി.',
+    nextLabel:'തുടരുക — ഇപ്പോൾ യഥാർഥത്തിൽ എന്ത് ആവശ്യം',
+    filters:{
+      all:'എല്ലാം',exam:'പഠനം',clinical:'Clinical',
+      enough:'Self-worth',exhausted:'Burnout',
+      relationship:'ബന്ധങ്ങൾ',unknown:'Overwhelm'
+    },
+    categories:{
+      exam:'പഠനം',clinical:'Clinical',enough:'Self-worth',
+      exhausted:'Burnout',relationship:'ബന്ധങ്ങൾ',unknown:'Overwhelm'
+    },
+    fromOptions:['ഒരു nursing student','ഒരു graduate nurse','ഒരു international student','ഒരു night shift nurse','Anonymous','കടന്നുപോയ ഒരാൾ'],
+  },
+  hi:{
+    back:'वापस', step:'चरण 6 / 10',
+    sLabel:'Peer wisdom',
+    sTitle:'पत्थर पर छोड़े गए शब्द',
+    sSub:'असली लोगों के असली शब्द जो यहाँ पहले बैठ चुके हैं। Quotes नहीं। सलाह नहीं। बस वो जो काश किसी ने बताया होता।',
+    gridLabel:'इस पत्थर से और',
+    prev:'पिछला', next:'अगला',
+    shareTitle:'पत्थर पर अपना शब्द छोड़ो',
+    shareSub:'एक लाइन। Anonymous। अगले इंसान के लिए जो यहाँ बैठेगा।',
+    sharePlaceholder:'क्या काश किसी ने तुमसे कहा होता?',
+    shareBtn:'पत्थर पर यह छोड़ दो',
+    shareConfirm:'तुम्हारा शब्द अब पत्थर पर है। शुक्रिया।',
+    nextLabel:'आगे बढ़ें — अभी सच में क्या चाहिए',
+    filters:{
+      all:'सब',exam:'पढ़ाई',clinical:'Clinical',
+      enough:'Self-worth',exhausted:'Burnout',
+      relationship:'रिश्ते',unknown:'Overwhelmed'
+    },
+    categories:{
+      exam:'पढ़ाई',clinical:'Clinical',enough:'Self-worth',
+      exhausted:'Burnout',relationship:'रिश्ते',unknown:'Overwhelmed'
+    },
+    fromOptions:['एक nursing student','एक graduate nurse','एक international student','एक night shift nurse','Anonymous','जो गुज़र चुका/चुकी है'],
+  }
+};
+
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang')||'en';
+let activeFilter = 'all';
+let filteredWisdom = [];
+let currentIdx = 0;
+let rotateTimer = null;
+let rotateProgress = 0;
+let likedCards = new Set();
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderUI();
+  applyFilter('all');
+  startRotate();
+});
+
+/* ══════════════════════════════════
+   RENDER UI
+══════════════════════════════════ */
+function renderUI(){
+  const u = UI[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  document.getElementById('back-label').textContent = u.back;
+  document.getElementById('step-badge').textContent = u.step;
+
+  const sl=document.getElementById('section-label');
+  sl.textContent=u.sLabel; sl.className='section-label '+lc;
+  const st=document.getElementById('section-title');
+  st.textContent=u.sTitle; st.className='section-title '+lc;
+  const ss=document.getElementById('section-sub');
+  ss.textContent=u.sSub; ss.className='section-sub '+lc;
+
+  const gl=document.getElementById('grid-label');
+  gl.textContent=u.gridLabel; gl.className='grid-label '+lc;
+
+  document.getElementById('prev-btn').className='nav-btn '+lc;
+  document.getElementById('prev-label').textContent=u.prev;
+  document.getElementById('next-nav-btn').className='nav-btn '+lc;
+  document.getElementById('next-nav-label').textContent=u.next;
+
+  const shareTitle=document.getElementById('share-title');
+  shareTitle.textContent=u.shareTitle; shareTitle.className='share-title '+lc;
+  const shareSub=document.getElementById('share-sub');
+  shareSub.textContent=u.shareSub; shareSub.className='share-sub '+lc;
+  const shareInput=document.getElementById('share-input');
+  shareInput.placeholder=u.sharePlaceholder; shareInput.className='share-input '+lc;
+  const shareBtn=document.getElementById('share-btn');
+  document.getElementById('share-btn-label').textContent=u.shareBtn;
+  shareBtn.className='share-btn '+lc;
+
+  const nextBtn=document.getElementById('next-btn');
+  nextBtn.className='next-btn '+lc;
+  document.getElementById('next-label').textContent=u.nextLabel;
+
+  // Share input enable
+  shareInput.addEventListener('input',()=>{
+    shareBtn.disabled=shareInput.value.trim().length<5;
+  });
+
+  // Filter pills
+  buildFilters();
+
+  // Share category
+  const catSel=document.getElementById('share-category');
+  catSel.innerHTML='';
+  catSel.className='share-select '+lc;
+  Object.entries(u.categories).forEach(([k,v])=>{
+    const opt=document.createElement('option');
+    opt.value=k; opt.textContent=v;
+    catSel.appendChild(opt);
+  });
+
+  // From select
+  const fromSel=document.getElementById('share-from-select');
+  fromSel.innerHTML='';
+  fromSel.className='share-select '+lc;
+  u.fromOptions.forEach(f=>{
+    const opt=document.createElement('option');
+    opt.value=f; opt.textContent=f;
+    fromSel.appendChild(opt);
+  });
+}
+
+/* ══════════════════════════════════
+   FILTERS
+══════════════════════════════════ */
+function buildFilters(){
+  const u=UI[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const row=document.getElementById('filter-row');
+  row.innerHTML='';
+  Object.entries(u.filters).forEach(([key,label])=>{
+    const btn=document.createElement('button');
+    btn.className='filter-pill '+lc+(key===activeFilter?' active':'');
+    btn.textContent=label;
+    btn.onclick=()=>applyFilter(key);
+    row.appendChild(btn);
+  });
+}
+
+function applyFilter(key){
+  activeFilter=key;
+  const wisdom=WISDOM[lang];
+  filteredWisdom=key==='all'?[...wisdom]:wisdom.filter(w=>w.category===key);
+  // Shuffle
+  filteredWisdom=filteredWisdom.sort(()=>Math.random()-0.5);
+  currentIdx=0;
+  buildFilters();
+  showFeatured();
+  buildGrid();
+  resetRotate();
+}
+
+/* ══════════════════════════════════
+   FEATURED
+══════════════════════════════════ */
+function showFeatured(){
+  if(!filteredWisdom.length) return;
+  const w=filteredWisdom[currentIdx];
+  const u=UI[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  const textEl=document.getElementById('featured-text');
+  textEl.classList.add('fading');
+  setTimeout(()=>{
+    textEl.textContent=w.text;
+    textEl.className='wisdom-text '+lc;
+    const fromEl=document.getElementById('featured-from');
+    fromEl.textContent='— '+w.from;
+    fromEl.className='wisdom-from '+lc;
+    const tagEl=document.getElementById('featured-tag');
+    tagEl.textContent=u.categories[w.category]||w.category;
+    tagEl.className=`wisdom-tag ${w.category} ${lc}`;
+    document.getElementById('wisdom-counter').textContent=`${currentIdx+1} / ${filteredWisdom.length}`;
+  },200);
+}
+
+function prevWisdom(){
+  currentIdx=(currentIdx-1+filteredWisdom.length)%filteredWisdom.length;
+  showFeatured();
+  resetRotate();
+}
+
+function nextWisdom(){
+  currentIdx=(currentIdx+1)%filteredWisdom.length;
+  showFeatured();
+  resetRotate();
+}
+
+/* ══════════════════════════════════
+   AUTO ROTATE
+══════════════════════════════════ */
+function startRotate(){
+  const fill=document.getElementById('rotate-fill');
+  const duration=8000;
+  const step=100;
+  rotateProgress=0;
+
+  rotateTimer=setInterval(()=>{
+    rotateProgress+=step;
+    const pct=Math.min((rotateProgress/duration)*100,100);
+    fill.style.transition=`width ${step}ms linear`;
+    fill.style.width=pct+'%';
+    if(rotateProgress>=duration){
+      nextWisdom();
+      rotateProgress=0;
+    }
+  },step);
+}
+
+function resetRotate(){
+  clearInterval(rotateTimer);
+  document.getElementById('rotate-fill').style.width='0%';
+  rotateProgress=0;
+  startRotate();
+}
+
+/* ══════════════════════════════════
+   GRID
+══════════════════════════════════ */
+function buildGrid(){
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const u=UI[lang];
+  const grid=document.getElementById('wisdom-grid');
+  grid.innerHTML='';
+
+  // Show up to 6 different from featured
+  const others=filteredWisdom.filter((_,i)=>i!==currentIdx).slice(0,6);
+
+  others.forEach((w,i)=>{
+    const card=document.createElement('div');
+    card.className='wisdom-card';
+    const id=`wcard-${i}`;
+    card.innerHTML=`
+      <span class="card-wisdom-text ${lc}">${w.text}</span>
+      <div class="card-meta">
+        <span class="card-from ${lc}">— ${w.from}</span>
+        <button class="card-heart" id="${id}" onclick="toggleLike('${id}',this)">♡ <span class="like-count">0</span></button>
+      </div>
+    `;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('visible'),i*80);
+  });
+}
+
+function toggleLike(id,btn){
+  const count=btn.querySelector('.like-count');
+  if(likedCards.has(id)){
+    likedCards.delete(id);
+    btn.classList.remove('liked');
+    count.textContent=Math.max(0,parseInt(count.textContent)-1);
+  } else {
+    likedCards.add(id);
+    btn.classList.add('liked');
+    count.textContent=parseInt(count.textContent)+1;
+  }
+}
+
+/* ══════════════════════════════════
+   SHARE
+══════════════════════════════════ */
+function submitWisdom(){
+  const input=document.getElementById('share-input');
+  const text=input.value.trim();
+  if(!text) return;
+
+  const cat=document.getElementById('share-category').value;
+  const from=document.getElementById('share-from-select').value;
+  const u=UI[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  // Add to local wisdom
+  WISDOM[lang].unshift({text,from,category:cat});
+
+  // Reset
+  input.value='';
+  document.getElementById('share-btn').disabled=true;
+  const confirm=document.getElementById('share-confirm');
+  confirm.textContent=u.shareConfirm;
+  confirm.className='share-confirm '+lc;
+  confirm.style.display='block';
+
+  setTimeout(()=>{
+    confirm.style.display='none';
+    // Refresh with new wisdom
+    applyFilter(activeFilter);
+  },2500);
+}
+
+function goNext(){
+  window.location.href='what-do-you-need.html';
+}
+</script>
+</body>
+</html>
