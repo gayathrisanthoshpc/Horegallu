@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-light:  #F0CC7A;
+      --sage:        #7A8C6E;
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d: 'Cormorant Garamond', Georgia, serif;
+      --font-b: 'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease: cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    /* ── DUST PARTICLES ── */
+    #dust-canvas{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:0.55;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-glow{
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .app{position:relative;z-index:1;min-height:100vh;}
+
+    /* ── SCREENS ── */
+    .screen{
+      display:none;
+      flex-direction:column;
+      min-height:100vh;
+    }
+    .screen.active{display:flex;}
+    .screen.fade-in{animation:fadeUp 0.6s var(--ease) both;}
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(18px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ══════════════════════════════
+       LANGUAGE SCREEN
+    ══════════════════════════════ */
+    #screen-lang{
+      justify-content:center;
+      align-items:center;
+      padding:2.5rem 2rem;
+      gap:0;
+    }
+
+    .lang-stone{margin-bottom:1.6rem;}
+
+    /* Breathing stone animation */
+    .stone-group{
+      transform-origin:140px 120px;
+      animation:stoneBreathe 5s ease-in-out infinite;
+    }
+    @keyframes stoneBreathe{
+      0%,100%{transform:scale(1);}
+      45%{transform:scale(1.025);}
+      55%{transform:scale(1.025);}
+    }
+
+    .lang-title{
+      font-family:var(--font-d);
+      font-size:2.9rem;
+      font-weight:300;
+      color:var(--earth);
+      letter-spacing:-0.02em;
+      text-align:center;
+      margin-bottom:0.15rem;
+    }
+
+    .lang-prompt{
+      text-align:center;
+      margin-bottom:2.2rem;
+    }
+    .lang-prompt p{
+      font-size:0.8rem;
+      color:var(--text-muted);
+      line-height:2.2;
+      letter-spacing:0.03em;
+    }
+    .lang-prompt .ml{font-family:var(--font-ml);}
+    .lang-prompt .hi{font-family:var(--font-hi);}
+
+    .lang-buttons{
+      display:flex;
+      flex-direction:column;
+      gap:11px;
+      width:100%;
+      max-width:290px;
+    }
+
+    .lang-btn{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:17px 20px;
+      background:rgba(255,255,255,0.78);
+      border:1px solid var(--border);
+      border-radius:18px;
+      cursor:pointer;
+      transition:all 0.3s var(--ease);
+      position:relative;
+      overflow:hidden;
+    }
+    .lang-btn::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg,rgba(212,169,74,0.08),transparent 60%);
+      opacity:0;
+      transition:opacity 0.3s;
+    }
+    .lang-btn:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateY(-2px);
+      box-shadow:0 8px 28px var(--shadow);
+    }
+    .lang-btn:hover::before{opacity:1;}
+    .lang-btn:active{transform:translateY(0) scale(0.99);}
+
+    .lang-btn-name{font-size:1.05rem;font-weight:500;color:var(--earth-deep);display:block;}
+    .lang-btn-native{font-size:0.77rem;color:var(--text-muted);display:block;margin-top:2px;}
+    .lang-btn-native.ml{font-family:var(--font-ml);}
+    .lang-btn-native.hi{font-family:var(--font-hi);}
+    .lang-arrow{font-size:1.1rem;color:var(--stone);transition:transform 0.2s;}
+    .lang-btn:hover .lang-arrow{transform:translateX(5px);}
+
+    .lang-foot{margin-top:2rem;text-align:center;}
+    .lang-foot p{font-size:0.69rem;color:var(--text-muted);letter-spacing:0.07em;}
+
+    /* ══════════════════════════════
+       OPENING SCREEN
+    ══════════════════════════════ */
+    #screen-opening{
+      padding:2.5rem 2rem 2rem;
+      max-width:480px;
+      margin:0 auto;
+      width:100%;
+      justify-content:space-between;
+    }
+
+    .open-top{display:flex;flex-direction:column;gap:0.2rem;}
+
+    .app-name{
+      font-family:var(--font-d);
+      font-size:2.5rem;
+      font-weight:300;
+      color:var(--earth);
+      letter-spacing:-0.02em;
+      line-height:1;
+    }
+    .app-name.ml{font-family:var(--font-ml);font-size:1.9rem;font-weight:400;}
+    .app-name.hi{font-family:var(--font-hi);font-size:1.9rem;font-weight:400;}
+
+    .app-tagline{
+      font-size:0.76rem;
+      color:var(--text-muted);
+      letter-spacing:0.09em;
+      text-transform:uppercase;
+      margin-top:0.35rem;
+    }
+    .app-tagline.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.82rem;}
+    .app-tagline.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.82rem;}
+
+    /* Stone section */
+    .stone-section{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:1rem 0 0.5rem;
+      flex:1;
+      position:relative;
+    }
+
+    .main-stone-svg{
+      width:min(250px,66vw);
+      filter:drop-shadow(0 12px 32px rgba(60,40,20,0.13));
+    }
+
+    /* Handwritten note */
+    .hw-note{
+      font-family:var(--font-hw);
+      font-size:1.1rem;
+      color:var(--stone-dark);
+      text-align:center;
+      margin-top:0.6rem;
+      min-height:1.6rem;
+      opacity:0;
+      transform:translateY(6px);
+      transition:opacity 0.6s ease, transform 0.6s ease;
+    }
+    .hw-note.visible{opacity:1;transform:translateY(0);}
+
+    /* Question */
+    .main-question{text-align:center;margin:0.8rem 0 1.2rem;}
+    .question-text{
+      font-family:var(--font-d);
+      font-size:1.65rem;
+      font-weight:400;
+      font-style:italic;
+      color:var(--earth-deep);
+      line-height:1.35;
+    }
+    .question-text.ml{font-family:var(--font-ml);font-style:normal;font-size:1.2rem;}
+    .question-text.hi{font-family:var(--font-hi);font-style:normal;font-size:1.2rem;}
+
+    /* Options */
+    .options-grid{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:1.5rem;
+    }
+
+    .option-btn{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 15px;
+      background:rgba(255,255,255,0.72);
+      border:1px solid var(--border);
+      border-radius:13px;
+      cursor:pointer;
+      text-align:left;
+      position:relative;
+      overflow:hidden;
+      transition:background 0.25s, border-color 0.25s, box-shadow 0.25s;
+      will-change:transform,opacity;
+    }
+    .option-btn::before{
+      content:'';
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:3px;
+      background:var(--gold);
+      transform:scaleY(0);
+      transition:transform 0.22s ease;
+      border-radius:3px 0 0 3px;
+    }
+    .option-btn:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      box-shadow:0 4px 18px var(--shadow);
+    }
+    .option-btn:hover::before{transform:scaleY(1);}
+
+    /* Weight-drop animation */
+    .option-btn.dropping{
+      animation:weightDrop 0.55s var(--ease) forwards;
+    }
+    .option-btn.floating-away{
+      animation:floatAway 0.45s var(--ease) forwards;
+    }
+    @keyframes weightDrop{
+      0%{transform:translateY(0);opacity:1;}
+      40%{transform:translateY(8px) scale(0.97);opacity:0.8;}
+      100%{transform:translateY(60px) scale(0.9);opacity:0;}
+    }
+    @keyframes floatAway{
+      0%{transform:translateY(0);opacity:1;}
+      100%{transform:translateY(-20px);opacity:0;}
+    }
+
+    .option-icon{
+      width:33px;height:33px;
+      border-radius:50%;
+      background:var(--cream-warm);
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      font-size:15px;
+      transition:transform 0.2s;
+    }
+    .option-btn:hover .option-icon{transform:scale(1.08);}
+
+    .option-text{flex:1;}
+    .option-main{
+      font-size:0.9rem;font-weight:500;
+      color:var(--text-primary);
+      display:block;line-height:1.3;
+    }
+    .option-main.ml{font-family:var(--font-ml);font-size:0.88rem;}
+    .option-main.hi{font-family:var(--font-hi);font-size:0.88rem;}
+
+    .option-sub{
+      font-size:0.71rem;color:var(--text-muted);
+      display:block;margin-top:2px;line-height:1.4;
+    }
+    .option-sub.ml{font-family:var(--font-ml);font-size:0.7rem;}
+    .option-sub.hi{font-family:var(--font-hi);font-size:0.7rem;}
+
+    .option-arrow{
+      font-size:13px;color:var(--text-muted);
+      transition:transform 0.2s;flex-shrink:0;
+    }
+    .option-btn:hover .option-arrow{transform:translateX(4px);color:var(--stone-dark);}
+
+    /* Footer */
+    .open-footer{
+      text-align:center;
+      padding-top:0.85rem;
+      border-top:1px solid var(--border);
+    }
+    .lang-switch-btn{
+      display:inline-flex;align-items:center;gap:5px;
+      font-size:0.73rem;color:var(--text-muted);
+      cursor:pointer;background:none;border:none;
+      font-family:var(--font-b);padding:3px 0;
+      transition:color 0.2s;
+    }
+    .lang-switch-btn:hover{color:var(--earth);}
+    .foot-promise{
+      font-size:0.68rem;color:var(--text-muted);
+      margin-top:5px;letter-spacing:0.06em;
+    }
+    .foot-promise.ml{font-family:var(--font-ml);letter-spacing:0.01em;}
+    .foot-promise.hi{font-family:var(--font-hi);letter-spacing:0.01em;}
+
+    /* ══════════════════════════════
+       PLACEHOLDER SCREEN
+    ══════════════════════════════ */
+    #screen-placeholder{
+      justify-content:center;
+      align-items:center;
+      padding:2.5rem 2rem;
+      max-width:480px;
+      margin:0 auto;
+      width:100%;
+      gap:1.1rem;
+      text-align:center;
+    }
+    .ph-tag{
+      display:inline-block;
+      padding:5px 13px;
+      background:var(--cream-warm);
+      border:1px solid var(--border);
+      border-radius:999px;
+      font-size:0.72rem;color:var(--text-muted);letter-spacing:0.07em;
+    }
+    .ph-title{
+      font-family:var(--font-d);
+      font-size:1.85rem;font-weight:300;
+      color:var(--earth);line-height:1.3;
+    }
+    .ph-sub{
+      font-size:0.87rem;color:var(--text-secondary);
+      line-height:1.75;max-width:310px;
+    }
+    .ph-hw{
+      font-family:var(--font-hw);
+      font-size:1.25rem;
+      color:var(--stone-dark);
+      line-height:1.8;
+    }
+    .back-btn{
+      display:inline-flex;align-items:center;gap:7px;
+      padding:9px 20px;
+      background:transparent;
+      border:1px solid var(--border);
+      border-radius:13px;
+      cursor:pointer;
+      font-size:0.84rem;color:var(--text-secondary);
+      font-family:var(--font-b);
+      transition:all 0.3s var(--ease);
+      margin-top:0.4rem;
+    }
+    .back-btn:hover{
+      background:var(--cream-warm);
+      border-color:var(--stone);
+      color:var(--earth);
+    }
+
+    /* Kintsugi gold crack glow pulse */
+    .kintsugi-crack{
+      filter:drop-shadow(0 0 3px rgba(212,169,74,0.6));
+      animation:crackGlow 3.5s ease-in-out infinite;
+    }
+    @keyframes crackGlow{
+      0%,100%{filter:drop-shadow(0 0 2px rgba(212,169,74,0.4));}
+      50%{filter:drop-shadow(0 0 7px rgba(212,169,74,0.9));}
+    }
+
+    @media(max-width:380px){
+      #screen-opening{padding:2rem 1.25rem 1.75rem;}
+      .app-name{font-size:2rem;}
+      .question-text{font-size:1.4rem;}
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="dust-canvas"></canvas>
+<div class="bg-glow"></div>
+
+<div class="app">
+
+  <!-- ══ LANGUAGE SCREEN ══ -->
+  <div class="screen active fade-in" id="screen-lang">
+
+    <div class="lang-stone">
+      <svg width="200" height="130" viewBox="0 0 280 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;filter:drop-shadow(0 8px 24px rgba(60,40,20,0.12));">
+        <g class="stone-group">
+          <ellipse cx="140" cy="168" rx="90" ry="10" fill="rgba(60,40,20,0.08)"/>
+          <path d="M30 140 Q20 120 35 95 Q55 60 100 50 Q130 42 165 48 Q210 56 235 85 Q258 112 250 138 Q245 158 220 162 Q170 172 100 168 Q52 165 30 140Z" fill="#C4A882"/>
+          <path d="M60 90 Q90 65 140 62 Q185 60 215 80 Q190 68 140 70 Q95 72 65 95Z" fill="rgba(255,255,255,0.28)"/>
+          <path d="M35 130 Q30 110 50 90 Q75 68 120 60 Q80 75 60 100 Q42 120 45 145Z" fill="rgba(139,111,82,0.22)"/>
+          <!-- Kintsugi crack -->
+          <path class="kintsugi-crack" d="M120 75 Q128 88 124 105 Q121 118 128 135 Q132 145 126 158" stroke="#D4A94A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path class="kintsugi-crack" d="M124 105 Q132 108 140 104" stroke="#D4A94A" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.7"/>
+          <!-- Moss -->
+          <circle cx="172" cy="102" r="2.5" fill="rgba(122,140,110,0.5)"/>
+          <circle cx="182" cy="110" r="1.5" fill="rgba(122,140,110,0.4)"/>
+          <circle cx="167" cy="114" r="2" fill="rgba(122,140,110,0.45)"/>
+          <!-- Person sitting -->
+          <ellipse cx="148" cy="55" rx="11" ry="11" fill="#3D2B1F"/>
+          <path d="M137 66 Q140 80 145 88 Q148 95 152 88 Q157 80 160 66 Q154 70 148 70 Q142 70 137 66Z" fill="#3D2B1F"/>
+          <path d="M145 88 Q135 100 120 108" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M152 88 Q162 100 178 108" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <!-- Bags -->
+          <rect x="100" y="118" width="18" height="14" rx="3" fill="#8B6F52" opacity="0.7"/>
+          <rect x="104" y="114" width="10" height="5" rx="2" fill="#8B6F52" opacity="0.5"/>
+          <!-- Plant -->
+          <path d="M255 150 Q258 135 265 128" stroke="#7A8C6E" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="265" cy="126" rx="7" ry="5" fill="#7A8C6E" opacity="0.7" transform="rotate(-20 265 126)"/>
+        </g>
+      </svg>
+    </div>
+
+    <h1 class="lang-title">Horegallu</h1>
+
+    <div class="lang-prompt">
+      <p>Choose your language</p>
+      <p class="ml">ഭാഷ തിരഞ്ഞെടുക്കൂ</p>
+      <p class="hi">अपनी भाषा चुनें</p>
+    </div>
+
+    <div class="lang-buttons">
+      <button class="lang-btn" onclick="setLang('en')">
+        <div>
+          <span class="lang-btn-name">English</span>
+          <span class="lang-btn-native">Continue in English</span>
+        </div>
+        <span class="lang-arrow">→</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('ml')">
+        <div>
+          <span class="lang-btn-name">മലയാളം</span>
+          <span class="lang-btn-native ml">മലയാളത്തിൽ തുടരുക</span>
+        </div>
+        <span class="lang-arrow">→</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('hi')">
+        <div>
+          <span class="lang-btn-name">हिंदी</span>
+          <span class="lang-btn-native hi">हिंदी में जारी रखें</span>
+        </div>
+        <span class="lang-arrow">→</span>
+      </button>
+    </div>
+
+    <div class="lang-foot">
+      <p>Private · No account · No one watching</p>
+    </div>
+  </div>
+
+  <!-- ══ OPENING SCREEN ══ -->
+  <div class="screen" id="screen-opening">
+
+    <div class="open-top">
+      <h1 class="app-name" id="app-name">Horegallu</h1>
+      <p class="app-tagline" id="app-tagline">Put your load down. Just for a moment.</p>
+    </div>
+
+    <div class="stone-section">
+      <!-- Main stone with breathing + kintsugi + posture -->
+      <svg class="main-stone-svg" id="main-stone-svg" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="stone-group">
+          <ellipse cx="140" cy="185" rx="90" ry="10" fill="rgba(60,40,20,0.08)"/>
+          <path d="M30 155 Q20 135 35 110 Q55 75 100 65 Q130 57 165 63 Q210 71 235 100 Q258 127 250 153 Q245 173 220 177 Q170 187 100 183 Q52 180 30 155Z" fill="#C4A882"/>
+          <path d="M60 105 Q90 80 140 77 Q185 75 215 95 Q190 83 140 85 Q95 87 65 110Z" fill="rgba(255,255,255,0.28)"/>
+          <path d="M35 145 Q30 125 50 105 Q75 83 120 75 Q80 90 60 115 Q42 135 45 160Z" fill="rgba(139,111,82,0.22)"/>
+          <!-- Kintsugi crack -->
+          <path class="kintsugi-crack" d="M122 90 Q130 103 126 120 Q123 133 130 150 Q134 160 128 173" stroke="#D4A94A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path class="kintsugi-crack" d="M126 120 Q134 123 142 119" stroke="#D4A94A" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.7"/>
+          <!-- Moss dots -->
+          <circle cx="172" cy="117" r="2.5" fill="rgba(122,140,110,0.5)"/>
+          <circle cx="182" cy="125" r="1.5" fill="rgba(122,140,110,0.4)"/>
+          <circle cx="167" cy="129" r="2" fill="rgba(122,140,110,0.45)"/>
+          <circle cx="92" cy="148" r="2" fill="rgba(122,140,110,0.35)"/>
+          <!-- Person — posture changes via JS class on <g> -->
+          <g id="person-group">
+            <!-- Head -->
+            <ellipse id="p-head" cx="148" cy="68" rx="11" ry="11" fill="#3D2B1F"/>
+            <!-- Body -->
+            <path id="p-body" d="M137 79 Q140 93 145 101 Q148 108 152 101 Q157 93 160 79 Q154 83 148 83 Q142 83 137 79Z" fill="#3D2B1F"/>
+            <!-- Arms -->
+            <path id="p-arm-l" d="M145 101 Q135 113 120 121" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path id="p-arm-r" d="M152 101 Q162 113 178 121" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <!-- Legs -->
+            <path d="M145 108 Q142 125 138 140" stroke="#3D2B1F" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <path d="M152 108 Q155 125 158 140" stroke="#3D2B1F" stroke-width="4" stroke-linecap="round" fill="none"/>
+          </g>
+          <!-- Bags beside stone -->
+          <rect x="100" y="133" width="18" height="14" rx="3" fill="#8B6F52" opacity="0.7"/>
+          <rect x="104" y="129" width="10" height="5" rx="2" fill="#8B6F52" opacity="0.5"/>
+          <!-- Plant -->
+          <path d="M255 165 Q258 150 265 143" stroke="#7A8C6E" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="265" cy="141" rx="7" ry="5" fill="#7A8C6E" opacity="0.7" transform="rotate(-20 265 141)"/>
+          <path d="M258 160 Q263 153 270 151" stroke="#7A8C6E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="271" cy="150" rx="5" ry="4" fill="#7A8C6E" opacity="0.6" transform="rotate(10 271 150)"/>
+        </g>
+      </svg>
+
+      <!-- Handwritten note beneath stone -->
+      <p class="hw-note" id="hw-note"></p>
+    </div>
+
+    <div class="main-question">
+      <p class="question-text" id="question-text">"What are you carrying today?"</p>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="open-footer">
+      <button class="lang-switch-btn" onclick="switchLang()">
+        ⇄ <span id="lang-switch-label">Change language</span>
+      </button>
+      <p class="foot-promise" id="foot-promise">Private · No account · No one watching</p>
+    </div>
+
+  </div>
+
+  <!-- ══ PLACEHOLDER SCREEN ══ -->
+  <div class="screen" id="screen-placeholder">
+    <span class="ph-tag" id="ph-tag">Coming in next steps</span>
+    <h2 class="ph-title" id="ph-title">You chose to rest here.</h2>
+    <p class="ph-sub" id="ph-sub">The tools for this path are being built step by step.</p>
+    <p class="ph-hw" id="ph-hw">You are not alone.</p>
+    <button class="back-btn" id="back-btn" onclick="showScreen('screen-opening')">← Back</button>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════
+   DUST PARTICLES
+══════════════════════════════════ */
+const canvas = document.getElementById('dust-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function createParticle(){
+  return {
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.8 + 0.4,
+    vx: (Math.random() - 0.5) * 0.18,
+    vy: (Math.random() - 0.7) * 0.12,
+    o: Math.random() * 0.35 + 0.05,
+    life: Math.random() * 300 + 200,
+    age: 0
+  };
+}
+
+for(let i=0;i<55;i++) particles.push(createParticle());
+
+function animateDust(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.age++;
+    p.x += p.vx;
+    p.y += p.vy;
+    const fade = p.age < 30 ? p.age/30 : p.age > p.life-30 ? (p.life-p.age)/30 : 1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(196,168,130,${p.o * fade})`;
+    ctx.fill();
+    if(p.age >= p.life || p.x < -10 || p.x > canvas.width+10 || p.y < -10 || p.y > canvas.height+10){
+      particles[i] = createParticle();
+    }
+  });
+  requestAnimationFrame(animateDust);
+}
+animateDust();
+
+/* ══════════════════════════════════
+   CONTENT
+══════════════════════════════════ */
+const C = {
+  en: {
+    name:'Horegallu', nc:'',
+    tagline:'Put your load down. Just for a moment.', tc:'',
+    question:'"What are you carrying today?"', qc:'',
+    switchLabel:'Change language',
+    promise:'Private · No account · No one watching', pc:'',
+    phTag:'Coming in next steps',
+    phHw:'You are not alone.',
+    back:'← Back',
+    options:[
+      {key:'exam',         icon:'📚', text:'Exam or study pressure',              sub:'Deadlines, performance anxiety, feeling behind',
+       note:'One step at a time.', posture:'normal'},
+      {key:'clinical',     icon:'🏥', text:'Something I saw or felt today',        sub:'A patient, a moment, something that stayed with me',
+       note:'You carried someone today.', posture:'tired'},
+      {key:'enough',       icon:'🪨', text:"I feel like I'm not enough",           sub:'Doubt, guilt, comparison, imposter feeling',
+       note:'You are more than you know.', posture:'hunched'},
+      {key:'exhausted',    icon:'🌑', text:"Exhausted. Can't keep going.",         sub:'Empty, burned out, running on nothing',
+       note:'Rest is not giving up.', posture:'hunched'},
+      {key:'relationship', icon:'🌿', text:'Relationship or personal pain',        sub:'Someone hurt me, distance, loneliness, conflict',
+       note:'This too shall pass.', posture:'headdown'},
+      {key:'unknown',      icon:'🌫️', text:"I don't even know. Just overwhelmed.", sub:"Everything at once, can't name it, just heavy",
+       note:'Sit here a while.', posture:'lookingup'},
+    ],
+    ph:{
+      exam:        {t:"Study pressure. That's real weight.",    s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
+      clinical:    {t:"Something stayed with you today.",       s:"Compassion fatigue · Unsent letter · AI that listens — Steps 5 & 10."},
+      enough:      {t:"That feeling has a name.",               s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
+      exhausted:   {t:"Burnout is not weakness.",               s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
+      relationship:{t:"Pain that lives between people.",        s:"Unsent letter · Guided reflection · AI support — Steps 5, 7 & 10."},
+      unknown:     {t:"Not knowing is okay too.",               s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
+    }
+  },
+  ml: {
+    name:'ഹൊറെഗല്ല്', nc:'ml',
+    tagline:'ഒന്ന് ഇരിക്കൂ. ഒരു നിമിഷം.', tc:'ml',
+    question:'"ഇന്ന് എന്താണ് നിങ്ങളെ ഭാരപ്പെടുത്തുന്നത്?"', qc:'ml',
+    switchLabel:'ഭാഷ മാറ്റുക',
+    promise:'സ്വകാര്യം · അക്കൗണ്ട് ഇല്ല · ആരും നോക്കുന്നില്ല', pc:'ml',
+    phTag:'അടുത്ത ഘട്ടങ്ങളിൽ വരുന്നു',
+    phHw:'നീ തനിച്ചല്ല.',
+    back:'← തിരിച്ചു പോകുക',
+    options:[
+      {key:'exam',         icon:'📚', text:'പരീക്ഷ അല്ലെങ്കിൽ പഠന സമ്മർദ്ദം',        sub:'ഡെഡ്‌ലൈൻ, ഉത്കണ്ഠ, പിന്നിലാണ് എന്ന തോന്നൽ',
+       note:'ഒരു ചുവടു മതി.', posture:'normal'},
+      {key:'clinical',     icon:'🏥', text:'ഇന്ന് കണ്ടതോ അനുഭവിച്ചതോ',               sub:'ഒരു രോഗി, ഒരു നിമിഷം, മനസ്സിൽ നിന്ന് മാറാത്തത്',
+       note:'ഇന്ന് നീ ഒരാളെ താങ്ങി.', posture:'tired'},
+      {key:'enough',       icon:'🪨', text:'ഞാൻ മതിയായ ആളല്ല എന്ന് തോന്നുന്നു',     sub:'സംശയം, കുറ്റബോധം, താരതമ്യം',
+       note:'നീ അറിയുന്നതിലേറെ ആളാണ്.', posture:'hunched'},
+      {key:'exhausted',    icon:'🌑', text:'ക്ഷീണം. തുടരാൻ കഴിയുന്നില്ല.',           sub:'ഒഴിഞ്ഞു, burnout, ഒന്നും ബാക്കിയില്ല',
+       note:'വിശ്രമം തോൽവിയല്ല.', posture:'hunched'},
+      {key:'relationship', icon:'🌿', text:'ബന്ധത്തിലെ അല്ലെങ്കിൽ വ്യക്തിഗത വേദന',  sub:'ആരോ വേദനിപ്പിച്ചു, ദൂരം, ഏകാന്തം',
+       note:'ഇതും കടന്നുപോകും.', posture:'headdown'},
+      {key:'unknown',      icon:'🌫️', text:'എന്തെന്നറിയില്ല. ഭാരം മാത്രം.',           sub:'എല്ലാം ഒരുമിച്ച്, പേരിടാൻ കഴിയില്ല',
+       note:'ഒന്ന് ഇരിക്കൂ.', posture:'lookingup'},
+    ],
+    ph:{
+      exam:        {t:"പഠന സമ്മർദ്ദം — അത് യഥാർഥ ഭാരം.",       s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
+      clinical:    {t:"ഇന്ന് എന്തോ നിന്നിൽ തങ്ങി.",             s:"Compassion fatigue · Unsent letter · AI — Steps 5 & 10."},
+      enough:      {t:"ആ വികാരത്തിന് ഒരു പേരുണ്ട്.",             s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
+      exhausted:   {t:"Burnout ദൗർബല്യമല്ല.",                    s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
+      relationship:{t:"ആളുകൾക്കിടയിൽ ജീവിക്കുന്ന വേദന.",       s:"Unsent letter · Guided reflection · AI — Steps 5, 7 & 10."},
+      unknown:     {t:"അറിയില്ല എന്നത് ശരിയാണ്.",                s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
+    }
+  },
+  hi: {
+    name:'हॊरेगल्लु', nc:'hi',
+    tagline:'अपना बोझ यहाँ रखो। बस एक पल के लिए।', tc:'hi',
+    question:'"आज क्या बोझ उठाए हो?"', qc:'hi',
+    switchLabel:'भाषा बदलें',
+    promise:'निजी · कोई खाता नहीं · कोई नहीं देख रहा', pc:'hi',
+    phTag:'अगले चरणों में आ रहा है',
+    phHw:'तुम अकेले नहीं हो।',
+    back:'← वापस जाएं',
+    options:[
+      {key:'exam',         icon:'📚', text:'परीक्षा या पढ़ाई का दबाव',           sub:'डेडलाइन, चिंता, पीछे रह जाने का डर',
+       note:'एक कदम काफी है।', posture:'normal'},
+      {key:'clinical',     icon:'🏥', text:'आज जो देखा या महसूस किया',            sub:'एक मरीज, एक पल, जो मन में रह गया',
+       note:'आज तुमने किसी को थामा।', posture:'tired'},
+      {key:'enough',       icon:'🪨', text:'लगता है मैं काफी नहीं हूँ',           sub:'संदेह, अपराधबोध, तुलना',
+       note:'तुम जितना सोचते हो उससे कहीं ज़्यादा हो।', posture:'hunched'},
+      {key:'exhausted',    icon:'🌑', text:'थक गया/गई। आगे नहीं चल सकता/सकती।',  sub:'खाली, burnout, कुछ बचा नहीं',
+       note:'आराम हार नहीं है।', posture:'hunched'},
+      {key:'relationship', icon:'🌿', text:'रिश्ते या निजी दर्द',                sub:'किसी ने तकलीफ दी, दूरी, अकेलापन',
+       note:'यह भी गुज़र जाएगा।', posture:'headdown'},
+      {key:'unknown',      icon:'🌫️', text:'पता नहीं। बस भारी लग रहा है।',       sub:'सब एक साथ, नाम नहीं दे सकता/सकती',
+       note:'यहाँ बैठो थोड़ी देर।', posture:'lookingup'},
+    ],
+    ph:{
+      exam:        {t:"पढ़ाई का दबाव — यह असली बोझ है।",        s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
+      clinical:    {t:"आज कुछ तुम्हारे साथ रह गया।",            s:"Compassion fatigue · Unsent letter · AI — Steps 5 & 10."},
+      enough:      {t:"उस भावना का एक नाम है।",                  s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
+      exhausted:   {t:"Burnout कमज़ोरी नहीं है।",                s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
+      relationship:{t:"लोगों के बीच जीता हुआ दर्द।",            s:"Unsent letter · Guided reflection · AI — Steps 5, 7 & 10."},
+      unknown:     {t:"न जानना भी ठीक है।",                     s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
+    }
+  }
+};
+
+/* ══════════════════════════════════
+   POSTURE MORPHING
+══════════════════════════════════ */
+const postures = {
+  normal: {
+    head:{cx:148,cy:68},
+    armL:'M145 101 Q135 113 120 121',
+    armR:'M152 101 Q162 113 178 121',
+  },
+  hunched: {
+    head:{cx:148,cy:72},
+    armL:'M145 101 Q138 110 128 116',
+    armR:'M152 101 Q155 108 162 112',
+  },
+  headdown: {
+    head:{cx:148,cy:75},
+    armL:'M145 101 Q140 108 135 112',
+    armR:'M152 101 Q156 108 160 112',
+  },
+  tired: {
+    head:{cx:148,cy:68},
+    armL:'M145 101 Q132 115 115 118',
+    armR:'M152 101 Q165 115 182 118',
+  },
+  lookingup: {
+    head:{cx:148,cy:62},
+    armL:'M145 101 Q135 113 120 121',
+    armR:'M152 101 Q162 113 178 121',
+  }
+};
+
+function applyPosture(key){
+  const p = postures[key] || postures.normal;
+  const head = document.getElementById('p-head');
+  const armL = document.getElementById('p-arm-l');
+  const armR = document.getElementById('p-arm-r');
+  if(head){ head.setAttribute('cx', p.head.cx); head.setAttribute('cy', p.head.cy); }
+  if(armL) armL.setAttribute('d', p.armL);
+  if(armR) armR.setAttribute('d', p.armR);
+}
+
+/* ══════════════════════════════════
+   STATE & LANG
+══════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang') || null;
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(lang && C[lang]){ applyLang(lang); showScreen('screen-opening'); }
+  else showScreen('screen-lang');
+});
+
+function setLang(l){
+  lang = l;
+  localStorage.setItem('horegallu-lang', l);
+  applyLang(l);
+  showScreen('screen-opening');
+}
+
+function switchLang(){
+  localStorage.removeItem('horegallu-lang');
+  lang = null;
+  showScreen('screen-lang');
+}
+
+function applyLang(l){
+  const c = C[l];
+  const el = (id) => document.getElementById(id);
+
+  el('app-name').textContent = c.name;
+  el('app-name').className = 'app-name ' + (c.nc||'');
+  el('app-tagline').textContent = c.tagline;
+  el('app-tagline').className = 'app-tagline ' + (c.tc||'');
+  el('question-text').textContent = c.question;
+  el('question-text').className = 'question-text ' + (c.qc||'');
+  el('lang-switch-label').textContent = c.switchLabel;
+  el('foot-promise').textContent = c.promise;
+  el('foot-promise').className = 'foot-promise ' + (c.pc||'');
+  el('ph-tag').textContent = c.phTag;
+  el('ph-hw').textContent = c.phHw;
+  el('back-btn').textContent = c.back;
+
+  const grid = el('options-grid');
+  grid.innerHTML = '';
+  c.options.forEach(o => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.dataset.key = o.key;
+    btn.dataset.note = o.note;
+    btn.dataset.posture = o.posture;
+    btn.innerHTML = `
+      <div class="option-icon">${o.icon}</div>
+      <div class="option-text">
+        <span class="option-main ${c.nc||''}">${o.text}</span>
+        <span class="option-sub ${c.nc||''}">${o.sub}</span>
+      </div>
+      <span class="option-arrow">→</span>`;
+    btn.addEventListener('click', () => handleOptionClick(btn, o.key, o.note, o.posture));
+    grid.appendChild(btn);
+  });
+}
+
+/* ══════════════════════════════════
+   OPTION CLICK — weight drop + posture + note
+══════════════════════════════════ */
+function handleOptionClick(clickedBtn, key, note, posture){
+  const allBtns = document.querySelectorAll('.option-btn');
+
+  // Apply posture change
+  applyPosture(posture);
+
+  // Show handwritten note
+  const noteEl = document.getElementById('hw-note');
+  noteEl.classList.remove('visible');
+  noteEl.textContent = note;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ noteEl.classList.add('visible'); });
+  });
+
+  // Animate: chosen drops, others float away
+  allBtns.forEach(btn => {
+    if(btn === clickedBtn){
+      btn.classList.add('dropping');
+    } else {
+      btn.classList.add('floating-away');
+    }
+  });
+
+  // After animation, go to placeholder
+  setTimeout(()=>{
+    const c = C[lang];
+    const ph = c.ph[key];
+    document.getElementById('ph-title').textContent = ph.t;
+    document.getElementById('ph-sub').textContent = ph.s;
+    showScreen('screen-placeholder');
+    // Reset
+    allBtns.forEach(btn=>{ btn.classList.remove('dropping','floating-away'); });
+    noteEl.classList.remove('visible');
+    applyPosture('normal');
+  }, 600);
+}
+
+/* ══════════════════════════════════
+   SCREEN NAV
+══════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active','fade-in');
+  });
+  const t = document.getElementById(id);
+  if(t){
+    t.classList.add('active');
+    requestAnimationFrame(()=>t.classList.add('fade-in'));
+    window.scrollTo(0,0);
+  }
+}
+</script>
+</body>
+</html>
