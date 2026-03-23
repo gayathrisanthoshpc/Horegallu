@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — Smallest Step</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --gold-border: rgba(212,169,74,0.2);
+      --terracotta:  #C1654A;
+      --sage:        #7A8C6E;
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+
+    .screen{display:none;flex-direction:column;min-height:100vh;}
+    .screen.active{display:flex;animation:fadeUp 0.55s var(--ease) both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      width:100%;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{display:flex;align-items:center;margin-bottom:2rem;}
+    .back-btn-nav{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);transition:color 0.2s;padding:0;
+    }
+    .back-btn-nav:hover{color:var(--earth);}
+    .step-badge{margin-left:auto;font-size:0.7rem;color:var(--text-muted);letter-spacing:0.08em;}
+
+    /* ── HEADER ── */
+    .section-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.4rem;
+    }
+    .section-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+    .section-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+
+    .section-title{
+      font-family:var(--font-d);font-size:2rem;font-weight:300;
+      color:var(--earth);line-height:1.2;margin-bottom:0.4rem;
+    }
+    .section-title.ml{font-family:var(--font-ml);font-size:1.55rem;font-weight:400;}
+    .section-title.hi{font-family:var(--font-hi);font-size:1.55rem;font-weight:400;}
+
+    .section-sub{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.65;margin-bottom:1.75rem;
+    }
+    .section-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .section-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── INPUT AREA ── */
+    .input-label{
+      font-size:0.78rem;color:var(--text-muted);
+      margin-bottom:0.5rem;display:block;
+      letter-spacing:0.04em;
+    }
+    .input-label.ml{font-family:var(--font-ml);font-size:0.76rem;}
+    .input-label.hi{font-family:var(--font-hi);font-size:0.76rem;}
+
+    .main-input{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:1rem 1.25rem;
+      font-family:var(--font-b);
+      font-size:0.92rem;
+      color:var(--text-primary);
+      background:rgba(255,255,255,0.8);
+      outline:none;resize:none;
+      transition:border-color 0.2s,box-shadow 0.2s;
+      line-height:1.6;
+      margin-bottom:0.75rem;
+    }
+    .main-input:focus{
+      border-color:var(--stone);
+      box-shadow:0 0 0 3px rgba(196,168,130,0.1);
+    }
+    .main-input::placeholder{color:var(--text-muted);font-style:italic;}
+    .main-input.ml{font-family:var(--font-ml);font-size:0.9rem;}
+    .main-input.hi{font-family:var(--font-hi);font-size:0.9rem;}
+
+    /* ── QUICK PROMPTS ── */
+    .quick-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.08em;margin-bottom:0.6rem;display:block;
+    }
+    .quick-label.ml{font-family:var(--font-ml);font-size:0.7rem;}
+    .quick-label.hi{font-family:var(--font-hi);font-size:0.7rem;}
+
+    .quick-grid{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:8px;margin-bottom:1.5rem;
+    }
+    .quick-chip{
+      padding:9px 12px;
+      border:1px solid var(--border);border-radius:10px;
+      background:rgba(255,255,255,0.72);
+      font-size:0.75rem;color:var(--text-secondary);
+      cursor:pointer;transition:all 0.22s;
+      text-align:left;line-height:1.4;
+      font-family:var(--font-b);
+    }
+    .quick-chip.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .quick-chip.hi{font-family:var(--font-hi);font-size:0.73rem;}
+    .quick-chip:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);color:var(--earth);
+    }
+    .quick-chip-icon{display:block;font-size:1rem;margin-bottom:3px;}
+
+    /* ── GENERATE BTN ── */
+    .gen-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:15px 20px;
+      background:var(--earth);border:none;border-radius:14px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+      margin-bottom:1.5rem;
+    }
+    .gen-btn:hover{background:var(--earth-deep);transform:translateY(-1px);box-shadow:0 6px 20px rgba(60,40,20,0.18);}
+    .gen-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;box-shadow:none;}
+    .gen-btn.ml{font-family:var(--font-ml);}
+    .gen-btn.hi{font-family:var(--font-hi);}
+
+    /* ── RESULT CARD ── */
+    .result-wrap{display:none;animation:fadeUp 0.5s var(--ease) both;}
+    .result-wrap.visible{display:block;}
+
+    /* Loading */
+    .loading-state{
+      display:flex;align-items:center;gap:10px;
+      padding:1.25rem;
+      background:rgba(255,255,255,0.8);
+      border:1px solid var(--border);
+      border-radius:14px;
+      margin-bottom:1rem;
+    }
+    .loading-dots{display:flex;gap:4px;}
+    .loading-dots span{
+      width:5px;height:5px;border-radius:50%;
+      background:var(--stone);
+      animation:dotPulse 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2){animation-delay:0.2s;}
+    .loading-dots span:nth-child(3){animation-delay:0.4s;}
+    @keyframes dotPulse{
+      0%,100%{opacity:0.3;transform:scale(0.8);}
+      50%{opacity:1;transform:scale(1);}
+    }
+    .loading-text{font-size:0.85rem;color:var(--text-muted);}
+    .loading-text.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .loading-text.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* Step card */
+    .step-card{
+      background:rgba(255,255,255,0.88);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.75rem;
+      margin-bottom:1rem;
+      position:relative;overflow:hidden;
+    }
+    .step-card::before{
+      content:'';position:absolute;
+      top:0;left:0;right:0;height:3px;
+      background:linear-gradient(to right,var(--gold),var(--stone),var(--gold));
+      border-radius:18px 18px 0 0;
+    }
+
+    .step-number-label{
+      font-size:0.68rem;color:var(--gold);
+      letter-spacing:0.12em;text-transform:uppercase;
+      font-weight:500;margin-bottom:0.5rem;display:block;
+    }
+    .step-number-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.72rem;}
+    .step-number-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.72rem;}
+
+    .step-action{
+      font-family:var(--font-d);
+      font-size:1.8rem;font-weight:400;
+      color:var(--earth-deep);
+      line-height:1.3;margin-bottom:0.75rem;
+    }
+    .step-action.ml{font-family:var(--font-ml);font-size:1.4rem;font-weight:400;}
+    .step-action.hi{font-family:var(--font-hi);font-size:1.4rem;font-weight:400;}
+
+    .step-why{
+      font-size:0.83rem;color:var(--text-secondary);
+      line-height:1.7;margin-bottom:1rem;
+    }
+    .step-why.ml{font-family:var(--font-ml);font-size:0.81rem;}
+    .step-why.hi{font-family:var(--font-hi);font-size:0.81rem;}
+
+    .step-time{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 12px;
+      background:var(--gold-bg);
+      border:1px solid var(--gold-border);
+      border-radius:999px;
+      font-size:0.72rem;color:var(--stone-dark);
+    }
+    .step-time.ml{font-family:var(--font-ml);font-size:0.7rem;}
+    .step-time.hi{font-family:var(--font-hi);font-size:0.7rem;}
+
+    /* Comfort */
+    .step-comfort{
+      margin-top:1rem;
+      padding:12px 15px;
+      background:var(--gold-bg);
+      border:1px solid var(--gold-border);
+      border-radius:12px;
+    }
+    .comfort-hw{
+      font-family:var(--font-hw);
+      font-size:1.05rem;color:var(--stone-dark);
+      line-height:1.5;display:block;
+    }
+
+    /* Done button */
+    .done-btn{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:14px;
+      background:var(--sage);border:none;border-radius:13px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.88rem;font-weight:500;
+      transition:all 0.3s;margin-bottom:10px;
+    }
+    .done-btn:hover{background:#5a7050;transform:translateY(-1px);}
+    .done-btn.ml{font-family:var(--font-ml);}
+    .done-btn.hi{font-family:var(--font-hi);}
+
+    /* Another step */
+    .another-btn{
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      width:100%;padding:11px;
+      background:transparent;border:1px solid var(--border);
+      border-radius:13px;cursor:pointer;
+      color:var(--text-muted);font-family:var(--font-b);
+      font-size:0.82rem;transition:all 0.25s;
+      margin-bottom:1.5rem;
+    }
+    .another-btn:hover{border-color:var(--stone);color:var(--earth);}
+    .another-btn.ml{font-family:var(--font-ml);}
+    .another-btn.hi{font-family:var(--font-hi);}
+
+    /* ── DONE SCREEN ── */
+    #screen-done{
+      justify-content:center;align-items:center;
+      text-align:center;
+    }
+    .done-page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:3rem 2rem;
+      display:flex;flex-direction:column;
+      align-items:center;gap:1.25rem;
+      min-height:100vh;justify-content:center;
+    }
+    .done-icon{font-size:3.5rem;display:block;}
+    .done-title{
+      font-family:var(--font-d);
+      font-size:2rem;font-weight:300;
+      color:var(--earth);line-height:1.3;
+    }
+    .done-title.ml{font-family:var(--font-ml);font-size:1.6rem;font-weight:400;}
+    .done-title.hi{font-family:var(--font-hi);font-size:1.6rem;font-weight:400;}
+
+    .done-sub{
+      font-size:0.88rem;color:var(--text-secondary);
+      line-height:1.75;max-width:300px;
+    }
+    .done-sub.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .done-sub.hi{font-family:var(--font-hi);font-size:0.86rem;}
+
+    .done-hw{
+      font-family:var(--font-hw);
+      font-size:1.2rem;color:var(--stone-dark);
+    }
+
+    .done-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;}
+
+    .next-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:15px 20px;
+      background:var(--earth);border:none;border-radius:14px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+    }
+    .next-btn:hover{background:var(--earth-deep);transform:translateY(-1px);box-shadow:0 6px 20px rgba(60,40,20,0.18);}
+    .next-btn.ml{font-family:var(--font-ml);}
+    .next-btn.hi{font-family:var(--font-hi);}
+
+    .reset-btn{
+      padding:11px;background:transparent;
+      border:1px solid var(--border);border-radius:13px;
+      cursor:pointer;color:var(--text-muted);
+      font-family:var(--font-b);font-size:0.82rem;
+      transition:all 0.25s;
+    }
+    .reset-btn:hover{border-color:var(--stone);color:var(--earth);}
+    .reset-btn.ml{font-family:var(--font-ml);}
+    .reset-btn.hi{font-family:var(--font-hi);}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .section-title{font-size:1.65rem;}
+      .step-action{font-size:1.5rem;}
+      .quick-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ INPUT SCREEN ══ -->
+  <div class="screen active" id="screen-input">
+    <div class="page">
+      <div class="back-nav">
+        <button class="back-btn-nav" onclick="history.back()">← <span id="back-label">Back</span></button>
+        <span class="step-badge" id="step-badge">Step 8 of 10</span>
+      </div>
+
+      <p class="section-label" id="section-label">Smallest possible next step</p>
+      <h1 class="section-title" id="section-title">What is overwhelming you right now?</h1>
+      <p class="section-sub" id="section-sub">Tell me what feels too big. I will find the one smallest thing you can do in the next 10 minutes. Not a plan. Not a list. One thing.</p>
+
+      <label class="input-label" id="input-label">Describe what feels impossible right now</label>
+      <textarea class="main-input" id="main-input" rows="4" id="main-input"></textarea>
+
+      <span class="quick-label" id="quick-label">Or pick a common situation</span>
+      <div class="quick-grid" id="quick-grid"></div>
+
+      <button class="gen-btn" id="gen-btn" disabled onclick="generateStep()">
+        <span id="gen-label">Find my one small step</span>
+        <span>→</span>
+      </button>
+
+      <!-- Result area -->
+      <div class="result-wrap" id="result-wrap">
+        <div class="loading-state" id="loading-state" style="display:none;">
+          <div class="loading-dots"><span></span><span></span><span></span></div>
+          <span class="loading-text" id="loading-text">Finding the smallest step...</span>
+        </div>
+        <div id="step-result"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ DONE SCREEN ══ -->
+  <div class="screen" id="screen-done">
+    <div class="done-page">
+      <span class="done-icon">✓</span>
+      <h2 class="done-title" id="done-title">You did it.</h2>
+      <p class="done-sub" id="done-sub">One small step is how every big thing gets done. You just proved you can move when it feels impossible.</p>
+      <span class="done-hw" id="done-hw">Momentum starts here.</span>
+      <div class="done-actions">
+        <button class="next-btn" id="next-btn-done" onclick="goNext()">
+          <span id="next-done-label">Continue — burnout & escalation check</span>
+          <span>→</span>
+        </button>
+        <button class="reset-btn" id="reset-btn" onclick="resetAll()">
+          <span id="reset-label">Find another small step</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ══════════════════════════════════
+   CONTENT
+══════════════════════════════════ */
+const C = {
+  en:{
+    back:'Back', step:'Step 8 of 10',
+    sLabel:'Smallest possible next step',
+    sTitle:'What is overwhelming you right now?',
+    sSub:'Tell me what feels too big. I will find the one smallest thing you can do in the next 10 minutes. Not a plan. Not a list. One thing.',
+    inputLabel:'Describe what feels impossible right now',
+    inputPlaceholder:'I have to study for three exams and I cannot even open my laptop...',
+    quickLabel:'Or pick a common situation',
+    genLabel:'Find my one small step',
+    loadingText:'Finding the smallest step...',
+    stepNumberLabel:'Your one small step',
+    doneTitle:'You did it.',
+    doneSub:'One small step is how every big thing gets done. You just proved you can move when it feels impossible.',
+    doneHw:'Momentum starts here.',
+    nextDoneLabel:'Continue — burnout & escalation check',
+    resetLabel:'Find another small step',
+    doneBtn:'I did this ✓',
+    anotherBtn:'↺ Give me a different step',
+    quickItems:[
+      {icon:'📚',text:'Cannot start studying — too much to cover'},
+      {icon:'🏥',text:'Behind on clinical hours or assignments'},
+      {icon:'😰',text:'Overwhelmed by everything at once'},
+      {icon:'💬',text:'Need to have a hard conversation'},
+      {icon:'🌑',text:'Too tired to do anything at all'},
+      {icon:'📝',text:'Assignment due but cannot begin'},
+    ],
+    systemPrompt:`You are a compassionate, practical guide for Horegallu — a stress relief app for nursing students and overwhelmed people.
+
+The user has described something that feels overwhelming or impossible. Your job is to:
+1. Find the SINGLE SMALLEST possible action they could take in the next 10 minutes — not a plan, not a list, ONE thing.
+2. The step must be so small it feels almost embarrassingly easy. Not "study for 30 minutes" but "open the textbook to page 1."
+3. Explain in 1 sentence WHY this small step works psychologically (momentum, dopamine, etc.)
+4. Estimate the time it takes (e.g., "2 minutes", "5 minutes")
+5. End with one short handwritten-style comfort line.
+
+Respond in this EXACT JSON format:
+{
+  "step": "The one small action",
+  "why": "One sentence explanation of why this works",
+  "time": "X minutes",
+  "comfort": "Short comfort line"
+}
+
+Only return JSON. No preamble. No extra text.`
+  },
+  ml:{
+    back:'തിരിച്ചു', step:'ഘട്ടം 8 / 10',
+    sLabel:'ഏറ്റവും ചെറിയ next step',
+    sTitle:'ഇപ്പോൾ എന്താണ് overwhelming ആയി തോന്നുന്നത്?',
+    sSub:'വളരെ വലുതെന്ന് തോന്നുന്നത് പറയൂ. അടുത്ത 10 മിനിറ്റിൽ ചെയ്യാൻ കഴിയുന്ന ഒരു ചെറിയ കാര്യം ഞാൻ കണ്ടെത്തും. Plan അല്ല. List അല്ല. ഒരു കാര്യം.',
+    inputLabel:'ഇപ്പോൾ impossible ആയി തോന്നുന്നത് describe ചെയ്യൂ',
+    inputPlaceholder:'മൂന്ന് exams-ന് പഠിക്കണം, laptop തുറക്കാൻ പോലും കഴിയുന്നില്ല...',
+    quickLabel:'അല്ലെങ്കിൽ ഒരു common situation തിരഞ്ഞെടുക്കൂ',
+    genLabel:'എന്റെ ഒരു ചെറിയ step കണ്ടെത്തൂ',
+    loadingText:'ഏറ്റവും ചെറിയ step കണ്ടെത്തുന്നു...',
+    stepNumberLabel:'നിങ്ങളുടെ ഒരു ചെറിയ step',
+    doneTitle:'ചെയ്തു.',
+    doneSub:'ഓരോ വലിയ കാര്യവും ഇങ്ങനെ ചെറിയ steps-ൽ ആകുന്നു. Impossible ആയ സമയത്ത് ചലിക്കാൻ കഴിയും എന്ന് നിങ്ങൾ ഇപ്പോൾ തെളിയിച്ചു.',
+    doneHw:'Momentum ഇവിടെ നിന്ന് തുടങ്ങുന്നു.',
+    nextDoneLabel:'തുടരുക — burnout & escalation check',
+    resetLabel:'മറ്റൊരു ചെറിയ step',
+    doneBtn:'ഞാൻ ചെയ്തു ✓',
+    anotherBtn:'↺ മറ്റൊരു step തരൂ',
+    quickItems:[
+      {icon:'📚',text:'പഠനം തുടങ്ങാൻ കഴിയുന്നില്ല — ഒത്തിരി ഉണ്ട്'},
+      {icon:'🏥',text:'Clinical hours അല്ലെങ്കിൽ assignments-ൽ പിന്നിൽ'},
+      {icon:'😰',text:'എല്ലാം ഒരുമിച്ച് overwhelm ആകുന്നു'},
+      {icon:'💬',text:'ഒരു ബുദ്ധിമുട്ടുള്ള conversation വേണം'},
+      {icon:'🌑',text:'ഒന്നും ചെയ്യാൻ energy ഇല്ല'},
+      {icon:'📝',text:'Assignment deadline — തുടങ്ങാൻ കഴിയുന്നില്ല'},
+    ],
+    systemPrompt:`നിങ്ങൾ Horegallu-യുടെ practical guide ആണ്.
+
+User overwhelmed ആയ ഒന്ന് describe ചെയ്തിരിക്കുന്നു. Malayalam-ൽ respond ചെയ്യൂ. ഈ exact JSON format-ൽ മാത്രം:
+{
+  "step": "ഒരു ചെറിയ action",
+  "why": "ഇത് psychologically work ചെയ്യുന്നതിന്റെ ഒരു sentence explanation",
+  "time": "X minutes",
+  "comfort": "ഒരു comfort line"
+}
+
+Step വളരെ ചെറുതായിരിക്കണം — embarrassingly easy. Only JSON. No extra text.`
+  },
+  hi:{
+    back:'वापस', step:'चरण 8 / 10',
+    sLabel:'सबसे छोटा अगला कदम',
+    sTitle:'अभी क्या overwhelming लग रहा है?',
+    sSub:'जो बहुत बड़ा लग रहा है वो बताओ। मैं अगले 10 मिनट में करने लायक एक छोटी सी चीज़ ढूंढूँगा। Plan नहीं। List नहीं। एक चीज़।',
+    inputLabel:'जो impossible लग रहा है वो describe करो',
+    inputPlaceholder:'तीन exams के लिए पढ़ना है और laptop खोलना भी नहीं हो रहा...',
+    quickLabel:'या कोई common situation चुनो',
+    genLabel:'मेरा एक छोटा step ढूंढो',
+    loadingText:'सबसे छोटा step ढूंढा जा रहा है...',
+    stepNumberLabel:'तुम्हारा एक छोटा कदम',
+    doneTitle:'कर दिया।',
+    doneSub:'हर बड़ी चीज़ ऐसे ही छोटे-छोटे कदमों से होती है। तुमने अभी साबित किया कि impossible लगने पर भी चल सकते हो।',
+    doneHw:'Momentum यहाँ से शुरू होता है।',
+    nextDoneLabel:'आगे बढ़ें — burnout & escalation check',
+    resetLabel:'एक और छोटा step ढूंढो',
+    doneBtn:'कर दिया ✓',
+    anotherBtn:'↺ अलग step दो',
+    quickItems:[
+      {icon:'📚',text:'पढ़ाई शुरू नहीं हो रही — बहुत ज़्यादा है'},
+      {icon:'🏥',text:'Clinical hours या assignments में पीछे'},
+      {icon:'😰',text:'सब एक साथ overwhelm कर रहा है'},
+      {icon:'💬',text:'एक मुश्किल conversation करनी है'},
+      {icon:'🌑',text:'कुछ भी करने की energy नहीं'},
+      {icon:'📝',text:'Assignment due है पर शुरू नहीं हो रहा'},
+    ],
+    systemPrompt:`तुम Horegallu के practical guide हो।
+
+User ने कुछ overwhelming बताया है। Hindi में respond करो। इस exact JSON format में:
+{
+  "step": "एक छोटा action",
+  "why": "यह psychologically क्यों काम करता है — एक sentence",
+  "time": "X minutes",
+  "comfort": "एक comfort line"
+}
+
+Step इतना छोटा हो कि embarrassingly easy लगे। Only JSON. No extra text.`
+  }
+};
+
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang')||'en';
+let currentStepData = null;
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderUI();
+  bindInput();
+});
+
+function renderUI(){
+  const c = C[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  document.getElementById('back-label').textContent=c.back;
+  document.getElementById('step-badge').textContent=c.step;
+
+  const sl=document.getElementById('section-label');
+  sl.textContent=c.sLabel; sl.className='section-label '+lc;
+  const st=document.getElementById('section-title');
+  st.textContent=c.sTitle; st.className='section-title '+lc;
+  const ss=document.getElementById('section-sub');
+  ss.textContent=c.sSub; ss.className='section-sub '+lc;
+
+  const il=document.getElementById('input-label');
+  il.textContent=c.inputLabel; il.className='input-label '+lc;
+  const inp=document.getElementById('main-input');
+  inp.placeholder=c.inputPlaceholder; inp.className='main-input '+lc;
+
+  const ql=document.getElementById('quick-label');
+  ql.textContent=c.quickLabel; ql.className='quick-label '+lc;
+
+  document.getElementById('gen-label').textContent=c.genLabel;
+  document.getElementById('gen-btn').className='gen-btn '+lc;
+
+  const lt=document.getElementById('loading-text');
+  lt.textContent=c.loadingText; lt.className='loading-text '+lc;
+
+  // Done screen
+  const dt=document.getElementById('done-title');
+  dt.textContent=c.doneTitle; dt.className='done-title '+lc;
+  const ds=document.getElementById('done-sub');
+  ds.textContent=c.doneSub; ds.className='done-sub '+lc;
+  document.getElementById('done-hw').textContent=c.doneHw;
+  document.getElementById('next-btn-done').className='next-btn '+lc;
+  document.getElementById('next-done-label').textContent=c.nextDoneLabel;
+  document.getElementById('reset-btn').className='reset-btn '+lc;
+  document.getElementById('reset-label').textContent=c.resetLabel;
+
+  // Quick chips
+  buildQuickChips();
+}
+
+function buildQuickChips(){
+  const c=C[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const grid=document.getElementById('quick-grid');
+  grid.innerHTML='';
+  c.quickItems.forEach(item=>{
+    const chip=document.createElement('button');
+    chip.className='quick-chip '+lc;
+    chip.innerHTML=`<span class="quick-chip-icon">${item.icon}</span>${item.text}`;
+    chip.addEventListener('click',()=>{
+      document.getElementById('main-input').value=item.text;
+      document.getElementById('gen-btn').disabled=false;
+    });
+    grid.appendChild(chip);
+  });
+}
+
+function bindInput(){
+  const inp=document.getElementById('main-input');
+  inp.addEventListener('input',()=>{
+    document.getElementById('gen-btn').disabled=inp.value.trim().length<5;
+  });
+}
+
+/* ══════════════════════════════════
+   GENERATE
+══════════════════════════════════ */
+async function generateStep(){
+  const c=C[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const text=document.getElementById('main-input').value.trim();
+  if(!text) return;
+
+  const resultWrap=document.getElementById('result-wrap');
+  const loadingState=document.getElementById('loading-state');
+  const stepResult=document.getElementById('step-result');
+
+  resultWrap.classList.add('visible');
+  loadingState.style.display='flex';
+  stepResult.innerHTML='';
+
+  resultWrap.scrollIntoView({behavior:'smooth',block:'start'});
+
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:c.systemPrompt,
+        messages:[{role:'user',content:text}]
+      })
+    });
+
+    const data=await response.json();
+    let raw=data.content?.[0]?.text||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw);
+    currentStepData=parsed;
+
+    loadingState.style.display='none';
+
+    stepResult.innerHTML=`
+      <div class="step-card">
+        <span class="step-number-label ${lc}">${c.stepNumberLabel}</span>
+        <p class="step-action ${lc}">${parsed.step||''}</p>
+        <p class="step-why ${lc}">${parsed.why||''}</p>
+        <span class="step-time ${lc}">⏱ ${parsed.time||'5 minutes'}</span>
+        <div class="step-comfort">
+          <span class="comfort-hw">${parsed.comfort||''}</span>
+        </div>
+      </div>
+      <button class="done-btn ${lc}" onclick="markDone()">${c.doneBtn}</button>
+      <button class="another-btn ${lc}" onclick="getAnother()">${c.anotherBtn}</button>
+    `;
+
+  } catch(err){
+    loadingState.style.display='none';
+    const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+    const errMsg=lang==='ml'?'ഒരു നിമിഷം. വീണ്ടും ശ്രമിക്കൂ.':lang==='hi'?'एक पल। दोबारा कोशिश करो।':'Something went quiet. Please try again.';
+    stepResult.innerHTML=`<p style="font-size:0.85rem;color:var(--text-muted);padding:1rem 0;">${errMsg}</p>`;
+  }
+}
+
+function markDone(){
+  showScreen('screen-done');
+}
+
+function getAnother(){
+  document.getElementById('step-result').innerHTML='';
+  document.getElementById('result-wrap').classList.remove('visible');
+  document.getElementById('main-input').value='';
+  document.getElementById('gen-btn').disabled=true;
+  window.scrollTo(0,0);
+}
+
+function resetAll(){
+  getAnother();
+  showScreen('screen-input');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById(id);
+  if(t){t.classList.add('active');window.scrollTo(0,0);}
+}
+
+function goNext(){
+  window.location.href='burnout-check.html';
+}
+</script>
+</body>
+</html>
