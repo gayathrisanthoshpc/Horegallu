@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — What Do You Need</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --gold-border: rgba(212,169,74,0.2);
+      --terracotta:  #C1654A;
+      --terra-bg:    rgba(193,101,74,0.08);
+      --sage:        #7A8C6E;
+      --sage-bg:     rgba(122,140,110,0.1);
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── SCREENS ── */
+    .screen{display:none;flex-direction:column;min-height:100vh;}
+    .screen.active{display:flex;animation:fadeUp 0.55s var(--ease) both;}
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(16px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      width:100%;flex:1;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{display:flex;align-items:center;margin-bottom:2rem;}
+    .back-btn-nav{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);transition:color 0.2s;padding:0;
+    }
+    .back-btn-nav:hover{color:var(--earth);}
+    .step-badge{margin-left:auto;font-size:0.7rem;color:var(--text-muted);letter-spacing:0.08em;}
+
+    /* ── PROGRESS ── */
+    .progress-track{
+      height:3px;background:rgba(139,111,82,0.12);
+      border-radius:2px;margin-bottom:2.5rem;overflow:hidden;
+    }
+    .progress-fill{
+      height:100%;background:var(--gold);
+      border-radius:2px;transition:width 0.5s var(--ease);
+    }
+
+    /* ── QUESTION SCREEN ── */
+    .q-number{
+      font-size:0.7rem;color:var(--text-muted);
+      letter-spacing:0.12em;text-transform:uppercase;
+      margin-bottom:0.5rem;
+    }
+    .q-number.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.76rem;}
+    .q-number.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.76rem;}
+
+    .q-text{
+      font-family:var(--font-d);
+      font-size:1.85rem;font-weight:300;font-style:italic;
+      color:var(--earth-deep);line-height:1.3;
+      margin-bottom:0.75rem;
+    }
+    .q-text.ml{font-family:var(--font-ml);font-style:normal;font-size:1.4rem;font-weight:400;}
+    .q-text.hi{font-family:var(--font-hi);font-style:normal;font-size:1.4rem;font-weight:400;}
+
+    .q-hint{
+      font-size:0.82rem;color:var(--text-muted);
+      line-height:1.6;margin-bottom:2rem;
+    }
+    .q-hint.ml{font-family:var(--font-ml);font-size:0.8rem;}
+    .q-hint.hi{font-family:var(--font-hi);font-size:0.8rem;}
+
+    /* ── ANSWER OPTIONS ── */
+    .answers{display:flex;flex-direction:column;gap:10px;}
+
+    .answer-btn{
+      display:flex;align-items:flex-start;gap:14px;
+      padding:14px 16px;
+      background:rgba(255,255,255,0.75);
+      border:1px solid var(--border);
+      border-radius:14px;
+      cursor:pointer;text-align:left;
+      transition:all 0.25s var(--ease);
+      position:relative;overflow:hidden;
+    }
+    .answer-btn::before{
+      content:'';position:absolute;
+      left:0;top:0;bottom:0;width:3px;
+      background:var(--gold);
+      transform:scaleY(0);
+      transition:transform 0.2s;
+      border-radius:3px 0 0 3px;
+    }
+    .answer-btn:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateX(4px);
+      box-shadow:0 4px 18px var(--shadow);
+    }
+    .answer-btn:hover::before{transform:scaleY(1);}
+    .answer-btn:active{transform:translateX(4px) scale(0.99);}
+
+    .answer-btn.selected{
+      background:var(--cream-warm);
+      border-color:var(--stone);
+    }
+    .answer-btn.selected::before{transform:scaleY(1);}
+
+    .answer-icon{
+      width:36px;height:36px;
+      border-radius:50%;
+      background:var(--cream-warm);
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;font-size:16px;
+      transition:transform 0.2s;
+    }
+    .answer-btn:hover .answer-icon{transform:scale(1.1);}
+
+    .answer-text{flex:1;}
+    .answer-main{
+      font-size:0.92rem;font-weight:500;
+      color:var(--text-primary);
+      display:block;line-height:1.3;margin-bottom:2px;
+    }
+    .answer-main.ml{font-family:var(--font-ml);font-size:0.9rem;}
+    .answer-main.hi{font-family:var(--font-hi);font-size:0.9rem;}
+
+    .answer-sub{
+      font-size:0.75rem;color:var(--text-muted);
+      display:block;line-height:1.4;
+    }
+    .answer-sub.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .answer-sub.hi{font-family:var(--font-hi);font-size:0.73rem;}
+
+    /* ── RESULT SCREEN ── */
+    #screen-result .page{
+      display:flex;flex-direction:column;
+      justify-content:flex-start;
+    }
+
+    .result-header{
+      text-align:center;margin-bottom:2rem;
+    }
+    .result-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.4rem;display:block;
+    }
+    .result-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+    .result-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+
+    .result-need{
+      font-family:var(--font-d);
+      font-size:2.2rem;font-weight:300;
+      color:var(--earth);line-height:1.2;
+      margin-bottom:0.5rem;
+    }
+    .result-need.ml{font-family:var(--font-ml);font-size:1.7rem;font-weight:400;}
+    .result-need.hi{font-family:var(--font-hi);font-size:1.7rem;font-weight:400;}
+
+    .result-why{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.7;max-width:360px;margin:0 auto;
+    }
+    .result-why.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .result-why.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── RESULT ACTIONS ── */
+    .result-actions{
+      display:flex;flex-direction:column;gap:10px;
+      margin-bottom:2rem;
+    }
+
+    .action-card{
+      background:rgba(255,255,255,0.85);
+      border:1px solid var(--border);
+      border-radius:15px;
+      padding:1.2rem 1.3rem;
+      transition:all 0.25s var(--ease);
+      cursor:pointer;
+      position:relative;overflow:hidden;
+    }
+    .action-card::before{
+      content:'';position:absolute;
+      top:0;left:0;right:0;height:2px;
+      background:linear-gradient(to right,var(--gold),var(--stone));
+      border-radius:15px 15px 0 0;
+    }
+    .action-card:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px var(--shadow);
+    }
+
+    .action-card-top{
+      display:flex;align-items:center;gap:12px;margin-bottom:0.5rem;
+    }
+    .action-icon{font-size:1.2rem;}
+    .action-name{
+      font-size:0.92rem;font-weight:500;
+      color:var(--text-primary);
+    }
+    .action-name.ml{font-family:var(--font-ml);font-size:0.9rem;}
+    .action-name.hi{font-family:var(--font-hi);font-size:0.9rem;}
+
+    .action-desc{
+      font-size:0.8rem;color:var(--text-secondary);
+      line-height:1.6;
+    }
+    .action-desc.ml{font-family:var(--font-ml);font-size:0.78rem;}
+    .action-desc.hi{font-family:var(--font-hi);font-size:0.78rem;}
+
+    /* Inline tool content */
+    .inline-tool{
+      margin-top:1rem;
+      padding-top:1rem;
+      border-top:1px solid var(--border);
+      display:none;
+    }
+    .inline-tool.open{display:block;animation:fadeUp 0.3s var(--ease) both;}
+
+    .tool-textarea{
+      width:100%;border:1px solid var(--border);
+      border-radius:10px;padding:10px 13px;
+      font-family:var(--font-b);font-size:0.88rem;
+      color:var(--text-primary);
+      background:var(--cream-warm);
+      outline:none;resize:none;
+      transition:border-color 0.2s;
+    }
+    .tool-textarea:focus{border-color:var(--stone);}
+    .tool-textarea.ml{font-family:var(--font-ml);}
+    .tool-textarea.hi{font-family:var(--font-hi);}
+
+    .tool-btn{
+      margin-top:8px;padding:9px 18px;
+      background:var(--earth);border:none;
+      border-radius:10px;cursor:pointer;
+      color:#FAF6F0;font-family:var(--font-b);
+      font-size:0.82rem;font-weight:500;
+      transition:all 0.25s;
+    }
+    .tool-btn:hover{background:var(--earth-deep);}
+    .tool-btn.ml{font-family:var(--font-ml);}
+    .tool-btn.hi{font-family:var(--font-hi);}
+
+    /* Breath mini */
+    .mini-breath{
+      display:flex;flex-direction:column;align-items:center;
+      gap:0.75rem;padding:0.5rem 0;
+    }
+    .mini-circle{
+      width:90px;height:90px;border-radius:50%;
+      border:2px solid var(--stone);
+      display:flex;align-items:center;justify-content:center;
+      flex-direction:column;cursor:pointer;
+      transition:all 0.3s;
+    }
+    .mini-circle:hover{border-color:var(--gold);}
+    .mini-circle.breathing{animation:breathePulse 4s ease-in-out infinite;}
+    @keyframes breathePulse{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.2);}
+    }
+    .mini-count{
+      font-family:var(--font-d);
+      font-size:1.6rem;font-weight:300;color:var(--earth);
+    }
+    .mini-word{font-size:0.65rem;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;}
+
+    /* Distraction mini */
+    .distraction-options{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:8px;margin-top:0.5rem;
+    }
+    .dist-chip{
+      padding:10px 12px;
+      border:1px solid var(--border);border-radius:10px;
+      background:var(--cream-warm);
+      font-size:0.78rem;color:var(--text-secondary);
+      text-align:center;cursor:pointer;
+      transition:all 0.2s;line-height:1.4;
+    }
+    .dist-chip:hover{
+      border-color:var(--stone);color:var(--earth);
+      background:rgba(255,255,255,0.9);
+    }
+    .dist-chip.ml{font-family:var(--font-ml);font-size:0.75rem;}
+    .dist-chip.hi{font-family:var(--font-hi);font-size:0.75rem;}
+
+    /* Cry permission */
+    .cry-card{
+      text-align:center;padding:1rem 0.5rem;
+    }
+    .cry-hw{
+      font-family:var(--font-hw);
+      font-size:1.3rem;color:var(--stone-dark);
+      line-height:1.6;display:block;margin-bottom:0.75rem;
+    }
+    .cry-science{
+      font-size:0.78rem;color:var(--text-muted);
+      line-height:1.6;
+    }
+    .cry-science.ml{font-family:var(--font-ml);font-size:0.76rem;}
+    .cry-science.hi{font-family:var(--font-hi);font-size:0.76rem;}
+
+    /* Call prompt */
+    .call-card{padding:0.5rem 0;}
+    .call-prompt{
+      font-size:0.88rem;color:var(--text-secondary);
+      line-height:1.7;margin-bottom:0.75rem;
+    }
+    .call-prompt.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .call-prompt.hi{font-family:var(--font-hi);font-size:0.86rem;}
+    .call-script{
+      background:var(--cream-warm);
+      border-radius:10px;padding:12px 14px;
+      font-family:var(--font-hw);font-size:1rem;
+      color:var(--earth-deep);line-height:1.6;
+      border-left:2px solid var(--gold);
+    }
+
+    /* Sit with it */
+    .sit-card{text-align:center;padding:1rem 0;}
+    .sit-hw{
+      font-family:var(--font-hw);
+      font-size:1.2rem;color:var(--stone-dark);
+      line-height:1.7;display:block;margin-bottom:0.75rem;
+    }
+    .sit-permission{
+      font-size:0.82rem;color:var(--text-muted);
+      line-height:1.6;
+    }
+    .sit-permission.ml{font-family:var(--font-ml);font-size:0.8rem;}
+    .sit-permission.hi{font-family:var(--font-hi);font-size:0.8rem;}
+
+    /* ── SUMMARY TRAIL ── */
+    .summary-trail{
+      background:var(--gold-bg);
+      border:1px solid var(--gold-border);
+      border-radius:14px;
+      padding:1.2rem 1.3rem;
+      margin-bottom:1.5rem;
+    }
+    .trail-label{
+      font-size:0.7rem;color:var(--gold);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.6rem;font-weight:500;
+    }
+    .trail-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.74rem;}
+    .trail-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.74rem;}
+    .trail-item{
+      font-size:0.82rem;color:var(--text-secondary);
+      line-height:1.6;padding:3px 0;
+    }
+    .trail-item.ml{font-family:var(--font-ml);font-size:0.8rem;}
+    .trail-item.hi{font-family:var(--font-hi);font-size:0.8rem;}
+    .trail-q{color:var(--text-muted);font-size:0.72rem;}
+    .trail-q.ml{font-family:var(--font-ml);}
+    .trail-q.hi{font-family:var(--font-hi);}
+
+    /* ── NEXT BTN ── */
+    .next-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:15px 20px;
+      background:var(--earth);border:none;border-radius:14px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+    }
+    .next-btn:hover{
+      background:var(--earth-deep);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.18);
+    }
+    .next-btn.ml{font-family:var(--font-ml);}
+    .next-btn.hi{font-family:var(--font-hi);}
+
+    .restart-btn{
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      width:100%;padding:11px;margin-top:8px;
+      background:transparent;border:1px solid var(--border);
+      border-radius:13px;cursor:pointer;
+      color:var(--text-muted);font-family:var(--font-b);
+      font-size:0.82rem;transition:all 0.25s;
+    }
+    .restart-btn:hover{border-color:var(--stone);color:var(--earth);}
+    .restart-btn.ml{font-family:var(--font-ml);}
+    .restart-btn.hi{font-family:var(--font-hi);}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .q-text{font-size:1.55rem;}
+      .result-need{font-size:1.8rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ QUESTION SCREENS ══ -->
+  <div class="screen active" id="screen-q">
+    <div class="page">
+      <div class="back-nav">
+        <button class="back-btn-nav" onclick="goBackQ()">← <span id="back-label">Back</span></button>
+        <span class="step-badge" id="step-badge">Step 7 of 10</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <p class="q-number" id="q-number"></p>
+      <h2 class="q-text" id="q-text"></h2>
+      <p class="q-hint" id="q-hint"></p>
+      <div class="answers" id="answers"></div>
+    </div>
+  </div>
+
+  <!-- ══ RESULT SCREEN ══ -->
+  <div class="screen" id="screen-result">
+    <div class="page">
+      <div class="back-nav">
+        <button class="back-btn-nav" onclick="restart()">← <span id="back-label-r">Back</span></button>
+        <span class="step-badge" id="step-badge-r">Step 7 of 10</span>
+      </div>
+
+      <div class="result-header">
+        <span class="result-label" id="result-label">What you need right now</span>
+        <h2 class="result-need" id="result-need"></h2>
+        <p class="result-why" id="result-why"></p>
+      </div>
+
+      <div class="result-actions" id="result-actions"></div>
+
+      <div class="summary-trail" id="summary-trail"></div>
+
+      <button class="next-btn" id="next-btn" onclick="goNext()">
+        <span id="next-label">Continue — your smallest possible next step</span>
+        <span>→</span>
+      </button>
+      <button class="restart-btn" id="restart-btn" onclick="restart()">
+        ↺ <span id="restart-label">Answer again</span>
+      </button>
+    </div>
+  </div>
+
+<script>
+/* ══════════════════════════════════════
+   QUESTIONS & ANSWERS
+══════════════════════════════════════ */
+const QUESTIONS = {
+  en:[
+    {
+      number:'Question 1 of 4',
+      text:'What does this feeling most want to do right now?',
+      hint:'Not what you think you should do — what the feeling itself wants.',
+      answers:[
+        {icon:'💬',main:'Speak — be heard by someone',sub:'I need to say this out loud to another person',value:'vent'},
+        {icon:'🌫️',main:'Escape — think about something else',sub:'I cannot be in this feeling right now',value:'distract'},
+        {icon:'😢',main:'Feel it — just cry or let it out',sub:'I need to stop holding this in',value:'cry'},
+        {icon:'🧩',main:'Solve — understand what to do next',sub:'I need clarity more than comfort',value:'solve'},
+        {icon:'🪑',main:'Sit — just be still with it',sub:'I don\'t need to do anything right now',value:'sit'},
+      ]
+    },
+    {
+      number:'Question 2 of 4',
+      text:'How long have you been carrying this?',
+      hint:'The length of time changes what kind of support helps most.',
+      answers:[
+        {icon:'⚡',main:'Just happened — today',sub:'It is fresh and raw right now',value:'fresh'},
+        {icon:'📅',main:'A few days',sub:'It has been sitting with me for a while',value:'days'},
+        {icon:'🌊',main:'Weeks or longer',sub:'This has been building for a long time',value:'weeks'},
+        {icon:'∞',main:'It comes and goes — always there',sub:'This is a recurring weight I carry',value:'recurring'},
+      ]
+    },
+    {
+      number:'Question 3 of 4',
+      text:'Is there a specific person involved in this?',
+      hint:'Stress connected to a person needs different tools than stress without one.',
+      answers:[
+        {icon:'👤',main:'Yes — someone specific',sub:'A professor, patient, friend, family member',value:'person'},
+        {icon:'🏛️',main:'Yes — a situation or system',sub:'Workload, exams, the hospital environment',value:'situation'},
+        {icon:'🫧',main:'It is about me',sub:'How I feel about myself, my worth, my ability',value:'self'},
+        {icon:'🌫️',main:'I am not sure',sub:'It is diffuse — everywhere and nowhere',value:'unsure'},
+      ]
+    },
+    {
+      number:'Question 4 of 4',
+      text:'What does support look like to you right now?',
+      hint:'There is no wrong answer. This is not about what you deserve — it is about what would actually help.',
+      answers:[
+        {icon:'🤝',main:'Someone to just listen — no advice',sub:'I want to be heard, not fixed',value:'listen'},
+        {icon:'💡',main:'A concrete next step',sub:'Tell me one small thing I can actually do',value:'action'},
+        {icon:'🌿',main:'Permission to rest',sub:'I need someone to tell me it is okay to stop',value:'rest'},
+        {icon:'🧠',main:'To understand what is happening',sub:'If I understand it, I can handle it better',value:'understand'},
+      ]
+    }
+  ],
+  ml:[
+    {
+      number:'ചോദ്യം 1 / 4',
+      text:'ഈ വികാരം ഇപ്പോൾ ഏറ്റവും കൂടുതൽ എന്ത് ചെയ്യാൻ ആഗ്രഹിക്കുന്നു?',
+      hint:'നിങ്ങൾ ചെയ്യേണ്ടതല്ല — ഈ വികാരം ആഗ്രഹിക്കുന്നത്.',
+      answers:[
+        {icon:'💬',main:'പറയണം — ആരെങ്കിലും കേൾക്കണം',sub:'ഉറക്കെ ആർക്കെങ്കിലും പറയണം',value:'vent'},
+        {icon:'🌫️',main:'രക്ഷപ്പെടണം — മറ്റൊന്ന് ചിന്തിക്കണം',sub:'ഈ വികാരത്തിൽ ഇപ്പോൾ ഇരിക്കാൻ കഴിയില്ല',value:'distract'},
+        {icon:'😢',main:'അനുഭവിക്കണം — കരയണം, പുറത്ത് കളയണം',sub:'ഇനി ഉള്ളിൽ ഉള്ളത് ഉള്ളിൽ വെക്കാൻ വയ്യ',value:'cry'},
+        {icon:'🧩',main:'Solve ചെയ്യണം — അടുത്ത് എന്ത് ചെയ്യണം',sub:'ആശ്വാസത്തേക്കാൾ clarity വേണം',value:'solve'},
+        {icon:'🪑',main:'ഇരിക്കണം — ഇതുമായി ശാന്തമായി ഇരിക്കണം',sub:'ഇപ്പോൾ ഒന്നും ചെയ്യേണ്ട',value:'sit'},
+      ]
+    },
+    {
+      number:'ചോദ്യം 2 / 4',
+      text:'ഇത് എത്ര നേരമായി വഹിക്കുന്നു?',
+      hint:'എത്ര നേരം ഉണ്ട് എന്നത് ഏത് support ഏറ്റവും help ചെയ്യും എന്ന് നിർണ്ണയിക്കുന്നു.',
+      answers:[
+        {icon:'⚡',main:'ഇന്ന് — ഇപ്പോൾ തന്നെ',sub:'ഇപ്പോഴും fresh ആണ്',value:'fresh'},
+        {icon:'📅',main:'ഒന്നു രണ്ടു ദിവസം',sub:'കുറേ നേരമായി ഒപ്പമുണ്ട്',value:'days'},
+        {icon:'🌊',main:'ആഴ്ചകൾ അല്ലെങ്കിൽ അതിലേറെ',sub:'ദീർഘനേരം ഉള്ളിൽ കൂടിക്കൊണ്ടിരിക്കുന്നു',value:'weeks'},
+        {icon:'∞',main:'വരുന്നു പോകുന്നു — എല്ലായ്പ്പോഴും ഉണ്ട്',sub:'ആവർത്തിക്കുന്ന ഭാരം',value:'recurring'},
+      ]
+    },
+    {
+      number:'ചോദ്യം 3 / 4',
+      text:'ഇതിൽ ഒരു specific ആളുണ്ടോ?',
+      hint:'ഒരാളുമായി ബന്ധപ്പെട്ട stress-ന് വ്യത്യസ്ത tools ആണ് സഹായിക്കുന്നത്.',
+      answers:[
+        {icon:'👤',main:'അതെ — ഒരാൾ',sub:'Professor, patient, friend, family member',value:'person'},
+        {icon:'🏛️',main:'അതെ — ഒരു situation',sub:'Workload, exams, hospital environment',value:'situation'},
+        {icon:'🫧',main:'ഇത് എന്നെ കുറിച്ചാണ്',sub:'സ്വയം, worth, ability',value:'self'},
+        {icon:'🌫️',main:'ഉറപ്പില്ല',sub:'എല്ലായിടത്തും ഒരു diffuse feeling',value:'unsure'},
+      ]
+    },
+    {
+      number:'ചോദ്യം 4 / 4',
+      text:'ഇപ്പോൾ support എന്നാൽ നിങ്ങൾക്ക് എന്ത്?',
+      hint:'തെറ്റായ ഉത്തരമില്ല. നിങ്ങൾ deserve ചെയ്യുന്നതല്ല — യഥാർഥത്തിൽ help ചെയ്യുന്നത്.',
+      answers:[
+        {icon:'🤝',main:'ആരെങ്കിലും കേൾക്കണം — ഉപദേശം വേണ്ട',sub:'Fix ചെയ്യേണ്ട, കേൾക്കണം',value:'listen'},
+        {icon:'💡',main:'ഒരു concrete next step',sub:'ഒരു ചെറിയ ചെയ്യാൻ കഴിയുന്ന കാര്യം',value:'action'},
+        {icon:'🌿',main:'വിശ്രമിക്കാൻ permission',sub:'നിർത്തുന്നത് ശരിയാണ് എന്ന് ആരെങ്കിലും പറയണം',value:'rest'},
+        {icon:'🧠',main:'എന്ത് സംഭവിക്കുന്നു എന്ന് മനസ്സിലാക്കണം',sub:'മനസ്സിലായാൽ handle ചെയ്യാൻ എളുപ്പമാകും',value:'understand'},
+      ]
+    }
+  ],
+  hi:[
+    {
+      number:'सवाल 1 / 4',
+      text:'यह भावना अभी सबसे ज़्यादा क्या करना चाहती है?',
+      hint:'वो नहीं जो तुम्हें करना चाहिए — वो जो यह भावना चाहती है।',
+      answers:[
+        {icon:'💬',main:'बोलना — कोई सुने',sub:'यह किसी को ज़ोर से कहना है',value:'vent'},
+        {icon:'🌫️',main:'भागना — कुछ और सोचना',sub:'अभी इस feeling में नहीं रह सकता/सकती',value:'distract'},
+        {icon:'😢',main:'महसूस करना — रोना, निकालना',sub:'यह अंदर रोकना बंद करना है',value:'cry'},
+        {icon:'🧩',main:'सुलझाना — आगे क्या करें',sub:'आराम से ज़्यादा clarity चाहिए',value:'solve'},
+        {icon:'🪑',main:'बस बैठना — इसके साथ शांत रहना',sub:'अभी कुछ करने की ज़रूरत नहीं',value:'sit'},
+      ]
+    },
+    {
+      number:'सवाल 2 / 4',
+      text:'यह कितने समय से उठाए हो?',
+      hint:'समय की लंबाई तय करती है कि कौन सी support सबसे ज़्यादा मदद करेगी।',
+      answers:[
+        {icon:'⚡',main:'अभी — आज हुआ',sub:'अभी भी ताज़ा है',value:'fresh'},
+        {icon:'📅',main:'कुछ दिन',sub:'कुछ समय से साथ है',value:'days'},
+        {icon:'🌊',main:'हफ्ते या उससे ज़्यादा',sub:'काफी समय से जमा हो रहा है',value:'weeks'},
+        {icon:'∞',main:'आता-जाता रहता है — हमेशा रहता है',sub:'यह बार-बार आने वाला बोझ है',value:'recurring'},
+      ]
+    },
+    {
+      number:'सवाल 3 / 4',
+      text:'क्या इसमें कोई specific इंसान शामिल है?',
+      hint:'किसी इंसान से जुड़े stress को अलग tools की ज़रूरत होती है।',
+      answers:[
+        {icon:'👤',main:'हाँ — एक specific इंसान',sub:'Professor, मरीज़, दोस्त, परिवार',value:'person'},
+        {icon:'🏛️',main:'हाँ — एक situation',sub:'Workload, exams, hospital environment',value:'situation'},
+        {icon:'🫧',main:'यह मेरे बारे में है',sub:'खुद के बारे में, worth, ability',value:'self'},
+        {icon:'🌫️',main:'पता नहीं',sub:'फैला हुआ — हर जगह और कहीं नहीं',value:'unsure'},
+      ]
+    },
+    {
+      number:'सवाल 4 / 4',
+      text:'अभी support का मतलब तुम्हारे लिए क्या है?',
+      hint:'कोई गलत जवाब नहीं। यह deserve करने के बारे में नहीं — जो सच में मदद करे उसके बारे में।',
+      answers:[
+        {icon:'🤝',main:'कोई बस सुने — सलाह नहीं',sub:'Fix नहीं होना, सुना जाना है',value:'listen'},
+        {icon:'💡',main:'एक concrete next step',sub:'एक छोटा काम जो सच में कर सकूँ',value:'action'},
+        {icon:'🌿',main:'आराम करने की permission',sub:'कोई बताए कि रुकना ठीक है',value:'rest'},
+        {icon:'🧠',main:'समझना क्या हो रहा है',sub:'समझ आई तो handle आसान होगा',value:'understand'},
+      ]
+    }
+  ]
+};
+
+/* ══════════════════════════════════════
+   NEEDS MAPPING
+══════════════════════════════════════ */
+const NEEDS = {
+  en:{
+    vent:{
+      need:'To be heard',
+      why:'You are not looking for solutions. You are looking for someone to witness what you are going through. That is a completely valid need. Being heard reduces cortisol just as effectively as breathing exercises.',
+      actions:[
+        {icon:'📞',name:'Call or text someone right now',desc:'Not to ask for advice — just to say "I need someone to listen for a few minutes." Most people will say yes.',type:'call',
+         script:'Hey, I\'m going through something hard right now. I don\'t need advice — I just need someone to listen for a few minutes. Are you free?'},
+        {icon:'✍️',name:'Write it all out here',desc:'If no one is available, writing to no one is the next best thing. Let it out in full.',type:'write'},
+        {icon:'○',name:'Breathe first, then reach out',desc:'Two minutes of breathing before you call helps you speak more clearly and feel more grounded.',type:'breath'},
+      ]
+    },
+    distract:{
+      need:'A break from your own mind',
+      why:'Sometimes the most therapeutic thing is to stop engaging with the feeling and let your nervous system reset. Distraction is not avoidance — it is a deliberate pause. The feeling will be there when you return. You will handle it better.',
+      actions:[
+        {icon:'🎵',name:'Put on something familiar',desc:'A show you have seen before. A playlist that feels like home. Familiar content requires no cognitive effort and soothes the nervous system.',type:'distract'},
+        {icon:'🚶',name:'Change your physical space',desc:'Walk outside even for 5 minutes. A physical change of environment signals the brain to shift mental state.',type:'distract'},
+        {icon:'🍵',name:'Do one very small physical thing',desc:'Make tea. Wash your face. Fold something. Physical tasks anchor you in the present without requiring emotional engagement.',type:'distract'},
+      ]
+    },
+    cry:{
+      need:'Permission to feel it fully',
+      why:'You have been holding something in. Crying is not weakness — it releases oxytocin, reduces cortisol, and physically relieves the tension your body has been storing. You do not need a reason. You do not need to explain it.',
+      actions:[
+        {icon:'😢',name:'You have permission to cry',desc:'Completely, without judgment, without a timer. Let it come fully.',type:'cry'},
+        {icon:'🎵',name:'Find the song that breaks you open',desc:'Music lowers our defenses. Sometimes you need a song to unlock the feeling that is stuck.',type:'distract'},
+        {icon:'○',name:'Breathe after',desc:'After the release, slow breathing helps your nervous system return to baseline.',type:'breath'},
+      ]
+    },
+    solve:{
+      need:'Clarity and a path forward',
+      why:'Some people process emotion through action. Understanding what to do next reduces uncertainty, and uncertainty is one of the biggest amplifiers of stress. The next step does not have to be big.',
+      actions:[
+        {icon:'📝',name:'Write the problem in one sentence',desc:'Then write three possible small actions. You do not have to do all three. Just pick one.',type:'write'},
+        {icon:'🧠',name:'Name what is actually in your control',desc:'List what you can control and what you cannot. Focus only on the first list.',type:'write'},
+        {icon:'💡',name:'What is the smallest thing that would help?',desc:'Not the solution. Just the next 10 minutes. What is one thing that would make this slightly better?',type:'write'},
+      ]
+    },
+    sit:{
+      need:'To just be with it',
+      why:'Not every feeling needs to be fixed or escaped. Sometimes the most courageous thing is to stay with the discomfort without running from it. This is how emotional resilience is built — not by avoiding feelings but by surviving them.',
+      actions:[
+        {icon:'🪑',name:'You are allowed to just sit with this',desc:'No breathing exercise. No journaling. Just you and the feeling, with nowhere to be.',type:'sit'},
+        {icon:'○',name:'One slow breath',desc:'Not a full exercise — just one long exhale. Let the feeling be there.',type:'breath'},
+        {icon:'🌿',name:'Name it without judging it',desc:'"I am feeling ___. And that is okay right now." Say it out loud if you can.',type:'sit'},
+      ]
+    }
+  },
+  ml:{
+    vent:{
+      need:'കേൾക്കപ്പെടണം',
+      why:'നിങ്ങൾ solutions അന്വേഷിക്കുന്നില്ല. ആരെങ്കിലും ഇത് witness ചെയ്യണം. അത് valid ആയ ഒരു need ആണ്. കേൾക്കപ്പെടുന്നത് breathing exercise-ഷോളും efficient ആയി cortisol കുറയ്ക്കുന്നു.',
+      actions:[
+        {icon:'📞',name:'ഇപ്പോൾ ആർക്കെങ്കിലും call ചെയ്യൂ',desc:'Advice ചോദിക്കാനല്ല — "കുറേ നേരം കേൾക്കണം" എന്ന് പറഞ്ഞാൽ മതി.',type:'call',
+         script:'ഞാൻ ഒരു ബുദ്ധിമുട്ടുള്ള സമയത്തൂടെ കടന്നു പോകുന്നു. Advice വേണ്ട — കുറേ നേരം കേൾക്കണം. Free ആണോ?'},
+        {icon:'✍️',name:'ഇവിടെ എഴുതൂ',desc:'ആരും ലഭ്യമല്ലെങ്കിൽ, ആർക്കുമല്ലാതെ എഴുതുന്നത് അടുത്ത best option ആണ്.',type:'write'},
+        {icon:'○',name:'ആദ്യം ശ്വസിക്കൂ, പിന്നെ reach out ചെയ്യൂ',desc:'2 മിനിറ്റ് breathing, call-ന് മുൻപ് — കൂടുതൽ clear ആയി സംസാരിക്കാൻ സഹായിക്കും.',type:'breath'},
+      ]
+    },
+    distract:{
+      need:'മനസ്സിൽ നിന്ന് ഒരു ഇടവേള',
+      why:'ചിലപ്പോൾ ഏറ്റവും therapeutic ആയ കാര്യം feeling-ൽ ഇടപെടുന്നത് നിർത്തി nervous system-നെ reset ചെയ്യാൻ അനുവദിക്കുക. Distraction avoidance അല്ല — ഒരു deliberate pause ആണ്.',
+      actions:[
+        {icon:'🎵',name:'Familiar ആയ എന്തെങ്കിലും play ചെയ്യൂ',desc:'മുൻപ് കണ്ട ഒരു show. Home-ൽ feel ചെയ്യിക്കുന്ന playlist. Familiar content nervous system-നെ soothe ചെയ്യുന്നു.',type:'distract'},
+        {icon:'🚶',name:'Physical space മാറ്റൂ',desc:'5 മിനിറ്റ് നടക്കൂ. Physical environment മാറ്റം mental state shift ചെയ്യാൻ brain-നോട് signal ചെയ്യുന്നു.',type:'distract'},
+        {icon:'🍵',name:'ഒരു ചെറിയ physical task ചെയ്യൂ',desc:'ചായ ഉണ്ടാക്കൂ. മുഖം കഴുകൂ. ഒന്ന് fold ചെയ്യൂ. Physical tasks present-ൽ anchor ചെയ്യുന്നു.',type:'distract'},
+      ]
+    },
+    cry:{
+      need:'പൂർണ്ണമായി അനുഭവിക്കാൻ permission',
+      why:'നിങ്ങൾ ഉള്ളിൽ ഉള്ളത് hold ചെയ്തിരിക്കുന്നു. കരയൽ ദൗർബല്യമല്ല — oxytocin release ചെയ്യുന്നു, cortisol കുറയ്ക്കുന്നു, ശരീരം hold ചെയ്ത tension release ചെയ്യുന്നു.',
+      actions:[
+        {icon:'😢',name:'കരയാൻ permission ഉണ്ട്',desc:'Judgment ഇല്ലാതെ, timer ഇല്ലാതെ. അത് വരട്ടെ.',type:'cry'},
+        {icon:'🎵',name:'തുറക്കുന്ന ഒരു song കണ്ടെത്തൂ',desc:'Music നമ്മുടെ defenses കുറയ്ക്കുന്നു. ഒരു song stuck ആയ feeling unlock ചെയ്യും.',type:'distract'},
+        {icon:'○',name:'ശേഷം ശ്വസിക്കൂ',desc:'Release-ന് ശേഷം, slow breathing nervous system-നെ baseline-ലേക്ക് തിരിച്ചു കൊണ്ടുവരും.',type:'breath'},
+      ]
+    },
+    solve:{
+      need:'Clarity, ഒരു വഴി',
+      why:'ചിലർ action-ലൂടെ emotion process ചെയ്യുന്നു. അടുത്ത step അറിയുന്നത് uncertainty കുറയ്ക്കുന്നു. Uncertainty stress-ന്റെ ഏറ്റവും വലിയ amplifier ആണ്.',
+      actions:[
+        {icon:'📝',name:'Problem ഒരു sentence-ൽ എഴുതൂ',desc:'പിന്നെ 3 possible small actions. മൂന്നും ചെയ്യേണ്ട. ഒന്ന് pick ചെയ്താൽ മതി.',type:'write'},
+        {icon:'🧠',name:'Control-ൽ ഉള്ളത് name ചെയ്യൂ',desc:'Control-ൽ ഉള്ളതും ഇല്ലാത്തതും list ചെയ്യൂ. ഒന്നാമത്തേതിൽ മാത്രം focus ചെയ്യൂ.',type:'write'},
+        {icon:'💡',name:'ഏറ്റവും ചെറിയ help ചെയ്യുന്ന കാര്യം?',desc:'Solution അല്ല. വെറും 10 മിനിറ്റ്. ഒരു കാര്യം ഇത് slight ആയി better ആക്കും?',type:'write'},
+      ]
+    },
+    sit:{
+      need:'ഇതുമായി ഇരിക്കൽ',
+      why:'ഓരോ feeling-ഉം fix ചെയ്യേണ്ടതില്ല. ചിലപ്പോൾ ഏറ്റവും ധൈര്യമുള്ള കാര്യം discomfort-ൽ ഓടാതെ നിൽക്കുന്നതാണ്. ഇങ്ങനെ emotional resilience ഉണ്ടാകുന്നു.',
+      actions:[
+        {icon:'🪑',name:'ഇതുമായി ഇരിക്കാൻ permission ഉണ്ട്',desc:'Breathing exercise ഇല്ല. Journaling ഇല്ല. ഉള്ളതൊന്ന് ഇവിടെ ഇരിക്കൂ.',type:'sit'},
+        {icon:'○',name:'ഒരു slow breath',desc:'Full exercise അല്ല — ഒരു നീണ്ട exhale. Feeling ഇരിക്കട്ടെ.',type:'breath'},
+        {icon:'🌿',name:'Judge ചെയ്യാതെ name ചെയ്യൂ',desc:'"ഞാൻ ___ feel ചെയ്യുന്നു. ഇത് ഇപ്പോൾ okay ആണ്." ഉറക്കെ പറഞ്ഞാൽ കൂടുതൽ നല്ലത്.',type:'sit'},
+      ]
+    }
+  },
+  hi:{
+    vent:{
+      need:'सुना जाना',
+      why:'तुम solutions नहीं ढूंढ रहे। तुम चाहते हो कि कोई गवाह बने। यह पूरी तरह valid need है। सुना जाना cortisol को उतना ही कम करता है जितना breathing exercises।',
+      actions:[
+        {icon:'📞',name:'अभी किसी को call या text करो',desc:'Advice माँगने के लिए नहीं — बस "कुछ मिनट सुनो" बोलो।',type:'call',
+         script:'अभी कुछ मुश्किल से गुज़र रहा/रही हूँ। सलाह नहीं चाहिए — बस कुछ मिनट कोई सुने। Free हो?'},
+        {icon:'✍️',name:'यहाँ सब लिखो',desc:'अगर कोई नहीं है, किसी के लिए न लिखना भी अगला बेहतर विकल्प है।',type:'write'},
+        {icon:'○',name:'पहले साँस लो, फिर reach out करो',desc:'Call से पहले 2 मिनट breathing — ज़्यादा clearly बोल पाओगे।',type:'breath'},
+      ]
+    },
+    distract:{
+      need:'अपने दिमाग से एक ब्रेक',
+      why:'कभी-कभी सबसे therapeutic काम यह है कि feeling में engage करना बंद करो और nervous system को reset होने दो। Distraction avoidance नहीं है — यह एक deliberate pause है।',
+      actions:[
+        {icon:'🎵',name:'कुछ familiar चलाओ',desc:'पहले देखा हुआ show। घर जैसी playlist। Familiar content nervous system को soothe करता है।',type:'distract'},
+        {icon:'🚶',name:'जगह बदलो',desc:'5 मिनट बाहर चलो। Physical environment बदलना brain को mental state shift करने का signal देता है।',type:'distract'},
+        {icon:'🍵',name:'एक छोटा physical काम करो',desc:'चाय बनाओ। मुँह धोओ। कुछ fold करो। Physical काम बिना emotional effort के present में anchor करता है।',type:'distract'},
+      ]
+    },
+    cry:{
+      need:'पूरी तरह महसूस करने की permission',
+      why:'तुम कुछ रोके हुए हो। रोना कमज़ोरी नहीं है — oxytocin release होता है, cortisol कम होता है, शरीर में जमा tension निकलती है। कोई वजह नहीं चाहिए।',
+      actions:[
+        {icon:'😢',name:'रोने की permission है',desc:'बिना judgment, बिना timer। आने दो।',type:'cry'},
+        {icon:'🎵',name:'वो गाना ढूंढो जो खोल दे',desc:'Music हमारी defenses कम करता है। कोई गाना stuck feeling unlock कर सकता है।',type:'distract'},
+        {icon:'○',name:'बाद में साँस लो',desc:'Release के बाद slow breathing nervous system को baseline पर वापस लाती है।',type:'breath'},
+      ]
+    },
+    solve:{
+      need:'Clarity और एक रास्ता',
+      why:'कुछ लोग action से emotion process करते हैं। अगला step पता होने से uncertainty कम होती है। और uncertainty stress का सबसे बड़ा amplifier है।',
+      actions:[
+        {icon:'📝',name:'Problem एक sentence में लिखो',desc:'फिर 3 छोटे possible actions। तीनों करने की ज़रूरत नहीं। बस एक चुनो।',type:'write'},
+        {icon:'🧠',name:'जो control में है उसे name करो',desc:'Control में क्या है और क्या नहीं — दोनों list करो। सिर्फ पहली list पर focus करो।',type:'write'},
+        {icon:'💡',name:'सबसे छोटी मदद करने वाली चीज़?',desc:'Solution नहीं। बस अगले 10 मिनट। एक चीज़ जो इसे थोड़ा बेहतर करे?',type:'write'},
+      ]
+    },
+    sit:{
+      need:'बस इसके साथ बैठना',
+      why:'हर feeling को fix या escape करने की ज़रूरत नहीं। कभी-कभी सबसे साहसी काम discomfort के साथ बिना भागे रहना है। यही emotional resilience बनती है।',
+      actions:[
+        {icon:'🪑',name:'बस इसके साथ बैठने की permission है',desc:'कोई breathing exercise नहीं। कोई journaling नहीं। बस तुम और यह feeling।',type:'sit'},
+        {icon:'○',name:'एक slow साँस',desc:'पूरी exercise नहीं — बस एक लंबी exhale। Feeling को रहने दो।',type:'breath'},
+        {icon:'🌿',name:'Judge किए बिना name करो',desc:'"मैं ___ feel कर रहा/रही हूँ। और यह अभी okay है।" ज़ोर से बोलो।',type:'sit'},
+      ]
+    }
+  }
+};
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang')||'en';
+let currentQ = 0;
+let answers = [];
+let breathRunning = false;
+let breathTimer = null;
+let breathPhase = 0;
+let breathCount = 0;
+
+const BREATH_PHASES = [
+  {en:'Inhale',ml:'ശ്വസിക്കൂ',hi:'साँस लो',count:4},
+  {en:'Hold',  ml:'നിർത്തൂ', hi:'रोको',   count:7},
+  {en:'Exhale',ml:'വിടൂ',     hi:'छोड़ो',  count:8},
+];
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  document.getElementById('back-label').textContent = lang==='ml'?'തിരിച്ചു':lang==='hi'?'वापस':'Back';
+  document.getElementById('back-label-r').textContent = lang==='ml'?'തിരിച്ചു':lang==='hi'?'वापस':'Back';
+  document.getElementById('step-badge').textContent = lang==='ml'?'ഘട്ടം 7 / 10':lang==='hi'?'चरण 7 / 10':'Step 7 of 10';
+  document.getElementById('step-badge-r').textContent = lang==='ml'?'ഘട്ടം 7 / 10':lang==='hi'?'चरण 7 / 10':'Step 7 of 10';
+  document.getElementById('next-label').textContent = lang==='ml'?'തുടരുക — ഏറ്റവും ചെറിയ next step':lang==='hi'?'आगे बढ़ें — सबसे छोटा अगला कदम':'Continue — your smallest possible next step';
+  document.getElementById('restart-label').textContent = lang==='ml'?'വീണ്ടും ഉത്തരം നൽകൂ':lang==='hi'?'फिर से जवाब दो':'Answer again';
+  document.getElementById('next-btn').className='next-btn '+lc;
+  document.getElementById('restart-btn').className='restart-btn '+lc;
+  showQuestion(0);
+});
+
+/* ══════════════════════════════════════
+   QUESTIONS
+══════════════════════════════════════ */
+function showQuestion(idx){
+  currentQ = idx;
+  const qs = QUESTIONS[lang];
+  const q = qs[idx];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const pct = (idx/qs.length)*100;
+
+  document.getElementById('progress-fill').style.width=pct+'%';
+
+  const qNum=document.getElementById('q-number');
+  qNum.textContent=q.number; qNum.className='q-number '+lc;
+  const qText=document.getElementById('q-text');
+  qText.textContent=q.text; qText.className='q-text '+lc;
+  const qHint=document.getElementById('q-hint');
+  qHint.textContent=q.hint; qHint.className='q-hint '+lc;
+
+  const answersEl=document.getElementById('answers');
+  answersEl.innerHTML='';
+  q.answers.forEach((a,i)=>{
+    const btn=document.createElement('button');
+    btn.className='answer-btn';
+    btn.style.animationDelay=`${i*60}ms`;
+    btn.innerHTML=`
+      <div class="answer-icon">${a.icon}</div>
+      <div class="answer-text">
+        <span class="answer-main ${lc}">${a.main}</span>
+        <span class="answer-sub ${lc}">${a.sub}</span>
+      </div>
+    `;
+    btn.addEventListener('click',()=>selectAnswer(idx,a.value,btn));
+    answersEl.appendChild(btn);
+    setTimeout(()=>btn.style.opacity='1',i*60);
+  });
+}
+
+function selectAnswer(qIdx,value,btn){
+  document.querySelectorAll('.answer-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[qIdx]=value;
+
+  setTimeout(()=>{
+    if(qIdx < QUESTIONS[lang].length-1){
+      showQuestion(qIdx+1);
+    } else {
+      showResult();
+    }
+  },350);
+}
+
+function goBackQ(){
+  if(currentQ>0){
+    showQuestion(currentQ-1);
+  } else {
+    history.back();
+  }
+}
+
+/* ══════════════════════════════════════
+   RESULT
+══════════════════════════════════════ */
+function showResult(){
+  document.getElementById('progress-fill').style.width='100%';
+  const needKey = answers[0]||'vent';
+  const needData = NEEDS[lang][needKey];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const u_result_label = lang==='ml'?'ഇപ്പോൾ നിങ്ങൾക്ക് ആവശ്യം':lang==='hi'?'अभी तुम्हें क्या चाहिए':'What you need right now';
+
+  document.getElementById('result-label').textContent=u_result_label;
+  document.getElementById('result-label').className='result-label '+lc;
+  document.getElementById('result-need').textContent=needData.need;
+  document.getElementById('result-need').className='result-need '+lc;
+  document.getElementById('result-why').textContent=needData.why;
+  document.getElementById('result-why').className='result-why '+lc;
+
+  // Actions
+  const actionsEl=document.getElementById('result-actions');
+  actionsEl.innerHTML='';
+  needData.actions.forEach((a,i)=>{
+    const card=document.createElement('div');
+    card.className='action-card';
+    card.innerHTML=`
+      <div class="action-card-top">
+        <span class="action-icon">${a.icon}</span>
+        <span class="action-name ${lc}">${a.name}</span>
+      </div>
+      <p class="action-desc ${lc}">${a.desc}</p>
+      <div class="inline-tool" id="tool-${i}">
+        ${buildInlineTool(a,lc,i)}
+      </div>
+    `;
+    card.addEventListener('click',()=>toggleTool(i,a.type));
+    actionsEl.appendChild(card);
+    setTimeout(()=>{
+      card.style.opacity='1';
+      card.style.transform='translateY(0)';
+    },i*100);
+    card.style.opacity='0';card.style.transform='translateY(8px)';
+    card.style.transition='opacity 0.4s ease, transform 0.4s ease';
+  });
+
+  // Summary trail
+  buildSummaryTrail();
+
+  showScreen('screen-result');
+}
+
+function buildInlineTool(action,lc,idx){
+  if(action.type==='breath'){
+    return `
+      <div class="mini-breath">
+        <div class="mini-circle" id="mini-breath-${idx}" onclick="event.stopPropagation();toggleBreath(${idx})">
+          <span class="mini-count" id="mini-count-${idx}">4</span>
+          <span class="mini-word" id="mini-word-${idx}">TAP</span>
+        </div>
+        <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;">
+          ${lang==='ml'?'Circle tap ചെയ്ത് തുടങ്ങൂ':lang==='hi'?'Circle tap करके शुरू करो':'Tap the circle to begin'}
+        </p>
+      </div>`;
+  }
+  if(action.type==='write'){
+    const ph = lang==='ml'?'ഇവിടെ എഴുതൂ...':lang==='hi'?'यहाँ लिखो...':'Write here...';
+    return `<textarea class="tool-textarea ${lc}" rows="4" placeholder="${ph}" onclick="event.stopPropagation()"></textarea>`;
+  }
+  if(action.type==='call' && action.script){
+    const scriptLabel = lang==='ml'?'ഇങ്ങനെ പറയൂ:':lang==='hi'?'यह कहो:':'What to say:';
+    return `
+      <div class="call-card" onclick="event.stopPropagation()">
+        <p class="call-prompt ${lc}">${lang==='ml'?'ഇത് message ചെയ്യൂ:':lang==='hi'?'यह message करो:':'Copy and send this:'}</p>
+        <div class="call-script">${action.script}</div>
+      </div>`;
+  }
+  if(action.type==='cry'){
+    const text = lang==='ml'?'കരയൽ cortisol 40% വരെ കുറയ്ക്കുന്നു. Oxytocin release ചെയ്യുന്നു. ശരീരത്തിൽ hold ചെയ്ത tension release ചെയ്യുന്നു. ഇത് healing ആണ്.':
+                 lang==='hi'?'रोने से cortisol 40% तक कम होता है। Oxytocin release होता है। शरीर में जमा tension निकलती है। यह healing है।':
+                 'Crying reduces cortisol by up to 40%. It releases oxytocin. It releases physical tension your body has been storing. This is healing.';
+    const hw = lang==='ml'?'ഇത് ദൗർബല്യമല്ല. ഇത് ജ്ഞാനമാണ്.':lang==='hi'?'यह कमज़ोरी नहीं। यह बुद्धिमानी है।':'This is not weakness. This is wisdom.';
+    return `
+      <div class="cry-card" onclick="event.stopPropagation()">
+        <span class="cry-hw">${hw}</span>
+        <p class="cry-science ${lc}">${text}</p>
+      </div>`;
+  }
+  if(action.type==='sit'){
+    const hw = lang==='ml'?'ഇവിടെ ഇരിക്കൂ. ഈ കല്ലിൽ.':lang==='hi'?'यहाँ बैठो। इस पत्थर पर।':'Sit here. On this stone.';
+    const perm = lang==='ml'?'ഇത് ഓടിക്കളയേണ്ട ഒന്നല്ല. ഈ feeling-ൽ ഇരിക്കുന്ന ഓരോ നിമിഷവും resilience build ചെയ്യുന്നു.':
+                 lang==='hi'?'इसे भागाने की ज़रूरत नहीं। इस feeling में बैठे हर पल resilience बनती है।':
+                 'This does not need to be chased away. Every moment you sit with this feeling, you are building resilience.';
+    return `
+      <div class="sit-card" onclick="event.stopPropagation()">
+        <span class="sit-hw">${hw}</span>
+        <p class="sit-permission ${lc}">${perm}</p>
+      </div>`;
+  }
+  return '';
+}
+
+function toggleTool(idx,type){
+  const tool=document.getElementById(`tool-${idx}`);
+  if(!tool) return;
+  const isOpen=tool.classList.contains('open');
+  document.querySelectorAll('.inline-tool').forEach(t=>t.classList.remove('open'));
+  if(!isOpen) tool.classList.add('open');
+}
+
+/* ══════════════════════════════════════
+   BREATH IN RESULT
+══════════════════════════════════════ */
+function toggleBreath(idx){
+  const circle=document.getElementById(`mini-breath-${idx}`);
+  const countEl=document.getElementById(`mini-count-${idx}`);
+  const wordEl=document.getElementById(`mini-word-${idx}`);
+  if(!circle) return;
+
+  if(breathRunning){
+    clearInterval(breathTimer);
+    breathRunning=false;
+    circle.classList.remove('breathing');
+    countEl.textContent='4';
+    wordEl.textContent='TAP';
+    return;
+  }
+
+  breathRunning=true;
+  circle.classList.add('breathing');
+  breathPhase=0;
+  const phases=BREATH_PHASES;
+  const lk=lang==='ml'?'ml':lang==='hi'?'hi':'en';
+  const label=lk==='ml'?'ml':lk==='hi'?'hi':'en';
+  breathCount=phases[0].count;
+  wordEl.textContent=phases[0][label==='en'?'en':label];
+  countEl.textContent=breathCount;
+
+  breathTimer=setInterval(()=>{
+    breathCount--;
+    if(breathCount<=0){
+      breathPhase=(breathPhase+1)%3;
+      breathCount=phases[breathPhase].count;
+      wordEl.textContent=phases[breathPhase][label==='en'?'en':label];
+    }
+    countEl.textContent=breathCount;
+  },1000);
+}
+
+/* ══════════════════════════════════════
+   SUMMARY TRAIL
+══════════════════════════════════════ */
+function buildSummaryTrail(){
+  const qs=QUESTIONS[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const trailLabel=lang==='ml'?'നിങ്ങൾ ഉത്തരം നൽകിയത്':lang==='hi'?'तुमने जवाब दिया':'Your answers';
+  const trail=document.getElementById('summary-trail');
+  trail.innerHTML=`<p class="trail-label ${lc}">${trailLabel}</p>`;
+
+  qs.forEach((q,i)=>{
+    if(answers[i]===undefined) return;
+    const answerObj=q.answers.find(a=>a.value===answers[i]);
+    if(!answerObj) return;
+    const item=document.createElement('div');
+    item.innerHTML=`
+      <p class="trail-q ${lc}">${q.text}</p>
+      <p class="trail-item ${lc}">${answerObj.icon} ${answerObj.main}</p>
+    `;
+    trail.appendChild(item);
+  });
+}
+
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+function restart(){
+  answers=[];
+  currentQ=0;
+  clearInterval(breathTimer);
+  breathRunning=false;
+  showQuestion(0);
+  showScreen('screen-q');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const t=document.getElementById(id);
+  if(t){t.classList.add('active');window.scrollTo(0,0);}
+}
+
+function goNext(){
+  window.location.href='smallest-step.html';
+}
+</script>
+</body>
+</html>
