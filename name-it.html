@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — Name it</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-light:  #F0CC7A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --sage:        #7A8C6E;
+      --terracotta:  #C1654A;
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d: 'Cormorant Garamond', Georgia, serif;
+      --font-b: 'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease: cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* bg */
+    body::before{
+      content:'';
+      position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;
+      margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      min-height:100vh;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{
+      display:flex;align-items:center;gap:8px;
+      margin-bottom:2rem;
+    }
+    .back-nav button{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);
+      transition:color 0.2s;padding:0;
+    }
+    .back-nav button:hover{color:var(--earth);}
+    .nav-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--stone);
+      display:inline-block;
+    }
+    .nav-step{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.08em;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-label{
+      font-size:0.72rem;
+      color:var(--text-muted);
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:0.4rem;
+    }
+    .section-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+    .section-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+
+    .section-title{
+      font-family:var(--font-d);
+      font-size:2rem;font-weight:300;
+      color:var(--earth);
+      line-height:1.25;
+      margin-bottom:0.4rem;
+    }
+    .section-title.ml{font-family:var(--font-ml);font-size:1.55rem;font-weight:400;}
+    .section-title.hi{font-family:var(--font-hi);font-size:1.55rem;font-weight:400;}
+
+    .section-sub{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.65;margin-bottom:1.75rem;
+    }
+    .section-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .section-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── STRESS TYPE PILLS ── */
+    .type-pills{
+      display:flex;flex-wrap:wrap;gap:8px;
+      margin-bottom:2rem;
+    }
+    .type-pill{
+      padding:7px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,0.7);
+      font-size:0.78rem;color:var(--text-secondary);
+      cursor:pointer;
+      transition:all 0.25s var(--ease);
+      font-family:var(--font-b);
+    }
+    .type-pill.ml{font-family:var(--font-ml);font-size:0.76rem;}
+    .type-pill.hi{font-family:var(--font-hi);font-size:0.76rem;}
+    .type-pill:hover{
+      border-color:var(--stone);
+      background:rgba(255,255,255,0.97);
+    }
+    .type-pill.active{
+      background:var(--earth);
+      border-color:var(--earth);
+      color:#FAF6F0;
+    }
+
+    /* ── EMOTION CARD ── */
+    .emotion-card{
+      background:rgba(255,255,255,0.82);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.5rem 1.5rem 1.25rem;
+      margin-bottom:1rem;
+      position:relative;
+      overflow:hidden;
+      opacity:0;transform:translateY(16px);
+      transition:opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+    .emotion-card.visible{opacity:1;transform:translateY(0);}
+
+    /* Gold left accent */
+    .emotion-card::before{
+      content:'';
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:3px;
+      background:linear-gradient(to bottom, var(--gold), var(--stone));
+      border-radius:3px 0 0 3px;
+    }
+
+    /* Kintsugi watermark */
+    .emotion-card::after{
+      content:'';
+      position:absolute;
+      right:-20px;bottom:-20px;
+      width:100px;height:100px;
+      background:radial-gradient(circle, rgba(212,169,74,0.07) 0%, transparent 70%);
+      pointer-events:none;
+    }
+
+    .emotion-name{
+      font-family:var(--font-d);
+      font-size:2.2rem;font-weight:400;
+      color:var(--earth-deep);
+      letter-spacing:-0.01em;
+      line-height:1.1;
+      margin-bottom:0.2rem;
+    }
+
+    .emotion-origin{
+      font-size:0.72rem;
+      color:var(--text-muted);
+      letter-spacing:0.08em;
+      margin-bottom:1rem;
+      font-style:italic;
+    }
+
+    .emotion-divider{
+      height:1px;
+      background:var(--border);
+      margin:1rem 0;
+    }
+
+    .emotion-block{margin-bottom:1rem;}
+    .emotion-block-label{
+      font-size:0.68rem;
+      color:var(--gold);
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:0.3rem;
+      font-weight:500;
+    }
+    .emotion-block-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.72rem;}
+    .emotion-block-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.72rem;}
+
+    .emotion-block-text{
+      font-size:0.88rem;
+      color:var(--text-secondary);
+      line-height:1.7;
+    }
+    .emotion-block-text.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .emotion-block-text.hi{font-family:var(--font-hi);font-size:0.86rem;}
+
+    /* Comfort line */
+    .comfort-line{
+      background:var(--gold-bg);
+      border:1px solid rgba(212,169,74,0.2);
+      border-radius:12px;
+      padding:12px 16px;
+      margin-top:1.25rem;
+    }
+    .comfort-text{
+      font-family:var(--font-hw);
+      font-size:1.1rem;
+      color:var(--stone-dark);
+      line-height:1.5;
+    }
+    .comfort-text.ml{font-size:1rem;}
+    .comfort-text.hi{font-size:1rem;}
+
+    /* ── SECONDARY EMOTIONS ── */
+    .also-label{
+      font-size:0.72rem;
+      color:var(--text-muted);
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+      margin:1.5rem 0 0.75rem;
+    }
+    .also-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+    .also-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+
+    .secondary-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+      margin-bottom:2rem;
+    }
+
+    .secondary-card{
+      background:rgba(255,255,255,0.7);
+      border:1px solid var(--border);
+      border-radius:13px;
+      padding:12px 14px;
+      cursor:pointer;
+      transition:all 0.25s var(--ease);
+    }
+    .secondary-card:hover{
+      background:rgba(255,255,255,0.97);
+      border-color:var(--stone);
+      transform:translateY(-1px);
+      box-shadow:0 4px 16px var(--shadow);
+    }
+    .sec-name{
+      font-family:var(--font-d);
+      font-size:1.05rem;font-weight:400;
+      color:var(--earth);
+      display:block;margin-bottom:3px;
+    }
+    .sec-desc{
+      font-size:0.72rem;color:var(--text-muted);
+      line-height:1.4;display:block;
+    }
+    .sec-desc.ml{font-family:var(--font-ml);font-size:0.7rem;}
+    .sec-desc.hi{font-family:var(--font-hi);font-size:0.7rem;}
+
+    /* ── NEXT STEP BTN ── */
+    .next-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;
+      padding:15px 20px;
+      background:var(--earth);
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      color:#FAF6F0;
+      font-family:var(--font-b);
+      font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+      margin-top:0.5rem;
+    }
+    .next-btn:hover{
+      background:var(--earth-deep);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.18);
+    }
+    .next-btn:active{transform:translateY(0);}
+    .next-btn.ml{font-family:var(--font-ml);}
+    .next-btn.hi{font-family:var(--font-hi);}
+
+    /* ── EMPTY STATE ── */
+    .empty-state{
+      text-align:center;
+      padding:3rem 1rem;
+      color:var(--text-muted);
+    }
+    .empty-state p{font-size:0.88rem;line-height:1.7;}
+
+    /* fade in stagger for secondary cards */
+    .secondary-card{
+      opacity:0;transform:translateY(10px);
+      animation:none;
+    }
+    .secondary-card.visible{
+      animation:cardIn 0.4s var(--ease) forwards;
+    }
+    @keyframes cardIn{
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .emotion-name{font-size:1.8rem;}
+      .secondary-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Back nav -->
+  <div class="back-nav">
+    <button onclick="history.back()">← <span id="back-label">Back</span></button>
+    <span style="flex:1"></span>
+    <span class="nav-dot"></span>
+    <span class="nav-step" id="step-label">Step 2 of 10</span>
+  </div>
+
+  <!-- Header -->
+  <p class="section-label" id="section-label">Name it to tame it</p>
+  <h1 class="section-title" id="section-title">What is this feeling, exactly?</h1>
+  <p class="section-sub" id="section-sub">Research shows that precisely naming an emotion reduces its intensity. Find the word for what you carry.</p>
+
+  <!-- Stress type pills -->
+  <div class="type-pills" id="type-pills"></div>
+
+  <!-- Primary emotion card -->
+  <div class="emotion-card" id="emotion-card">
+    <div class="empty-state">
+      <p id="empty-text">Choose what you are feeling above to find its name.</p>
+    </div>
+  </div>
+
+  <!-- Secondary emotions -->
+  <p class="also-label" id="also-label" style="display:none;"></p>
+  <div class="secondary-grid" id="secondary-grid"></div>
+
+  <!-- Next step -->
+  <button class="next-btn" id="next-btn" style="display:none;" onclick="goNext()">
+    <span id="next-label">Continue — what's happening in your body</span>
+    <span>→</span>
+  </button>
+
+</div>
+<script>
+/* ══════════════════════════════════════
+   EMOTION DATA — all 3 languages
+══════════════════════════════════════ */
+const EMOTIONS = {
+  exam: {
+    en: {
+      name:'Perfectionism paralysis',
+      origin:'From Latin perfectus — made complete',
+      what:'A state where the fear of not doing something perfectly stops you from doing it at all — or makes the doing feel unbearable.',
+      why:'Your brain\'s threat system treats imperfection like danger. Cortisol rises, the prefrontal cortex (your thinking brain) goes partially offline, and you freeze or spiral. This is biology, not weakness.',
+      comfort:'You don\'t need to be perfect. You need to begin.',
+      also:[
+        {name:'Atelophobia', desc:'Fear of not being good enough'},
+        {name:'Overthinking', desc:'Looping thoughts that resist solutions'},
+        {name:'Exam anxiety', desc:'Acute stress response to performance'},
+        {name:'Imposter dread', desc:'Fear of being exposed as unprepared'},
+      ]
+    },
+    ml: {
+      name:'പൂർണ്ണതയുടെ തളർച്ച',
+      origin:'Perfectionism paralysis എന്ന മനഃശാസ്ത്ര പദത്തിൽ നിന്ന്',
+      what:'തെറ്റ് പറ്റിയാൽ എന്ന് ഭയന്ന് ഒന്നും ചെയ്യാൻ കഴിയാതെ പോകുന്ന അവസ്ഥ — ശ്രമിക്കുന്നതു തന്നെ ഭയമാകുന്നു.',
+      why:'മസ്തിഷ്കം അപൂർണ്ണതയെ അപകടമായി കാണുന്നു. Cortisol കൂടുന്നു, ചിന്തിക്കുന്ന ഭാഗം മന്ദഗതിയിലാകുന്നു. ഇത് ബയോളജിയാണ്, ദൗർബല്യമല്ല.',
+      comfort:'പൂർണ്ണത വേണ്ട. തുടക്കം മതി.',
+      also:[
+        {name:'Atelophobia', desc:'മതിയാകില്ല എന്ന ഭയം'},
+        {name:'Overthinking', desc:'തീരാത്ത ചിന്തകളുടെ ചുഴി'},
+        {name:'പരീക്ഷാ ഉത്കണ്ഠ', desc:'പ്രകടനത്തെ ഭയക്കുന്ന stress'},
+        {name:'Imposter dread', desc:'തയ്യാറല്ല എന്ന് മറ്റർ അറിയുമോ എന്ന ഭയം'},
+      ]
+    },
+    hi: {
+      name:'परफेक्शनिज़्म का जाल',
+      origin:'Perfectionism paralysis — मनोविज्ञान का शब्द',
+      what:'गलती हो जाएगी इस डर से कुछ शुरू ही न कर पाना — या शुरू करना असहनीय लगना।',
+      why:'दिमाग अपूर्णता को खतरे की तरह देखता है। Cortisol बढ़ता है, सोचने वाला हिस्सा धीमा पड़ जाता है। यह biology है, कमज़ोरी नहीं।',
+      comfort:'परफेक्ट होने की ज़रूरत नहीं। बस शुरू करो।',
+      also:[
+        {name:'Atelophobia', desc:'काफी न होने का डर'},
+        {name:'Overthinking', desc:'घूमते रहने वाले विचार'},
+        {name:'परीक्षा की चिंता', desc:'प्रदर्शन से जुड़ा तनाव'},
+        {name:'Imposter dread', desc:'तैयार न होने का डर'},
+      ]
+    }
+  },
+
+  clinical: {
+    en: {
+      name:'Compassion fatigue',
+      origin:'Coined by Joinson (1992) — the cost of caring',
+      what:'The emotional and physical exhaustion that comes from repeatedly absorbing the pain, trauma, and suffering of others — especially patients. You gave so much of yourself that you are running on empty.',
+      why:'Mirror neurons in your brain fire when you witness pain — you literally feel a shadow of what others feel. For healthcare workers, this fires dozens of times a day. The nervous system eventually reaches its limit.',
+      comfort:'Caring for yourself is not selfish. It is how you keep caring for others.',
+      also:[
+        {name:'Secondary trauma', desc:'Absorbing others\' traumatic experiences'},
+        {name:'Emotional numbing', desc:'Shutting down to protect yourself'},
+        {name:'Vicarious grief', desc:'Mourning for patients you couldn\'t save'},
+        {name:'Moral injury', desc:'When what you must do conflicts with values'},
+      ]
+    },
+    ml: {
+      name:'കരുണയുടെ ക്ഷീണം',
+      origin:'Compassion fatigue — Joinson (1992) ആദ്യം ഉപയോഗിച്ചത്',
+      what:'മറ്റുള്ളവരുടെ — പ്രത്യേകിച്ച് രോഗികളുടെ — വേദനയും ആഘാതവും ആവർത്തിച്ച് ഏറ്റുവാങ്ങുന്നതിൽ നിന്നുണ്ടാകുന്ന ശാരീരികവും വൈകാരികവുമായ തളർച്ച.',
+      why:'മറ്റൊരാളുടെ വേദന കാണുമ്പോൾ നമ്മുടെ Mirror neurons ജ്വലിക്കുന്നു — ആ വേദനയുടെ നിഴൽ നാമും അനുഭവിക്കുന്നു. ദിവസം നൂറുതവണ ഇത് ആവർത്തിക്കുമ്പോൾ nervous system തളരുന്നു.',
+      comfort:'സ്വയം പരിപാലിക്കുന്നത് സ്വാർഥതയല്ല. അത് മറ്റുള്ളവർക്ക് വേണ്ടി ജ്വലിക്കാനുള്ള മാർഗ്ഗമാണ്.',
+      also:[
+        {name:'Secondary trauma', desc:'മറ്റുള്ളവരുടെ ആഘാതം ഏറ്റുവാങ്ങൽ'},
+        {name:'Emotional numbing', desc:'സ്വയം സംരക്ഷിക്കാൻ വികാരങ്ങൾ അടയ്ക്കൽ'},
+        {name:'Vicarious grief', desc:'രക്ഷിക്കാൻ കഴിയാതിരുന്നതിൽ ദുഃഖം'},
+        {name:'Moral injury', desc:'ചെയ്യേണ്ടതും ശരിയും തമ്മിലുള്ള സംഘർഷം'},
+      ]
+    },
+    hi: {
+      name:'करुणा की थकान',
+      origin:'Compassion fatigue — Joinson (1992) द्वारा नामित',
+      what:'दूसरों — खासकर मरीज़ों — के दर्द और आघात को बार-बार अपने अंदर समेटने से आने वाली शारीरिक और भावनात्मक थकान।',
+      why:'किसी का दर्द देखने पर हमारे Mirror neurons जल उठते हैं — हम उस दर्द की छाया खुद महसूस करते हैं। दिन में सैकड़ों बार यही होने पर nervous system टूट जाता है।',
+      comfort:'खुद का ख्याल रखना स्वार्थ नहीं है। यही वो तरीका है जिससे तुम दूसरों की देखभाल करते रह सकते हो।',
+      also:[
+        {name:'Secondary trauma', desc:'दूसरों के आघात को अपना बना लेना'},
+        {name:'Emotional numbing', desc:'खुद को बचाने के लिए भावनाएं बंद करना'},
+        {name:'Vicarious grief', desc:'न बचा पाए मरीज़ों का शोक'},
+        {name:'Moral injury', desc:'करना पड़े और सही हो — इनमें टकराव'},
+      ]
+    }
+  },
+
+  enough: {
+    en: {
+      name:'Impostor syndrome',
+      origin:'Named by Clance & Imes (1978) — the fraud feeling',
+      what:'A persistent internal experience of believing you are not as competent as others perceive you — and fearing that at any moment, you will be exposed as a fraud, despite evidence of your ability.',
+      why:'High achievers are most susceptible. Your brain focuses on failures and discounts successes — a negativity bias that evolution built in. Meanwhile, you compare your internal chaos to everyone else\'s external composure.',
+      comfort:'Every expert you admire once felt exactly this.',
+      also:[
+        {name:'Atelophobia', desc:'Fear of imperfection in any form'},
+        {name:'Self-doubt spiral', desc:'Evidence against yourself mounts fast'},
+        {name:'Comparison trap', desc:'Measuring your inside by others\' outside'},
+        {name:'Validation hunger', desc:'Needing external proof you are enough'},
+      ]
+    },
+    ml: {
+      name:'Impostor syndrome',
+      origin:'Clance & Imes (1978) ആദ്യം പേരിട്ടത്',
+      what:'താൻ യഥാർഥത്തിൽ മതിയായ ആളല്ല, ആരെങ്കിലും ഇത് കണ്ടുപിടിക്കും എന്ന നിരന്തരമായ ഭയം — കഴിവിന്റെ തെളിവുകൾ ഉണ്ടായിരുന്നിട്ടും.',
+      why:'ഉന്നത നേട്ടക്കാരാണ് ഏറ്റവും കൂടുതൽ ഇത് അനുഭവിക്കുന്നത്. മസ്തിഷ്കം പരാജയങ്ങൾ ഓർക്കുകയും വിജയങ്ങൾ ചെറുതാക്കുകയും ചെയ്യുന്നു — evolution ഉണ്ടാക്കിയ bias.',
+      comfort:'നിങ്ങൾ ആദർശമാക്കുന്ന ഓരോ expert-ഉം ഒരു കാലത്ത് ഇതേ തോന്നൽ ഉണ്ടായിരുന്നു.',
+      also:[
+        {name:'Atelophobia', desc:'ഏതു രൂപത്തിലുള്ള അപൂർണ്ണതയോടും ഭയം'},
+        {name:'Self-doubt spiral', desc:'സ്വയം എതിരായ തെളിവുകൾ കൂടിക്കൂടി വരുന്നു'},
+        {name:'Comparison trap', desc:'മറ്റുള്ളവരുടെ പ്രകടനവുമായി താരതമ്യം'},
+        {name:'Validation hunger', desc:'ഞാൻ മതിയായ ആളാണ് എന്ന് ആർക്കെങ്കിലും പറഞ്ഞുതരണം'},
+      ]
+    },
+    hi: {
+      name:'Impostor syndrome',
+      origin:'Clance & Imes (1978) द्वारा नामित',
+      what:'यह लगातार लगना कि मैं उतना काबिल नहीं जितना लोग समझते हैं — और किसी दिन सब पकड़ लेंगे — चाहे कितनी भी कामयाबी हो।',
+      why:'सबसे ज़्यादा महत्वाकांक्षी लोग इसे सबसे ज़्यादा महसूस करते हैं। दिमाग नाकामियों को याद रखता है, कामयाबियों को छोटा करता है — यह evolution की देन है।',
+      comfort:'जिस भी expert को तुम देखते हो, उसने एक वक्त यही महसूस किया था।',
+      also:[
+        {name:'Atelophobia', desc:'किसी भी रूप में अपूर्णता का डर'},
+        {name:'Self-doubt spiral', desc:'खुद के खिलाफ सबूत जमा होते रहते हैं'},
+        {name:'Comparison trap', desc:'दूसरों के बाहर से अपने अंदर को नापना'},
+        {name:'Validation hunger', desc:'बाहर से confirmation चाहिए कि मैं काफी हूँ'},
+      ]
+    }
+  },
+
+  exhausted: {
+    en: {
+      name:'Burnout',
+      origin:'Coined by Freudenberger (1974) — flame gone out',
+      what:'A state of chronic physical and emotional exhaustion caused by prolonged stress that has not been addressed. It is not laziness. It is what happens when a person gives more than they receive for too long.',
+      why:'Burnout depletes dopamine and serotonin — the brain chemicals responsible for motivation and mood. Your body goes into conservation mode, making everything feel impossible. This is a physiological state, not a personal failing.',
+      comfort:'You are not lazy. You are empty. There is a difference.',
+      also:[
+        {name:'Adrenal fatigue', desc:'Body\'s stress hormones are depleted'},
+        {name:'Emotional exhaustion', desc:'Nothing left to give, even to yourself'},
+        {name:'Depersonalisation', desc:'Feeling detached from your own life'},
+        {name:'Cynicism', desc:'Hope replaced by helplessness'},
+      ]
+    },
+    ml: {
+      name:'Burnout',
+      origin:'Freudenberger (1974) — ജ്വാല കെട്ടുപോയി',
+      what:'ദീർഘകാലം പരിഹരിക്കപ്പെടാതെ കിടന്ന stress-ൽ നിന്നുണ്ടാകുന്ന ശാരീരികവും വൈകാരികവുമായ ക്ഷീണം. ഇത് മടിയല്ല. ഒരാൾ ലഭിക്കുന്നതിനേക്കാൾ കൂടുതൽ കൊടുക്കുന്നത് തുടരുമ്പോൾ സംഭവിക്കുന്നത്.',
+      why:'Burnout dopamine-ഉം serotonin-ഉം കുറയ്ക്കുന്നു — motivation-ഉം mood-ഉം നിലനിർത്തുന്ന brain chemicals. ശരീരം energy save ചെയ്യാൻ ശ്രമിക്കുന്നു, എല്ലാം അസാധ്യമെന്ന് തോന്നിക്കുന്നു.',
+      comfort:'നിങ്ങൾ മടിയനല്ല. ഒഴിഞ്ഞുപോയതാണ്. രണ്ടും വ്യത്യസ്തമാണ്.',
+      also:[
+        {name:'Adrenal fatigue', desc:'Stress hormones തീർന്നുപോയ അവസ്ഥ'},
+        {name:'Emotional exhaustion', desc:'സ്വയം പോലും കൊടുക്കാൻ ഒന്നും ബാക്കിയില്ല'},
+        {name:'Depersonalisation', desc:'സ്വന്തം ജീവിതത്തിൽ നിന്ന് അകന്ന തോന്നൽ'},
+        {name:'Cynicism', desc:'പ്രതീക്ഷ നിരാശയ്ക്ക് വഴിമാറിയ അവസ്ഥ'},
+      ]
+    },
+    hi: {
+      name:'Burnout',
+      origin:'Freudenberger (1974) — लौ बुझ गई',
+      what:'लंबे समय तक अनदेखे तनाव से होने वाली शारीरिक और भावनात्मक थकान। यह आलस नहीं है। यह तब होता है जब कोई लंबे समय तक जितना मिलता है उससे ज़्यादा देता रहे।',
+      why:'Burnout dopamine और serotonin को खत्म करता है — motivation और mood के लिए ज़िम्मेदार brain chemicals। शरीर conservation mode में चला जाता है, सब कुछ असंभव लगने लगता है।',
+      comfort:'तुम आलसी नहीं हो। खाली हो। दोनों में फर्क है।',
+      also:[
+        {name:'Adrenal fatigue', desc:'Stress hormones खत्म हो गए'},
+        {name:'Emotional exhaustion', desc:'खुद के लिए भी कुछ बचा नहीं'},
+        {name:'Depersonalisation', desc:'अपनी ज़िंदगी से कटा-कटा महसूस करना'},
+        {name:'Cynicism', desc:'उम्मीद की जगह बेबसी ने ले ली'},
+      ]
+    }
+  },
+
+  relationship: {
+    en: {
+      name:'Emotional dysregulation',
+      origin:'From Latin regulare — to control, with dys — badly',
+      what:'When emotional pain becomes so intense that your usual ability to cope, think clearly, or respond calmly breaks down. You are not overreacting. You are overwhelmed.',
+      why:'The amygdala — your brain\'s alarm system — hijacks rational thinking when emotional pain peaks. Blood pressure rises, breathing shallows, the prefrontal cortex loses control. Your body is responding to emotional pain as if it were physical danger.',
+      comfort:'Your feelings are not too much. The situation is.',
+      also:[
+        {name:'Attachment anxiety', desc:'Fear of losing the people who matter'},
+        {name:'Rumination', desc:'Replaying painful moments on loop'},
+        {name:'Rejection sensitivity', desc:'Small signals of rejection feel enormous'},
+        {name:'Loneliness', desc:'Disconnection that aches physically'},
+      ]
+    },
+    ml: {
+      name:'വൈകാരിക അനിയന്ത്രിതാവസ്ഥ',
+      origin:'Emotional dysregulation — dys (ബുദ്ധിമുട്ടോടെ) + regulare (നിയന്ത്രിക്കുക)',
+      what:'വൈകാരിക വേദന ഇത്രയധികം തീവ്രമാകുമ്പോൾ, സ്വാഭാവികമായ cope ചെയ്യാനുള്ള ശേഷി, വ്യക്തമായി ചിന്തിക്കാനുള്ള കഴിവ് — ഇവ തകരുന്നു. ഇത് overreaction അല്ല. Overwhelm ആണ്.',
+      why:'Amygdala — മസ്തിഷ്കത്തിന്റെ alarm — rational thinking-നെ ഏറ്റെടുക്കുന്നു. Blood pressure കൂടുന്നു, ശ്വാസം മന്ദഗതിയിലാകുന്നു. ശരീരം വൈകാരിക വേദനയെ ശാരീരിക അപകടമായി കണക്കാക്കുന്നു.',
+      comfort:'നിങ്ങളുടെ വികാരങ്ങൾ അധികമല്ല. സ്ഥിതി അധികമാണ്.',
+      also:[
+        {name:'Attachment anxiety', desc:'പ്രധാനപ്പെട്ടവരെ നഷ്ടപ്പെടുമോ എന്ന ഭയം'},
+        {name:'Rumination', desc:'വേദനാജനകമായ നിമിഷങ്ങൾ ആവർത്തിക്കൽ'},
+        {name:'Rejection sensitivity', desc:'ചെറിയ rejection-ഉം വലുതായി അനുഭവപ്പെടൽ'},
+        {name:'Loneliness', desc:'ശാരീരികമായി വേദനിക്കുന്ന ഒറ്റപ്പെടൽ'},
+      ]
+    },
+    hi: {
+      name:'भावनात्मक अनियंत्रण',
+      origin:'Emotional dysregulation — dys (बुरी तरह) + regulare (नियंत्रित करना)',
+      what:'जब भावनात्मक दर्द इतना तीव्र हो जाए कि सामान्य रूप से cope करने, सोचने या शांत रहने की क्षमता टूट जाए। यह overreaction नहीं है। यह overwhelm है।',
+      why:'Amygdala — दिमाग का alarm system — emotional pain के चरम पर rational thinking को हाईजैक कर लेता है। Blood pressure बढ़ता है, सांस उथली हो जाती है। शरीर emotional दर्द को physical खतरे की तरह treat करता है।',
+      comfort:'तुम्हारी भावनाएं ज़्यादा नहीं हैं। हालात ज़्यादा हैं।',
+      also:[
+        {name:'Attachment anxiety', desc:'प्रिय लोगों को खोने का डर'},
+        {name:'Rumination', desc:'दर्दनाक पल बार-बार दोहराना'},
+        {name:'Rejection sensitivity', desc:'छोटी सी rejection भी बहुत बड़ी लगती है'},
+        {name:'Loneliness', desc:'अकेलापन जो शारीरिक दर्द की तरह चुभता है'},
+      ]
+    }
+  },
+
+  unknown: {
+    en: {
+      name:'Existential overwhelm',
+      origin:'From Greek existentia — being, + overwhelm — to submerge',
+      what:'The feeling of being submerged by too many unknowns at once — about your future, your purpose, your relationships, your worth. It is not one problem. It is the weight of everything unresolved pressing down simultaneously.',
+      why:'When the brain cannot identify a specific threat, it goes into generalised alert — anxiety without a clear object. This is more exhausting than fear of a specific thing because there is nothing to fight or flee from.',
+      comfort:'You don\'t need to solve everything. Just find one true thing.',
+      also:[
+        {name:'Generalised anxiety', desc:'Worry that attaches to everything'},
+        {name:'Decision fatigue', desc:'Too many choices have exhausted you'},
+        {name:'Emotional flooding', desc:'Feelings coming faster than words'},
+        {name:'Dissociation', desc:'Feeling unreal, watching from outside'},
+      ]
+    },
+    ml: {
+      name:'അസ്തിത്വ overwhelm',
+      origin:'Greek existentia (ഉണ്മ) + overwhelm (മുക്കിക്കളയുക)',
+      what:'ഒരേ സമയം നിരവധി അനിശ്ചിതത്വങ്ങൾ — ഭാവി, ഉദ്ദേശ്യം, ബന്ധങ്ങൾ, വില — ഇവ ഒരുമിച്ച് ഞെക്കിത്തരുന്ന തോന്നൽ. ഇത് ഒറ്റ പ്രശ്നമല്ല. പരിഹരിക്കപ്പെടാത്ത എല്ലാ ഭാരങ്ങളുടെയും ഒരേ സമയത്തുള്ള അമർച്ചയാണ്.',
+      why:'Brain-ന് ഒരു specific threat കണ്ടെത്താൻ കഴിയാതെ വരുമ്പോൾ generalised alert-ൽ പോകുന്നു — ലക്ഷ്യമില്ലാത്ത ഉത്കണ്ഠ. ഒരു specific ഭയത്തേക്കാൾ ഇത് കൂടുതൽ തളർത്തുന്നു.',
+      comfort:'എല്ലാം ഒരേ സമയം solve ചെയ്യേണ്ട. ഒരു സത്യം കണ്ടെത്തിയാൽ മതി.',
+      also:[
+        {name:'Generalised anxiety', desc:'എന്തിനോടും ചേർന്ന ഉത്കണ്ഠ'},
+        {name:'Decision fatigue', desc:'തീരുമാനങ്ങൾ ഇത്ര ക്ഷീണിപ്പിച്ചു'},
+        {name:'Emotional flooding', desc:'വികാരങ്ങൾ വാക്കുകളേക്കാൾ വേഗം വരുന്നു'},
+        {name:'Dissociation', desc:'യഥാർഥമല്ലെന്ന, പുറത്ത് നിന്ന് നോക്കുന്ന തോന്നൽ'},
+      ]
+    },
+    hi: {
+      name:'अस्तित्व का overwhelm',
+      origin:'Greek existentia (होना) + overwhelm (डुबो देना)',
+      what:'एक साथ बहुत सारे अनजाने सवालों का बोझ — भविष्य, मकसद, रिश्ते, अपनी worth — सब एक साथ दबाने लगते हैं। यह एक समस्या नहीं है। यह सभी अनसुलझी चीज़ों का एक साथ वज़न है।',
+      why:'जब brain कोई specific खतरा नहीं पहचान पाता, तो generalised alert में चला जाता है — बिना किसी लक्ष्य के चिंता। किसी specific डर से यह ज़्यादा थका देता है।',
+      comfort:'सब कुछ एक साथ सुलझाने की ज़रूरत नहीं। बस एक सच्ची बात ढूंढो।',
+      also:[
+        {name:'Generalised anxiety', desc:'हर चीज़ से जुड़ी चिंता'},
+        {name:'Decision fatigue', desc:'बहुत सारे फैसलों ने थका दिया'},
+        {name:'Emotional flooding', desc:'भावनाएं शब्दों से तेज़ आती हैं'},
+        {name:'Dissociation', desc:'अवास्तविक लगना, बाहर से देखने जैसा'},
+      ]
+    }
+  }
+};
+
+/* ══════════════════════════════════════
+   UI STRINGS
+══════════════════════════════════════ */
+const UI = {
+  en: {
+    back:'Back', step:'Step 2 of 10',
+    sectionLabel:'Name it to tame it',
+    sectionTitle:'What is this feeling, exactly?',
+    sectionSub:'Research shows that precisely naming an emotion reduces its intensity. Find the word for what you carry.',
+    empty:'Choose what you are feeling above to find its name.',
+    alsoLabel:'You may also be feeling',
+    nextLabel:'Continue — what\'s happening in your body →',
+    pills:{
+      exam:'Study pressure', clinical:'Clinical experience',
+      enough:'Not enough', exhausted:'Exhausted',
+      relationship:'Relationship pain', unknown:'Just overwhelmed'
+    }
+  },
+  ml: {
+    back:'തിരിച്ചു', step:'ഘട്ടം 2 / 10',
+    sectionLabel:'പേരിടൂ, ശക്തി കുറയ്ക്കൂ',
+    sectionTitle:'ഈ വികാരം കൃത്യമായി എന്താണ്?',
+    sectionSub:'ഒരു വികാരത്തെ കൃത്യമായി പേരിടുന്നത് അതിന്റെ തീവ്രത കുറയ്ക്കുന്നു — ഗവേഷണം ഇത് തെളിയിക്കുന്നു.',
+    empty:'മുകളിൽ നിന്ന് ഒന്ന് തിരഞ്ഞെടുക്കൂ.',
+    alsoLabel:'ഒപ്പം ഇവയും അനുഭവപ്പെടുന്നുണ്ടാകാം',
+    nextLabel:'തുടരുക — ശരീരത്തിൽ എന്ത് സംഭവിക്കുന്നു →',
+    pills:{
+      exam:'പരീക്ഷ സമ്മർദ്ദം', clinical:'Clinical അനുഭവം',
+      enough:'മതിയാകുന്നില്ല', exhausted:'ക്ഷീണം',
+      relationship:'ബന്ധ വേദന', unknown:'അനിശ്ചിതത്വം'
+    }
+  },
+  hi: {
+    back:'वापस', step:'चरण 2 / 10',
+    sectionLabel:'नाम दो, ताकत घटाओ',
+    sectionTitle:'यह भावना ठीक-ठीक क्या है?',
+    sectionSub:'शोध बताता है कि किसी भावना को सटीक नाम देने से उसकी तीव्रता कम होती है।',
+    empty:'ऊपर से कुछ चुनें।',
+    alsoLabel:'शायद यह भी महसूस हो रहा है',
+    nextLabel:'आगे बढ़ें — शरीर में क्या हो रहा है →',
+    pills:{
+      exam:'पढ़ाई का दबाव', clinical:'Clinical अनुभव',
+      enough:'काफी नहीं हूँ', exhausted:'थकान',
+      relationship:'रिश्ते का दर्द', unknown:'बस overwhelmed'
+    }
+  }
+};
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang') || 'en';
+let selectedKey = localStorage.getItem('horegallu-stress') || null;
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderUI();
+  if(selectedKey) selectType(selectedKey);
+});
+
+function renderUI(){
+  const u = UI[lang];
+  const lc = lang === 'ml' ? 'ml' : lang === 'hi' ? 'hi' : '';
+
+  document.getElementById('back-label').textContent = u.back;
+  document.getElementById('step-label').textContent = u.step;
+
+  const sl = document.getElementById('section-label');
+  sl.textContent = u.sectionLabel;
+  sl.className = 'section-label ' + lc;
+
+  const st = document.getElementById('section-title');
+  st.textContent = u.sectionTitle;
+  st.className = 'section-title ' + lc;
+
+  const ss = document.getElementById('section-sub');
+  ss.textContent = u.sectionSub;
+  ss.className = 'section-sub ' + lc;
+
+  document.getElementById('empty-text').textContent = u.empty;
+
+  // Pills
+  const pillsEl = document.getElementById('type-pills');
+  pillsEl.innerHTML = '';
+  Object.entries(u.pills).forEach(([key, label])=>{
+    const btn = document.createElement('button');
+    btn.className = 'type-pill ' + lc;
+    btn.textContent = label;
+    btn.dataset.key = key;
+    btn.onclick = () => selectType(key);
+    pillsEl.appendChild(btn);
+  });
+}
+
+function selectType(key){
+  selectedKey = key;
+  localStorage.setItem('horegallu-stress', key);
+
+  // Update pills
+  document.querySelectorAll('.type-pill').forEach(p=>{
+    p.classList.toggle('active', p.dataset.key === key);
+  });
+
+  // Get data
+  const emotion = EMOTIONS[key][lang];
+  const u = UI[lang];
+  const lc = lang === 'ml' ? 'ml' : lang === 'hi' ? 'hi' : '';
+
+  // Build primary card
+  const card = document.getElementById('emotion-card');
+  card.classList.remove('visible');
+  card.innerHTML = `
+    <div class="emotion-name">${emotion.name}</div>
+    <div class="emotion-origin">${emotion.origin}</div>
+    <div class="emotion-divider"></div>
+    <div class="emotion-block">
+      <p class="emotion-block-label ${lc}">What it is</p>
+      <p class="emotion-block-text ${lc}">${emotion.what}</p>
+    </div>
+    <div class="emotion-block">
+      <p class="emotion-block-label ${lc}">Why it happens</p>
+      <p class="emotion-block-text ${lc}">${emotion.why}</p>
+    </div>
+    <div class="comfort-line">
+      <p class="comfort-text ${lc}">${emotion.comfort}</p>
+    </div>
+  `;
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ card.classList.add('visible'); });
+  });
+
+  // Also label
+  const alsoLabel = document.getElementById('also-label');
+  alsoLabel.textContent = u.alsoLabel;
+  alsoLabel.className = 'also-label ' + lc;
+  alsoLabel.style.display = 'block';
+
+  // Secondary cards
+  const grid = document.getElementById('secondary-grid');
+  grid.innerHTML = '';
+  emotion.also.forEach((item, i)=>{
+    const c = document.createElement('div');
+    c.className = 'secondary-card';
+    c.innerHTML = `
+      <span class="sec-name">${item.name}</span>
+      <span class="sec-desc ${lc}">${item.desc}</span>
+    `;
+    grid.appendChild(c);
+    setTimeout(()=>c.classList.add('visible'), 100 + i*80);
+  });
+
+  // Next btn
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = '';
+  const span = document.createElement('span');
+  span.textContent = u.nextLabel;
+  nextBtn.appendChild(span);
+  nextBtn.className = 'next-btn ' + lc;
+  nextBtn.style.display = 'flex';
+}
+
+function goNext(){
+  // Will link to stress-translated.html in Step 4
+  alert('Step 4 — Stress translated — coming next!');
+}
+</script>
+</body>
+</html>
