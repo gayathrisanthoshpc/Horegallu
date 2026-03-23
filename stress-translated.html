@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu — Stress Translated</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-bg:     rgba(212,169,74,0.08);
+      --terracotta:  #C1654A;
+      --terra-bg:    rgba(193,101,74,0.08);
+      --sage:        #7A8C6E;
+      --sage-bg:     rgba(122,140,110,0.1);
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d:  'Cormorant Garamond', Georgia, serif;
+      --font-b:  'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease:    cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+    .page{
+      position:relative;z-index:1;
+      max-width:480px;margin:0 auto;
+      padding:2.5rem 1.75rem 3rem;
+      min-height:100vh;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav{
+      display:flex;align-items:center;gap:8px;
+      margin-bottom:2rem;
+    }
+    .back-nav button{
+      display:inline-flex;align-items:center;gap:6px;
+      background:none;border:none;cursor:pointer;
+      font-size:0.82rem;color:var(--text-muted);
+      font-family:var(--font-b);transition:color 0.2s;padding:0;
+    }
+    .back-nav button:hover{color:var(--earth);}
+    .step-badge{
+      margin-left:auto;
+      font-size:0.7rem;color:var(--text-muted);
+      letter-spacing:0.08em;
+    }
+
+    /* ── HEADER ── */
+    .section-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.12em;text-transform:uppercase;
+      margin-bottom:0.4rem;
+    }
+    .section-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+    .section-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.03em;font-size:0.78rem;}
+
+    .section-title{
+      font-family:var(--font-d);
+      font-size:2rem;font-weight:300;
+      color:var(--earth);line-height:1.2;
+      margin-bottom:0.4rem;
+    }
+    .section-title.ml{font-family:var(--font-ml);font-size:1.55rem;font-weight:400;}
+    .section-title.hi{font-family:var(--font-hi);font-size:1.55rem;font-weight:400;}
+
+    .section-sub{
+      font-size:0.85rem;color:var(--text-secondary);
+      line-height:1.65;margin-bottom:2rem;
+    }
+    .section-sub.ml{font-family:var(--font-ml);font-size:0.83rem;}
+    .section-sub.hi{font-family:var(--font-hi);font-size:0.83rem;}
+
+    /* ── BODY MAP ── */
+    .body-map-wrap{
+      position:relative;
+      display:flex;justify-content:center;
+      margin-bottom:2rem;
+    }
+    .body-map-svg{
+      width:min(200px,55vw);
+    }
+
+    /* Hotspot markers on the body */
+    .hotspot{
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .hotspot circle{
+      transition:r 0.2s, opacity 0.2s;
+    }
+    .hotspot:hover circle{opacity:0.9;}
+    .hotspot.active circle{
+      animation:hotPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes hotPulse{
+      0%,100%{r:10;opacity:0.7;}
+      50%{r:13;opacity:1;}
+    }
+
+    /* ── WHAT'S HAPPENING CARDS ── */
+    .happening-grid{
+      display:flex;flex-direction:column;
+      gap:10px;margin-bottom:2rem;
+    }
+
+    .happening-card{
+      border-radius:15px;
+      padding:1.1rem 1.25rem;
+      border:1px solid var(--border);
+      position:relative;overflow:hidden;
+      opacity:0;transform:translateX(-12px);
+      transition:opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      cursor:default;
+    }
+    .happening-card.visible{opacity:1;transform:translateX(0);}
+
+    .happening-card::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:3px;
+      border-radius:15px 15px 0 0;
+    }
+
+    .happening-card.brain::before{background:linear-gradient(to right,#C4A882,#D4A94A);}
+    .happening-card.heart::before{background:linear-gradient(to right,#C1654A,#C4A882);}
+    .happening-card.lungs::before{background:linear-gradient(to right,#7A8C6E,#C4A882);}
+    .happening-card.muscles::before{background:linear-gradient(to right,#8B6F52,#C4A882);}
+    .happening-card.gut::before{background:linear-gradient(to right,#D4A94A,#7A8C6E);}
+
+    .happening-card.brain{background:var(--gold-bg);}
+    .happening-card.heart{background:var(--terra-bg);}
+    .happening-card.lungs{background:var(--sage-bg);}
+    .happening-card.muscles{background:rgba(139,111,82,0.07);}
+    .happening-card.gut{background:rgba(196,168,130,0.1);}
+
+    .card-header{
+      display:flex;align-items:center;gap:10px;
+      margin-bottom:0.6rem;
+    }
+    .card-organ{
+      font-size:1.1rem;
+    }
+    .card-name{
+      font-size:0.8rem;font-weight:500;
+      color:var(--text-primary);
+      letter-spacing:0.06em;text-transform:uppercase;
+    }
+    .card-name.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.82rem;}
+    .card-name.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.82rem;}
+
+    .card-what{
+      font-size:0.88rem;font-weight:500;
+      color:var(--text-primary);
+      line-height:1.4;margin-bottom:0.4rem;
+    }
+    .card-what.ml{font-family:var(--font-ml);font-size:0.86rem;}
+    .card-what.hi{font-family:var(--font-hi);font-size:0.86rem;}
+
+    .card-why{
+      font-size:0.8rem;color:var(--text-secondary);
+      line-height:1.65;
+    }
+    .card-why.ml{font-family:var(--font-ml);font-size:0.78rem;}
+    .card-why.hi{font-family:var(--font-hi);font-size:0.78rem;}
+
+    /* ── HORMONE BAR ── */
+    .hormone-section{
+      margin-bottom:2rem;
+    }
+    .hormone-label{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.75rem;
+    }
+    .hormone-label.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+    .hormone-label.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+
+    .hormone-row{
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:10px;
+    }
+    .hormone-name{
+      font-size:0.78rem;font-weight:500;
+      color:var(--text-secondary);
+      width:90px;flex-shrink:0;
+    }
+    .hormone-name.ml{font-family:var(--font-ml);width:110px;font-size:0.75rem;}
+    .hormone-name.hi{font-family:var(--font-hi);width:100px;font-size:0.75rem;}
+
+    .hormone-track{
+      flex:1;height:6px;
+      background:rgba(139,111,82,0.12);
+      border-radius:3px;overflow:hidden;
+    }
+    .hormone-fill{
+      height:100%;border-radius:3px;
+      width:0%;
+      transition:width 1.2s var(--ease);
+    }
+    .hormone-fill.cortisol{background:linear-gradient(to right,#C1654A,#D4A94A);}
+    .hormone-fill.adrenaline{background:linear-gradient(to right,#D4A94A,#C4A882);}
+    .hormone-fill.dopamine{background:linear-gradient(to right,#7A8C6E,#C4A882);}
+    .hormone-fill.serotonin{background:linear-gradient(to right,#8B6F52,#C4A882);}
+
+    .hormone-state{
+      font-size:0.7rem;color:var(--text-muted);
+      width:40px;text-align:right;flex-shrink:0;
+    }
+    .hormone-state.up{color:var(--terracotta);}
+    .hormone-state.down{color:var(--sage);}
+
+    /* ── TRUTH REVEAL ── */
+    .truth-section{
+      background:var(--gold-bg);
+      border:1px solid rgba(212,169,74,0.18);
+      border-radius:16px;
+      padding:1.4rem;
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .truth-title{
+      font-family:var(--font-d);
+      font-size:1.5rem;font-weight:400;
+      color:var(--earth);
+      margin-bottom:0.5rem;
+    }
+    .truth-body{
+      font-size:0.84rem;color:var(--text-secondary);
+      line-height:1.7;
+    }
+    .truth-body.ml{font-family:var(--font-ml);font-size:0.82rem;}
+    .truth-body.hi{font-family:var(--font-hi);font-size:0.82rem;}
+
+    .truth-hw{
+      font-family:var(--font-hw);
+      font-size:1.15rem;color:var(--stone-dark);
+      display:block;margin-top:0.75rem;
+      line-height:1.5;
+    }
+
+    /* ── WHAT HELPS ── */
+    .helps-section{margin-bottom:2rem;}
+    .helps-title{
+      font-size:0.72rem;color:var(--text-muted);
+      letter-spacing:0.1em;text-transform:uppercase;
+      margin-bottom:0.75rem;
+    }
+    .helps-title.ml{font-family:var(--font-ml);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+    .helps-title.hi{font-family:var(--font-hi);text-transform:none;letter-spacing:0.02em;font-size:0.76rem;}
+
+    .helps-grid{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .help-chip{
+      padding:10px 12px;
+      border-radius:11px;
+      background:rgba(255,255,255,0.75);
+      border:1px solid var(--border);
+      font-size:0.78rem;color:var(--text-secondary);
+      line-height:1.4;
+      opacity:0;transform:translateY(8px);
+      animation:none;
+    }
+    .help-chip.visible{
+      animation:chipIn 0.4s var(--ease) forwards;
+    }
+    @keyframes chipIn{to{opacity:1;transform:translateY(0);}}
+
+    .help-chip-icon{
+      display:block;font-size:1rem;margin-bottom:4px;
+    }
+    .help-chip-text{
+      display:block;
+    }
+    .help-chip-text.ml{font-family:var(--font-ml);font-size:0.75rem;}
+    .help-chip-text.hi{font-family:var(--font-hi);font-size:0.75rem;}
+
+    /* ── NEXT BTN ── */
+    .next-btn{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;padding:15px 20px;
+      background:var(--earth);border:none;border-radius:14px;
+      cursor:pointer;color:#FAF6F0;
+      font-family:var(--font-b);font-size:0.9rem;font-weight:500;
+      transition:all 0.3s var(--ease);
+    }
+    .next-btn:hover{
+      background:var(--earth-deep);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(60,40,20,0.18);
+    }
+    .next-btn.ml{font-family:var(--font-ml);}
+    .next-btn.hi{font-family:var(--font-hi);}
+
+    @media(max-width:380px){
+      .page{padding:2rem 1.25rem 2.5rem;}
+      .section-title{font-size:1.65rem;}
+      .helps-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Back nav -->
+  <div class="back-nav">
+    <button onclick="history.back()">← <span id="back-label">Back</span></button>
+    <span class="step-badge" id="step-badge">Step 4 of 10</span>
+  </div>
+
+  <!-- Header -->
+  <p class="section-label" id="section-label">Stress translated</p>
+  <h1 class="section-title" id="section-title">What is happening in your body right now</h1>
+  <p class="section-sub" id="section-sub">You are not imagining it. There is real biology behind what you feel. Understanding it makes it less frightening.</p>
+
+  <!-- Body diagram -->
+  <div class="body-map-wrap">
+    <svg class="body-map-svg" viewBox="0 0 120 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Body silhouette -->
+      <!-- Head -->
+      <ellipse cx="60" cy="28" rx="22" ry="26" fill="#E8DCCF" opacity="0.5"/>
+      <!-- Neck -->
+      <rect x="53" y="50" width="14" height="14" rx="4" fill="#E8DCCF" opacity="0.4"/>
+      <!-- Torso -->
+      <path d="M30 64 Q20 80 22 120 Q24 145 30 155 L90 155 Q96 145 98 120 Q100 80 90 64 Z" fill="#E8DCCF" opacity="0.4"/>
+      <!-- Left arm -->
+      <path d="M30 68 Q14 85 10 130 Q9 140 14 148 Q18 155 22 148 Q24 138 28 120 Q32 100 36 80 Z" fill="#E8DCCF" opacity="0.35"/>
+      <!-- Right arm -->
+      <path d="M90 68 Q106 85 110 130 Q111 140 106 148 Q102 155 98 148 Q96 138 92 120 Q88 100 84 80 Z" fill="#E8DCCF" opacity="0.35"/>
+      <!-- Left leg -->
+      <path d="M38 155 Q34 185 33 220 Q32 245 38 258 Q44 265 50 258 Q54 245 54 220 Q54 190 54 155 Z" fill="#E8DCCF" opacity="0.35"/>
+      <!-- Right leg -->
+      <path d="M82 155 Q86 185 87 220 Q88 245 82 258 Q76 265 70 258 Q66 245 66 220 Q66 190 66 155 Z" fill="#E8DCCF" opacity="0.35"/>
+
+      <!-- HOTSPOT: Brain -->
+      <g class="hotspot" id="hs-brain" onclick="highlightOrgan('brain')">
+        <circle cx="60" cy="24" r="9" fill="#D4A94A" opacity="0.55"/>
+        <circle cx="60" cy="24" r="5" fill="#D4A94A" opacity="0.8"/>
+      </g>
+
+      <!-- HOTSPOT: Heart -->
+      <g class="hotspot" id="hs-heart" onclick="highlightOrgan('heart')">
+        <circle cx="50" cy="90" r="9" fill="#C1654A" opacity="0.55"/>
+        <circle cx="50" cy="90" r="5" fill="#C1654A" opacity="0.8"/>
+      </g>
+
+      <!-- HOTSPOT: Lungs -->
+      <g class="hotspot" id="hs-lungs" onclick="highlightOrgan('lungs')">
+        <circle cx="72" cy="95" r="8" fill="#7A8C6E" opacity="0.55"/>
+        <circle cx="72" cy="95" r="4" fill="#7A8C6E" opacity="0.8"/>
+      </g>
+
+      <!-- HOTSPOT: Muscles -->
+      <g class="hotspot" id="hs-muscles" onclick="highlightOrgan('muscles')">
+        <circle cx="18" cy="110" r="8" fill="#8B6F52" opacity="0.55"/>
+        <circle cx="18" cy="110" r="4" fill="#8B6F52" opacity="0.8"/>
+      </g>
+
+      <!-- HOTSPOT: Gut -->
+      <g class="hotspot" id="hs-gut" onclick="highlightOrgan('gut')">
+        <circle cx="60" cy="125" r="9" fill="#C4A882" opacity="0.55"/>
+        <circle cx="60" cy="125" r="5" fill="#C4A882" opacity="0.8"/>
+      </g>
+
+      <!-- Labels -->
+      <text x="74" y="27" font-size="7" fill="#9E8A7A" font-family="DM Sans, sans-serif">Brain</text>
+      <text x="60" y="93" font-size="7" fill="#9E8A7A" font-family="DM Sans, sans-serif">Heart</text>
+      <text x="82" y="97" font-size="7" fill="#9E8A7A" font-family="DM Sans, sans-serif">Lungs</text>
+      <text x="2" y="112" font-size="6" fill="#9E8A7A" font-family="DM Sans, sans-serif">Muscle</text>
+      <text x="68" y="128" font-size="7" fill="#9E8A7A" font-family="DM Sans, sans-serif">Gut</text>
+    </svg>
+  </div>
+
+  <p style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:-1rem;margin-bottom:1.5rem;" id="tap-hint">Tap any point to focus on that organ</p>
+
+  <!-- What is happening cards -->
+  <div class="happening-grid" id="happening-grid"></div>
+
+  <!-- Hormone levels -->
+  <div class="hormone-section">
+    <p class="hormone-label" id="hormone-label">What your hormones are doing</p>
+    <div id="hormone-rows"></div>
+  </div>
+
+  <!-- Truth section -->
+  <div class="truth-section">
+    <div class="truth-title" id="truth-title">You are not broken.</div>
+    <p class="truth-body" id="truth-body">Every single symptom you feel when stressed is your body doing exactly what it was designed to do — protect you. The system is working. It just needs to know you are safe.</p>
+    <span class="truth-hw" id="truth-hw">You are safe right now.</span>
+  </div>
+
+  <!-- What helps -->
+  <div class="helps-section">
+    <p class="helps-title" id="helps-title">What actually helps — and why</p>
+    <div class="helps-grid" id="helps-grid"></div>
+  </div>
+
+  <!-- Next -->
+  <button class="next-btn" id="next-btn" onclick="goNext()">
+    <span id="next-label">Continue — write what you cannot say out loud</span>
+    <span>→</span>
+  </button>
+
+</div>
+<script>
+/* ══════════════════════════════════
+   CONTENT
+══════════════════════════════════ */
+const C = {
+  en:{
+    back:'Back', step:'Step 4 of 10',
+    sLabel:'Stress translated',
+    sTitle:'What is happening in your body right now',
+    sSub:'You are not imagining it. There is real biology behind what you feel. Understanding it makes it less frightening.',
+    tapHint:'Tap any point to focus on that organ',
+    hormoneLabel:'What your hormones are doing',
+    truthTitle:'You are not broken.',
+    truthBody:'Every symptom you feel when stressed is your body doing exactly what it was designed to do — protect you. The system is working. It just needs to know you are safe.',
+    truthHw:'You are safe right now.',
+    helpsTitle:'What actually helps — and why',
+    nextLabel:'Continue — write what you cannot say out loud',
+    organs:{
+      brain:{
+        name:'Brain',icon:'🧠',type:'brain',
+        what:'Your prefrontal cortex — the rational thinking part — is partially offline.',
+        why:'The amygdala (your brain\'s alarm) has flooded your system with cortisol and adrenaline. This shuts down non-essential functions like logical reasoning, long-term planning, and clear decision-making. This is why stress makes you feel stupid. You are not stupid. Your thinking brain is temporarily hijacked.'
+      },
+      heart:{
+        name:'Heart',icon:'♡',type:'heart',
+        what:'Your heart is beating faster. Blood pressure has risen.',
+        why:'Adrenaline signals the heart to pump more blood to your muscles for fight or flight. This is ancient survival biology — your body is preparing to run from a predator that does not exist. The racing heart is real. The predator is not.'
+      },
+      lungs:{
+        name:'Lungs',icon:'◎',type:'lungs',
+        what:'Your breathing has become shallow and fast.',
+        why:'Faster breathing brings more oxygen to muscles. But shallow breathing actually increases anxiety — less CO₂ is exhaled, which triggers more alarm signals. Slow deep breathing reverses this. It is the fastest way to signal safety to your nervous system.'
+      },
+      muscles:{
+        name:'Muscles',icon:'◈',type:'muscles',
+        what:'Your shoulders are tense. Your jaw may be clenched. Your stomach tight.',
+        why:'Muscles tense in preparation for physical action. When no action follows, the tension stays. This is why stressed people carry physical pain — headaches, back pain, jaw pain. The body holds what the mind cannot process.'
+      },
+      gut:{
+        name:'Gut',icon:'◉',type:'gut',
+        what:'You may feel nauseous, have no appetite, or feel hollow inside.',
+        why:'The gut has its own nervous system — the enteric nervous system — sometimes called the second brain. Under stress, digestion shuts down (it is not essential for survival right now). Blood flow redirects away from the gut. Your gut literally feels your emotions before your mind does.'
+      }
+    },
+    hormones:[
+      {name:'Cortisol',    cls:'cortisol',  pct:85, state:'↑ High',  stateClass:'up',  note:'Stress hormone — suppresses immunity, digestion, and rational thought'},
+      {name:'Adrenaline',  cls:'adrenaline',pct:78, state:'↑ High',  stateClass:'up',  note:'Fight-or-flight activator — racing heart, heightened alertness'},
+      {name:'Dopamine',    cls:'dopamine',  pct:28, state:'↓ Low',   stateClass:'down',note:'Motivation and reward — depleted by chronic stress'},
+      {name:'Serotonin',   cls:'serotonin', pct:22, state:'↓ Low',   stateClass:'down',note:'Mood stabiliser — reduced when cortisol stays high'},
+    ],
+    helps:[
+      {icon:'○', text:'Deep breathing — signals the vagus nerve that you are safe'},
+      {icon:'◇', text:'Cold water on face — triggers the dive reflex, slows heart rate'},
+      {icon:'▽', text:'Moving your body — burns the adrenaline your body prepared'},
+      {icon:'✦', text:'Naming the feeling — reduces amygdala activation by up to 50%'},
+      {icon:'◎', text:'Talking to someone — releases oxytocin, the safety hormone'},
+      {icon:'○', text:'Sleep — the only time cortisol fully resets'},
+    ]
+  },
+
+  ml:{
+    back:'തിരിച്ചു', step:'ഘട്ടം 4 / 10',
+    sLabel:'Stress വിവർത്തനം ചെയ്യപ്പെടുന്നു',
+    sTitle:'ഇപ്പോൾ നിങ്ങളുടെ ശരീരത്തിൽ എന്ത് സംഭവിക്കുന്നു',
+    sSub:'ഇത് നിങ്ങളുടെ ഭാവനയല്ല. ഈ അനുഭവങ്ങൾക്ക് യഥാർഥ ശാസ്ത്രീയ കാരണങ്ങളുണ്ട്. മനസ്സിലാക്കിയാൽ ഭയം കുറയും.',
+    tapHint:'ഏത് ബിന്ദുവിലും tap ചെയ്ത് ആ അവയവം കാണൂ',
+    hormoneLabel:'നിങ്ങളുടെ hormones എന്ത് ചെയ്യുന്നു',
+    truthTitle:'നിങ്ങൾ തകർന്നിട്ടില്ല.',
+    truthBody:'Stress-ൽ അനുഭവിക്കുന്ന ഓരോ ലക്ഷണവും ശരീരം ഡിസൈൻ ചെയ്തതുപോലെ ചെയ്യുന്നതാണ് — നിങ്ങളെ സംരക്ഷിക്കാൻ. System പ്രവർത്തിക്കുന്നു. ഇത് സുരക്ഷിതമാണ് എന്ന് അറിയിക്കുക മാത്രം വേണം.',
+    truthHw:'ഇപ്പോൾ നിങ്ങൾ സുരക്ഷിതരാണ്.',
+    helpsTitle:'എന്ത് സഹായിക്കും — എന്തുകൊണ്ട്',
+    nextLabel:'തുടരുക — പറയാൻ കഴിയാത്തത് എഴുതൂ',
+    organs:{
+      brain:{
+        name:'മസ്തിഷ്കം',icon:'🧠',type:'brain',
+        what:'Prefrontal cortex — യുക്തിചിന്ത ഭാഗം — ഭാഗികമായി offline ആണ്.',
+        why:'Amygdala (alarm system) cortisol-ഉം adrenaline-ഉം സിസ്റ്റത്തിൽ നിറച്ചു. ഇത് logical reasoning, long-term planning, clear decision-making — ഇവ shut down ചെയ്യുന്നു. Stress-ൽ മൂഢനാണ് എന്ന് തോന്നാൻ ഇതാണ് കാരണം. നിങ്ങൾ മൂഢനല്ല. ചിന്തിക്കുന്ന മസ്തിഷ്കം താൽക്കാലികമായി hijack ആയിരിക്കുന്നു.'
+      },
+      heart:{
+        name:'ഹൃദയം',icon:'♡',type:'heart',
+        what:'ഹൃദയം വേഗത്തിൽ മിടിക്കുന്നു. Blood pressure ഉയർന്നു.',
+        why:'Adrenaline ഹൃദയത്തോട് കൂടുതൽ blood pump ചെയ്യാൻ ആവശ്യപ്പെടുന്നു — fight or flight-നായി. ഇത് പ്രാചീന survival biology — ഇല്ലാത്ത ഒരു predator-ൽ നിന്ന് ഓടാൻ ശരീരം ഒരുങ്ങുന്നു.'
+      },
+      lungs:{
+        name:'ശ്വാസകോശം',icon:'◎',type:'lungs',
+        what:'ശ്വാസം ഉടച്ചതും വേഗത്തിലും ആയിരിക്കുന്നു.',
+        why:'വേഗത്തിലുള്ള ശ്വാസം muscles-ന് കൂടുതൽ oxygen കൊടുക്കുന്നു. എന്നാൽ shallow breathing anxiety കൂട്ടുന്നു — CO₂ കുറഞ്ഞ് alarm signals വർദ്ധിക്കുന്നു. ആഴത്തിൽ ശ്വസിക്കുന്നത് ഇത് reverse ചെയ്യുന്നു.'
+      },
+      muscles:{
+        name:'മസിലുകൾ',icon:'◈',type:'muscles',
+        what:'തോളുകൾ tensed. താടി clenched. വയർ tight.',
+        why:'Physical action-നായി muscles tense ആകുന്നു. Action ഇല്ലെങ്കിൽ tension നിൽക്കുന്നു. Stressed ആളുകൾക്ക് തലവേദന, back pain, jaw pain — ഇങ്ങനെ ഉണ്ടാകാൻ ഇതാണ് കാരണം.'
+      },
+      gut:{
+        name:'ദഹനനാളം',icon:'◉',type:'gut',
+        what:'ഓക്കാനം, വിശപ്പില്ലായ്മ, അകം ശൂന്യം.',
+        why:'Gut-ന് സ്വന്തം nervous system ഉണ്ട് — second brain എന്ന് വിളിക്കുന്നു. Stress-ൽ ദഹനം shut down ആകുന്നു. Blood flow gut-ൽ നിന്ന് redirect ആകുന്നു. Gut-ന് mind-നേക്കാൾ മുൻപ് emotions അനുഭവപ്പെടുന്നു.'
+      }
+    },
+    hormones:[
+      {name:'Cortisol',   cls:'cortisol',  pct:85, state:'↑ ഉയർന്നു', stateClass:'up',  note:'Stress hormone — immunity, ദഹനം, rational thinking കുറയ്ക്കുന്നു'},
+      {name:'Adrenaline', cls:'adrenaline',pct:78, state:'↑ ഉയർന്നു', stateClass:'up',  note:'Fight-or-flight — heart racing, heightened alertness'},
+      {name:'Dopamine',   cls:'dopamine',  pct:28, state:'↓ കുറഞ്ഞു', stateClass:'down',note:'Motivation — chronic stress-ൽ depleted ആകുന്നു'},
+      {name:'Serotonin',  cls:'serotonin', pct:22, state:'↓ കുറഞ്ഞു', stateClass:'down',note:'Mood stabiliser — cortisol ഉയർന്നിരിക്കുമ്പോൾ കുറയുന്നു'},
+    ],
+    helps:[
+      {icon:'○', text:'ആഴത്തിൽ ശ്വസിക്കൂ — vagus nerve-ന് സുരക്ഷിതം എന്ന് signal'},
+      {icon:'◇', text:'മുഖത്ത് തണുത്ത വെള്ളം — dive reflex, heart rate കുറയുന്നു'},
+      {icon:'▽', text:'ശരീരം ചലിപ്പിക്കൂ — adrenaline burn ആകുന്നു'},
+      {icon:'✦', text:'വികാരത്തിന് പേരിടൂ — amygdala activation 50% കുറയുന്നു'},
+      {icon:'◎', text:'ആരോടെങ്കിലും സംസാരിക്കൂ — oxytocin release ആകുന്നു'},
+      {icon:'○', text:'ഉറക്കം — cortisol പൂർണ്ണമായി reset ആകുന്ന ഏക സമയം'},
+    ]
+  },
+
+  hi:{
+    back:'वापस', step:'चरण 4 / 10',
+    sLabel:'Stress का अनुवाद',
+    sTitle:'अभी तुम्हारे शरीर में क्या हो रहा है',
+    sSub:'यह तुम्हारी कल्पना नहीं है। जो तुम महसूस करते हो उसके पीछे असली biology है। समझने से डर कम होता है।',
+    tapHint:'किसी भी बिंदु को tap करो उस अंग को देखने के लिए',
+    hormoneLabel:'तुम्हारे hormones क्या कर रहे हैं',
+    truthTitle:'तुम टूटे नहीं हो।',
+    truthBody:'Stress में जो भी महसूस होता है वो शरीर वही कर रहा है जिसके लिए उसे बनाया गया था — तुम्हें बचाना। System काम कर रहा है। बस उसे बताना है कि तुम सुरक्षित हो।',
+    truthHw:'तुम अभी सुरक्षित हो।',
+    helpsTitle:'क्या सच में मदद करता है — और क्यों',
+    nextLabel:'आगे बढ़ें — जो बोल नहीं सकते वो लिखो',
+    organs:{
+      brain:{
+        name:'दिमाग',icon:'🧠',type:'brain',
+        what:'Prefrontal cortex — rational thinking वाला हिस्सा — आंशिक रूप से offline है।',
+        why:'Amygdala (दिमाग का alarm) ने cortisol और adrenaline से system को भर दिया है। इससे logical reasoning, long-term planning, clear decision-making बंद हो जाती है। Stress में बेवकूफ लगने की यही वजह है। तुम बेवकूफ नहीं हो। सोचने वाला दिमाग temporarily hijack हो गया है।'
+      },
+      heart:{
+        name:'दिल',icon:'♡',type:'heart',
+        what:'दिल तेज़ धड़क रहा है। Blood pressure बढ़ गया है।',
+        why:'Adrenaline दिल को संकेत देता है कि muscles को ज़्यादा blood pump करो — fight or flight के लिए। यह पुरानी survival biology है — शरीर एक ऐसे predator से भागने की तैयारी कर रहा है जो है ही नहीं।'
+      },
+      lungs:{
+        name:'फेफड़े',icon:'◎',type:'lungs',
+        what:'साँस उथली और तेज़ हो गई है।',
+        why:'तेज़ साँस muscles को ज़्यादा oxygen देती है। लेकिन shallow breathing anxiety बढ़ाती है — कम CO₂ निकलने से और alarm signals बढ़ते हैं। गहरी साँस इसे reverse करती है। यह सबसे तेज़ तरीका है nervous system को safe signal देने का।'
+      },
+      muscles:{
+        name:'मांसपेशियाँ',icon:'◈',type:'muscles',
+        what:'कंधे tight हैं। जबड़ा भिंचा हुआ है। पेट कसा हुआ है।',
+        why:'Physical action के लिए muscles तन जाती हैं। जब action नहीं होता तो tension रहती है। इसीलिए stressed लोगों को सिरदर्द, कमर दर्द, जबड़े का दर्द होता है। शरीर वो धारण करता है जो मन process नहीं कर पाता।'
+      },
+      gut:{
+        name:'पेट',icon:'◉',type:'gut',
+        what:'मतली, भूख न लगना, या अंदर से खाली महसूस करना।',
+        why:'Gut का अपना nervous system है — enteric nervous system — जिसे second brain कहते हैं। Stress में पाचन बंद हो जाता है। Blood flow gut से दूर जाता है। Gut मन से पहले emotions महसूस करता है।'
+      }
+    },
+    hormones:[
+      {name:'Cortisol',   cls:'cortisol',  pct:85, state:'↑ बढ़ा',   stateClass:'up',  note:'Stress hormone — immunity, पाचन, rational thinking कम करता है'},
+      {name:'Adrenaline', cls:'adrenaline',pct:78, state:'↑ बढ़ा',   stateClass:'up',  note:'Fight-or-flight — दिल तेज़, सतर्कता बढ़ी'},
+      {name:'Dopamine',   cls:'dopamine',  pct:28, state:'↓ घटा',   stateClass:'down',note:'Motivation — chronic stress में खत्म हो जाता है'},
+      {name:'Serotonin',  cls:'serotonin', pct:22, state:'↓ घटा',   stateClass:'down',note:'Mood stabiliser — cortisol बढ़ने पर घटता है'},
+    ],
+    helps:[
+      {icon:'○', text:'गहरी साँस — vagus nerve को safe signal'},
+      {icon:'◇', text:'चेहरे पर ठंडा पानी — dive reflex, heart rate कम'},
+      {icon:'▽', text:'शरीर हिलाओ — adrenaline जल जाता है'},
+      {icon:'✦', text:'भावना को नाम दो — amygdala 50% शांत होता है'},
+      {icon:'◎', text:'किसी से बात करो — oxytocin निकलता है'},
+      {icon:'○', text:'नींद — cortisol पूरी तरह reset होने का एकमात्र समय'},
+    ]
+  }
+};
+
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+let lang = localStorage.getItem('horegallu-lang')||'en';
+let activeOrgan = null;
+
+window.addEventListener('DOMContentLoaded',()=>{
+  renderAll();
+  setTimeout(animateHormones, 600);
+  setTimeout(revealCards, 200);
+  setTimeout(revealChips, 800);
+});
+
+/* ══════════════════════════
+   RENDER
+══════════════════════════ */
+function renderAll(){
+  const c = C[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+
+  document.getElementById('back-label').textContent = c.back;
+  document.getElementById('step-badge').textContent = c.step;
+
+  const sl=document.getElementById('section-label');
+  sl.textContent=c.sLabel; sl.className='section-label '+lc;
+  const st=document.getElementById('section-title');
+  st.textContent=c.sTitle; st.className='section-title '+lc;
+  const ss=document.getElementById('section-sub');
+  ss.textContent=c.sSub; ss.className='section-sub '+lc;
+
+  document.getElementById('tap-hint').textContent=c.tapHint;
+  const hl=document.getElementById('hormone-label');
+  hl.textContent=c.hormoneLabel; hl.className='hormone-label '+lc;
+
+  document.getElementById('truth-title').textContent=c.truthTitle;
+  const tb=document.getElementById('truth-body');
+  tb.textContent=c.truthBody; tb.className='truth-body '+lc;
+  document.getElementById('truth-hw').textContent=c.truthHw;
+
+  const ht=document.getElementById('helps-title');
+  ht.textContent=c.helpsTitle; ht.className='helps-title '+lc;
+  const nb=document.getElementById('next-btn');
+  nb.className='next-btn '+lc;
+  document.getElementById('next-label').textContent=c.nextLabel;
+
+  // Build organ cards
+  buildOrganCards();
+
+  // Build hormone rows
+  buildHormoneRows();
+
+  // Build helps
+  buildHelps();
+}
+
+function buildOrganCards(){
+  const c = C[lang];
+  const lc = lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const grid = document.getElementById('happening-grid');
+  grid.innerHTML='';
+  Object.entries(c.organs).forEach(([key,o])=>{
+    const card = document.createElement('div');
+    card.className=`happening-card ${o.type}`;
+    card.id='card-'+key;
+    card.innerHTML=`
+      <div class="card-header">
+        <span class="card-organ">${o.icon}</span>
+        <span class="card-name ${lc}">${o.name}</span>
+      </div>
+      <p class="card-what ${lc}">${o.what}</p>
+      <p class="card-why ${lc}">${o.why}</p>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function buildHormoneRows(){
+  const c=C[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const container=document.getElementById('hormone-rows');
+  container.innerHTML='';
+  c.hormones.forEach(h=>{
+    const row=document.createElement('div');
+    row.className='hormone-row';
+    row.innerHTML=`
+      <span class="hormone-name ${lc}">${h.name}</span>
+      <div class="hormone-track">
+        <div class="hormone-fill ${h.cls}" data-pct="${h.pct}" style="width:0%"></div>
+      </div>
+      <span class="hormone-state ${h.stateClass}">${h.state}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function buildHelps(){
+  const c=C[lang];
+  const lc=lang==='ml'?'ml':lang==='hi'?'hi':'';
+  const grid=document.getElementById('helps-grid');
+  grid.innerHTML='';
+  c.helps.forEach(h=>{
+    const chip=document.createElement('div');
+    chip.className='help-chip';
+    chip.innerHTML=`
+      <span class="help-chip-icon">${h.icon}</span>
+      <span class="help-chip-text ${lc}">${h.text}</span>
+    `;
+    grid.appendChild(chip);
+  });
+}
+
+/* ══════════════════════════
+   ANIMATIONS
+══════════════════════════ */
+function revealCards(){
+  document.querySelectorAll('.happening-card').forEach((card,i)=>{
+    setTimeout(()=>card.classList.add('visible'), i*120);
+  });
+}
+
+function animateHormones(){
+  document.querySelectorAll('.hormone-fill').forEach(fill=>{
+    const pct=fill.dataset.pct;
+    fill.style.width=pct+'%';
+  });
+}
+
+function revealChips(){
+  document.querySelectorAll('.help-chip').forEach((chip,i)=>{
+    setTimeout(()=>chip.classList.add('visible'), i*80);
+  });
+}
+
+/* ══════════════════════════
+   ORGAN HIGHLIGHT
+══════════════════════════ */
+function highlightOrgan(key){
+  // Reset all hotspots
+  document.querySelectorAll('.hotspot').forEach(h=>h.classList.remove('active'));
+  // Reset all cards
+  document.querySelectorAll('.happening-card').forEach(c=>{
+    c.style.outline='none';
+    c.style.boxShadow='none';
+  });
+
+  if(activeOrgan===key){ activeOrgan=null; return; }
+  activeOrgan=key;
+
+  // Activate hotspot
+  const hs=document.getElementById('hs-'+key);
+  if(hs) hs.classList.add('active');
+
+  // Scroll to and highlight card
+  const card=document.getElementById('card-'+key);
+  if(card){
+    card.scrollIntoView({behavior:'smooth',block:'center'});
+    card.style.outline='2px solid var(--gold)';
+    card.style.boxShadow='0 0 0 4px rgba(212,169,74,0.12)';
+    setTimeout(()=>{
+      card.style.outline='none';
+      card.style.boxShadow='none';
+    },2000);
+  }
+}
+
+function goNext(){
+  window.location.href='unsent-letter.html';
+}
+</script>
+</body>
+</html>
