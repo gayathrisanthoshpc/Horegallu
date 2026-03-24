@@ -87,7 +87,6 @@
 
     .lang-stone{margin-bottom:1.6rem;}
 
-    /* Breathing stone animation */
     .stone-group{
       transform-origin:140px 120px;
       animation:stoneBreathe 5s ease-in-out infinite;
@@ -218,7 +217,6 @@
       filter:drop-shadow(0 12px 32px rgba(60,40,20,0.13));
     }
 
-    /* Handwritten note */
     .hw-note{
       font-family:var(--font-hw);
       font-size:1.1rem;
@@ -232,7 +230,6 @@
     }
     .hw-note.visible{opacity:1;transform:translateY(0);}
 
-    /* Question */
     .main-question{text-align:center;margin:0.8rem 0 1.2rem;}
     .question-text{
       font-family:var(--font-d);
@@ -285,7 +282,6 @@
     }
     .option-btn:hover::before{transform:scaleY(1);}
 
-    /* Weight-drop animation */
     .option-btn.dropping{
       animation:weightDrop 0.55s var(--ease) forwards;
     }
@@ -356,60 +352,6 @@
     .foot-promise.ml{font-family:var(--font-ml);letter-spacing:0.01em;}
     .foot-promise.hi{font-family:var(--font-hi);letter-spacing:0.01em;}
 
-    /* ══════════════════════════════
-       PLACEHOLDER SCREEN
-    ══════════════════════════════ */
-    #screen-placeholder{
-      justify-content:center;
-      align-items:center;
-      padding:2.5rem 2rem;
-      max-width:480px;
-      margin:0 auto;
-      width:100%;
-      gap:1.1rem;
-      text-align:center;
-    }
-    .ph-tag{
-      display:inline-block;
-      padding:5px 13px;
-      background:var(--cream-warm);
-      border:1px solid var(--border);
-      border-radius:999px;
-      font-size:0.72rem;color:var(--text-muted);letter-spacing:0.07em;
-    }
-    .ph-title{
-      font-family:var(--font-d);
-      font-size:1.85rem;font-weight:300;
-      color:var(--earth);line-height:1.3;
-    }
-    .ph-sub{
-      font-size:0.87rem;color:var(--text-secondary);
-      line-height:1.75;max-width:310px;
-    }
-    .ph-hw{
-      font-family:var(--font-hw);
-      font-size:1.25rem;
-      color:var(--stone-dark);
-      line-height:1.8;
-    }
-    .back-btn{
-      display:inline-flex;align-items:center;gap:7px;
-      padding:9px 20px;
-      background:transparent;
-      border:1px solid var(--border);
-      border-radius:13px;
-      cursor:pointer;
-      font-size:0.84rem;color:var(--text-secondary);
-      font-family:var(--font-b);
-      transition:all 0.3s var(--ease);
-      margin-top:0.4rem;
-    }
-    .back-btn:hover{
-      background:var(--cream-warm);
-      border-color:var(--stone);
-      color:var(--earth);
-    }
-
     /* Kintsugi gold crack glow pulse */
     .kintsugi-crack{
       filter:drop-shadow(0 0 3px rgba(212,169,74,0.6));
@@ -444,22 +386,17 @@
           <path d="M30 140 Q20 120 35 95 Q55 60 100 50 Q130 42 165 48 Q210 56 235 85 Q258 112 250 138 Q245 158 220 162 Q170 172 100 168 Q52 165 30 140Z" fill="#C4A882"/>
           <path d="M60 90 Q90 65 140 62 Q185 60 215 80 Q190 68 140 70 Q95 72 65 95Z" fill="rgba(255,255,255,0.28)"/>
           <path d="M35 130 Q30 110 50 90 Q75 68 120 60 Q80 75 60 100 Q42 120 45 145Z" fill="rgba(139,111,82,0.22)"/>
-          <!-- Kintsugi crack -->
           <path class="kintsugi-crack" d="M120 75 Q128 88 124 105 Q121 118 128 135 Q132 145 126 158" stroke="#D4A94A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
           <path class="kintsugi-crack" d="M124 105 Q132 108 140 104" stroke="#D4A94A" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.7"/>
-          <!-- Moss -->
           <circle cx="172" cy="102" r="2.5" fill="rgba(122,140,110,0.5)"/>
           <circle cx="182" cy="110" r="1.5" fill="rgba(122,140,110,0.4)"/>
           <circle cx="167" cy="114" r="2" fill="rgba(122,140,110,0.45)"/>
-          <!-- Person sitting -->
           <ellipse cx="148" cy="55" rx="11" ry="11" fill="#3D2B1F"/>
           <path d="M137 66 Q140 80 145 88 Q148 95 152 88 Q157 80 160 66 Q154 70 148 70 Q142 70 137 66Z" fill="#3D2B1F"/>
           <path d="M145 88 Q135 100 120 108" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
           <path d="M152 88 Q162 100 178 108" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
-          <!-- Bags -->
           <rect x="100" y="118" width="18" height="14" rx="3" fill="#8B6F52" opacity="0.7"/>
           <rect x="104" y="114" width="10" height="5" rx="2" fill="#8B6F52" opacity="0.5"/>
-          <!-- Plant -->
           <path d="M255 150 Q258 135 265 128" stroke="#7A8C6E" stroke-width="2" fill="none" stroke-linecap="round"/>
           <ellipse cx="265" cy="126" rx="7" ry="5" fill="#7A8C6E" opacity="0.7" transform="rotate(-20 265 126)"/>
         </g>
@@ -512,38 +449,28 @@
     </div>
 
     <div class="stone-section">
-      <!-- Main stone with breathing + kintsugi + posture -->
       <svg class="main-stone-svg" id="main-stone-svg" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g class="stone-group">
           <ellipse cx="140" cy="185" rx="90" ry="10" fill="rgba(60,40,20,0.08)"/>
           <path d="M30 155 Q20 135 35 110 Q55 75 100 65 Q130 57 165 63 Q210 71 235 100 Q258 127 250 153 Q245 173 220 177 Q170 187 100 183 Q52 180 30 155Z" fill="#C4A882"/>
           <path d="M60 105 Q90 80 140 77 Q185 75 215 95 Q190 83 140 85 Q95 87 65 110Z" fill="rgba(255,255,255,0.28)"/>
           <path d="M35 145 Q30 125 50 105 Q75 83 120 75 Q80 90 60 115 Q42 135 45 160Z" fill="rgba(139,111,82,0.22)"/>
-          <!-- Kintsugi crack -->
           <path class="kintsugi-crack" d="M122 90 Q130 103 126 120 Q123 133 130 150 Q134 160 128 173" stroke="#D4A94A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
           <path class="kintsugi-crack" d="M126 120 Q134 123 142 119" stroke="#D4A94A" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.7"/>
-          <!-- Moss dots -->
           <circle cx="172" cy="117" r="2.5" fill="rgba(122,140,110,0.5)"/>
           <circle cx="182" cy="125" r="1.5" fill="rgba(122,140,110,0.4)"/>
           <circle cx="167" cy="129" r="2" fill="rgba(122,140,110,0.45)"/>
           <circle cx="92" cy="148" r="2" fill="rgba(122,140,110,0.35)"/>
-          <!-- Person — posture changes via JS class on <g> -->
           <g id="person-group">
-            <!-- Head -->
             <ellipse id="p-head" cx="148" cy="68" rx="11" ry="11" fill="#3D2B1F"/>
-            <!-- Body -->
             <path id="p-body" d="M137 79 Q140 93 145 101 Q148 108 152 101 Q157 93 160 79 Q154 83 148 83 Q142 83 137 79Z" fill="#3D2B1F"/>
-            <!-- Arms -->
             <path id="p-arm-l" d="M145 101 Q135 113 120 121" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
             <path id="p-arm-r" d="M152 101 Q162 113 178 121" stroke="#3D2B1F" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <!-- Legs -->
             <path d="M145 108 Q142 125 138 140" stroke="#3D2B1F" stroke-width="4" stroke-linecap="round" fill="none"/>
             <path d="M152 108 Q155 125 158 140" stroke="#3D2B1F" stroke-width="4" stroke-linecap="round" fill="none"/>
           </g>
-          <!-- Bags beside stone -->
           <rect x="100" y="133" width="18" height="14" rx="3" fill="#8B6F52" opacity="0.7"/>
           <rect x="104" y="129" width="10" height="5" rx="2" fill="#8B6F52" opacity="0.5"/>
-          <!-- Plant -->
           <path d="M255 165 Q258 150 265 143" stroke="#7A8C6E" stroke-width="2" fill="none" stroke-linecap="round"/>
           <ellipse cx="265" cy="141" rx="7" ry="5" fill="#7A8C6E" opacity="0.7" transform="rotate(-20 265 141)"/>
           <path d="M258 160 Q263 153 270 151" stroke="#7A8C6E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -551,7 +478,6 @@
         </g>
       </svg>
 
-      <!-- Handwritten note beneath stone -->
       <p class="hw-note" id="hw-note"></p>
     </div>
 
@@ -568,15 +494,6 @@
       <p class="foot-promise" id="foot-promise">Private · No account · No one watching</p>
     </div>
 
-  </div>
-
-  <!-- ══ PLACEHOLDER SCREEN ══ -->
-  <div class="screen" id="screen-placeholder">
-    <span class="ph-tag" id="ph-tag">Coming in next steps</span>
-    <h2 class="ph-title" id="ph-title">You chose to rest here.</h2>
-    <p class="ph-sub" id="ph-sub">The tools for this path are being built step by step.</p>
-    <p class="ph-hw" id="ph-hw">You are not alone.</p>
-    <button class="back-btn" id="back-btn" onclick="showScreen('screen-opening')">← Back</button>
   </div>
 
 </div>
@@ -640,9 +557,6 @@ const C = {
     question:'"What are you carrying today?"', qc:'',
     switchLabel:'Change language',
     promise:'Private · No account · No one watching', pc:'',
-    phTag:'Coming in next steps',
-    phHw:'You are not alone.',
-    back:'← Back',
     options:[
       {key:'exam',         icon:'📚', text:'Exam or study pressure',              sub:'Deadlines, performance anxiety, feeling behind',
        note:'One step at a time.', posture:'normal'},
@@ -657,14 +571,6 @@ const C = {
       {key:'unknown',      icon:'🌫️', text:"I don't even know. Just overwhelmed.", sub:"Everything at once, can't name it, just heavy",
        note:'Sit here a while.', posture:'lookingup'},
     ],
-    ph:{
-      exam:        {t:"Study pressure. That's real weight.",    s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
-      clinical:    {t:"Something stayed with you today.",       s:"Compassion fatigue · Unsent letter · AI that listens — Steps 5 & 10."},
-      enough:      {t:"That feeling has a name.",               s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
-      exhausted:   {t:"Burnout is not weakness.",               s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
-      relationship:{t:"Pain that lives between people.",        s:"Unsent letter · Guided reflection · AI support — Steps 5, 7 & 10."},
-      unknown:     {t:"Not knowing is okay too.",               s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
-    }
   },
   ml: {
     name:'ഹൊറെഗല്ല്', nc:'ml',
@@ -672,9 +578,6 @@ const C = {
     question:'"ഇന്ന് എന്താണ് നിങ്ങളെ ഭാരപ്പെടുത്തുന്നത്?"', qc:'ml',
     switchLabel:'ഭാഷ മാറ്റുക',
     promise:'സ്വകാര്യം · അക്കൗണ്ട് ഇല്ല · ആരും നോക്കുന്നില്ല', pc:'ml',
-    phTag:'അടുത്ത ഘട്ടങ്ങളിൽ വരുന്നു',
-    phHw:'നീ തനിച്ചല്ല.',
-    back:'← തിരിച്ചു പോകുക',
     options:[
       {key:'exam',         icon:'📚', text:'പരീക്ഷ അല്ലെങ്കിൽ പഠന സമ്മർദ്ദം',        sub:'ഡെഡ്‌ലൈൻ, ഉത്കണ്ഠ, പിന്നിലാണ് എന്ന തോന്നൽ',
        note:'ഒരു ചുവടു മതി.', posture:'normal'},
@@ -689,14 +592,6 @@ const C = {
       {key:'unknown',      icon:'🌫️', text:'എന്തെന്നറിയില്ല. ഭാരം മാത്രം.',           sub:'എല്ലാം ഒരുമിച്ച്, പേരിടാൻ കഴിയില്ല',
        note:'ഒന്ന് ഇരിക്കൂ.', posture:'lookingup'},
     ],
-    ph:{
-      exam:        {t:"പഠന സമ്മർദ്ദം — അത് യഥാർഥ ഭാരം.",       s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
-      clinical:    {t:"ഇന്ന് എന്തോ നിന്നിൽ തങ്ങി.",             s:"Compassion fatigue · Unsent letter · AI — Steps 5 & 10."},
-      enough:      {t:"ആ വികാരത്തിന് ഒരു പേരുണ്ട്.",             s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
-      exhausted:   {t:"Burnout ദൗർബല്യമല്ല.",                    s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
-      relationship:{t:"ആളുകൾക്കിടയിൽ ജീവിക്കുന്ന വേദന.",       s:"Unsent letter · Guided reflection · AI — Steps 5, 7 & 10."},
-      unknown:     {t:"അറിയില്ല എന്നത് ശരിയാണ്.",                s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
-    }
   },
   hi: {
     name:'हॊरेगल्लु', nc:'hi',
@@ -704,9 +599,6 @@ const C = {
     question:'"आज क्या बोझ उठाए हो?"', qc:'hi',
     switchLabel:'भाषा बदलें',
     promise:'निजी · कोई खाता नहीं · कोई नहीं देख रहा', pc:'hi',
-    phTag:'अगले चरणों में आ रहा है',
-    phHw:'तुम अकेले नहीं हो।',
-    back:'← वापस जाएं',
     options:[
       {key:'exam',         icon:'📚', text:'परीक्षा या पढ़ाई का दबाव',           sub:'डेडलाइन, चिंता, पीछे रह जाने का डर',
        note:'एक कदम काफी है।', posture:'normal'},
@@ -721,46 +613,30 @@ const C = {
       {key:'unknown',      icon:'🌫️', text:'पता नहीं। बस भारी लग रहा है।',       sub:'सब एक साथ, नाम नहीं दे सकता/सकती',
        note:'यहाँ बैठो थोड़ी देर।', posture:'lookingup'},
     ],
-    ph:{
-      exam:        {t:"पढ़ाई का दबाव — यह असली बोझ है।",        s:"Name it to tame it · Stress translated · Smallest next step — Steps 2, 4 & 8."},
-      clinical:    {t:"आज कुछ तुम्हारे साथ रह गया।",            s:"Compassion fatigue · Unsent letter · AI — Steps 5 & 10."},
-      enough:      {t:"उस भावना का एक नाम है।",                  s:"Name it to tame it · Peer wisdom · What do you need — Steps 2, 6 & 7."},
-      exhausted:   {t:"Burnout कमज़ोरी नहीं है।",                s:"Burnout detection · 3am mode · Escalation — Steps 3 & 9."},
-      relationship:{t:"लोगों के बीच जीता हुआ दर्द।",            s:"Unsent letter · Guided reflection · AI — Steps 5, 7 & 10."},
-      unknown:     {t:"न जानना भी ठीक है।",                     s:"What do you need · Emotion naming · Peer wisdom — Steps 2, 6 & 7."},
-    }
   }
+};
+
+/* ══════════════════════════════════
+   ROUTING — each stress key maps to the right page
+══════════════════════════════════ */
+const ROUTES = {
+  exam:         'talk.html',
+  clinical:     'talk.html',
+  enough:       'talk.html',
+  exhausted:    'burnout-check.html',
+  relationship: 'talk.html',
+  unknown:      'talk.html',
 };
 
 /* ══════════════════════════════════
    POSTURE MORPHING
 ══════════════════════════════════ */
 const postures = {
-  normal: {
-    head:{cx:148,cy:68},
-    armL:'M145 101 Q135 113 120 121',
-    armR:'M152 101 Q162 113 178 121',
-  },
-  hunched: {
-    head:{cx:148,cy:72},
-    armL:'M145 101 Q138 110 128 116',
-    armR:'M152 101 Q155 108 162 112',
-  },
-  headdown: {
-    head:{cx:148,cy:75},
-    armL:'M145 101 Q140 108 135 112',
-    armR:'M152 101 Q156 108 160 112',
-  },
-  tired: {
-    head:{cx:148,cy:68},
-    armL:'M145 101 Q132 115 115 118',
-    armR:'M152 101 Q165 115 182 118',
-  },
-  lookingup: {
-    head:{cx:148,cy:62},
-    armL:'M145 101 Q135 113 120 121',
-    armR:'M152 101 Q162 113 178 121',
-  }
+  normal:   { head:{cx:148,cy:68}, armL:'M145 101 Q135 113 120 121', armR:'M152 101 Q162 113 178 121' },
+  hunched:  { head:{cx:148,cy:72}, armL:'M145 101 Q138 110 128 116', armR:'M152 101 Q155 108 162 112' },
+  headdown: { head:{cx:148,cy:75}, armL:'M145 101 Q140 108 135 112', armR:'M152 101 Q156 108 160 112' },
+  tired:    { head:{cx:148,cy:68}, armL:'M145 101 Q132 115 115 118', armR:'M152 101 Q165 115 182 118' },
+  lookingup:{ head:{cx:148,cy:62}, armL:'M145 101 Q135 113 120 121', armR:'M152 101 Q162 113 178 121' }
 };
 
 function applyPosture(key){
@@ -809,9 +685,6 @@ function applyLang(l){
   el('lang-switch-label').textContent = c.switchLabel;
   el('foot-promise').textContent = c.promise;
   el('foot-promise').className = 'foot-promise ' + (c.pc||'');
-  el('ph-tag').textContent = c.phTag;
-  el('ph-hw').textContent = c.phHw;
-  el('back-btn').textContent = c.back;
 
   const grid = el('options-grid');
   grid.innerHTML = '';
@@ -819,8 +692,6 @@ function applyLang(l){
     const btn = document.createElement('button');
     btn.className = 'option-btn';
     btn.dataset.key = o.key;
-    btn.dataset.note = o.note;
-    btn.dataset.posture = o.posture;
     btn.innerHTML = `
       <div class="option-icon">${o.icon}</div>
       <div class="option-text">
@@ -834,10 +705,13 @@ function applyLang(l){
 }
 
 /* ══════════════════════════════════
-   OPTION CLICK — weight drop + posture + note
+   OPTION CLICK — animate then navigate
 ══════════════════════════════════ */
 function handleOptionClick(clickedBtn, key, note, posture){
   const allBtns = document.querySelectorAll('.option-btn');
+
+  // Save stress type for destination pages to use
+  localStorage.setItem('horegallu_stress', key);
 
   // Apply posture change
   applyPosture(posture);
@@ -859,18 +733,10 @@ function handleOptionClick(clickedBtn, key, note, posture){
     }
   });
 
-  // After animation, go to placeholder
+  // After animation completes, navigate to the real page
   setTimeout(()=>{
-    const c = C[lang];
-    const ph = c.ph[key];
-    document.getElementById('ph-title').textContent = ph.t;
-    document.getElementById('ph-sub').textContent = ph.s;
-    showScreen('screen-placeholder');
-    // Reset
-    allBtns.forEach(btn=>{ btn.classList.remove('dropping','floating-away'); });
-    noteEl.classList.remove('visible');
-    applyPosture('normal');
-  }, 600);
+    window.location.href = ROUTES[key] || 'talk.html';
+  }, 580);
 }
 
 /* ══════════════════════════════════
