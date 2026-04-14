@@ -367,6 +367,41 @@
       .app-name{font-size:2rem;}
       .question-text{font-size:1.4rem;}
     }
+
+    /* ── BOTTOM NAVIGATION ── */
+    .bottom-nav{
+      position:fixed;
+      bottom:0;left:0;right:0;
+      background:var(--cream);
+      border-top:1px solid var(--border);
+      padding:0.6rem 0;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      z-index:100;
+      box-shadow:0 -2px 8px var(--shadow);
+    }
+    .bottom-nav a{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:3px;
+      text-decoration:none;
+      color:var(--text-muted);
+      font-size:0.7rem;
+      padding:0.5rem 0.8rem;
+      border-radius:8px;
+      transition:all 0.2s var(--ease);
+    }
+    .bottom-nav a:hover{color:var(--text-secondary);}
+    .bottom-nav a.active{
+      color:var(--earth);
+      background:rgba(212,169,74,0.1);
+      font-weight:500;
+    }
+    .bottom-nav-icon{font-size:1.2rem;}
+    
+    .app{padding-bottom:4.5rem;}
   </style>
 </head>
 <body>
@@ -498,6 +533,14 @@
 
 </div>
 
+<!-- ══ BOTTOM NAVIGATION ══ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="index.html" class="active" id="nav-home"><span class="bottom-nav-icon">🏠</span>Home</a>
+  <a href="talk.html" id="nav-talk"><span class="bottom-nav-icon">💬</span>Talk</a>
+  <a href="night.html" id="nav-night"><span class="bottom-nav-icon">🌙</span>Night</a>
+  <a href="burnout-check.html" id="nav-check"><span class="bottom-nav-icon">🔍</span>Check</a>
+</nav>
+
 <script>
 /* ══════════════════════════════════
    DUST PARTICLES
@@ -620,12 +663,12 @@ const C = {
    ROUTING — each stress key maps to the right page
 ══════════════════════════════════ */
 const ROUTES = {
-  exam:         'talk.html',
-  clinical:     'talk.html',
-  enough:       'talk.html',
+  exam:         'name-it.html',
+  clinical:     'name-it.html',
+  enough:       'name-it.html',
   exhausted:    'burnout-check.html',
-  relationship: 'talk.html',
-  unknown:      'talk.html',
+  relationship: 'unsent-letter.html',
+  unknown:      'what-do-you-need.html',
 };
 
 /* ══════════════════════════════════
@@ -657,6 +700,13 @@ let lang = localStorage.getItem('horegallu-lang') || null;
 window.addEventListener('DOMContentLoaded', ()=>{
   if(lang && C[lang]){ applyLang(lang); showScreen('screen-opening'); }
   else showScreen('screen-lang');
+
+  // Set active nav
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.bottom-nav a').forEach(a => {
+    a.classList.remove('active');
+    if(a.href.endsWith(currentPage)) a.classList.add('active');
+  });
 });
 
 function setLang(l){

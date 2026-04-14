@@ -353,6 +353,39 @@
       .step-action{font-size:1.5rem;}
       .quick-grid{grid-template-columns:1fr;}
     }
+  /* ── BOTTOM NAVIGATION ── */
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:var(--cream);
+  border-top:1px solid var(--border);
+  padding:0.6rem 0;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:100;
+  box-shadow:0 -2px 8px var(--shadow);
+}
+.bottom-nav a{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+  text-decoration:none;
+  color:var(--text-muted);
+  font-size:0.7rem;
+  padding:0.5rem 0.8rem;
+  border-radius:8px;
+  transition:all 0.2s var(--ease);
+}
+.bottom-nav a:hover{color:var(--text-secondary);}
+.bottom-nav a.active{
+  color:var(--earth);
+  background:rgba(212,169,74,0.1);
+  font-weight:500;
+}
+.bottom-nav-icon{font-size:1.2rem;}
+body{padding-bottom:4.5rem;}
   </style>
 </head>
 <body>
@@ -410,6 +443,14 @@
       </div>
     </div>
   </div>
+
+<!-- ══ BOTTOM NAVIGATION ══ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="index.html" id="nav-home"><span class="bottom-nav-icon">🏠</span>Home</a>
+  <a href="talk.html" id="nav-talk"><span class="bottom-nav-icon">💬</span>Talk</a>
+  <a href="night.html" id="nav-night"><span class="bottom-nav-icon">🌙</span>Night</a>
+  <a href="burnout-check.html" id="nav-check"><span class="bottom-nav-icon">🔍</span>Check</a>
+</nav>
 
 <script>
 /* ══════════════════════════════════
@@ -707,6 +748,17 @@ function showScreen(id){
 function goNext(){
   window.location.href='burnout-check.html';
 }
+
+// Set active nav on load
+window.addEventListener('DOMContentLoaded', function(){
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.bottom-nav a').forEach(a => {
+    const href = a.getAttribute('href');
+    if(href === currentPage || (currentPage === '' && href === 'index.html')) {
+      a.classList.add('active');
+    }
+  });
+});
 </script>
 </body>
 </html>

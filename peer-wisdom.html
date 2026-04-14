@@ -840,9 +840,31 @@ function submitWisdom(){
   },2500);
 }
 
+</div>
+<!-- ══ BOTTOM NAVIGATION ══ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="index.html" id="nav-home"><span class="bottom-nav-icon">🏠</span>Home</a>
+  <a href="talk.html" id="nav-talk"><span class="bottom-nav-icon">💬</span>Talk</a>
+  <a href="night.html" id="nav-night"><span class="bottom-nav-icon">🌙</span>Night</a>
+  <a href="burnout-check.html" id="nav-check"><span class="bottom-nav-icon">🔍</span>Check</a>
+</nav>
+
+<script>
+
 function goNext(){
   window.location.href='what-do-you-need.html';
 }
+
+// Set active nav on load
+window.addEventListener('DOMContentLoaded', function(){
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.bottom-nav a').forEach(a => {
+    const href = a.getAttribute('href');
+    if(href === currentPage || (currentPage === '' && href === 'index.html')) {
+      a.classList.add('active');
+    }
+  });
+});
 </script>
 </body>
 </html>
