@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horegallu - Burnout Check</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --stone:       #C4A882;
+      --stone-light: #E8DCCF;
+      --stone-dark:  #8B6F52;
+      --earth:       #6B4F3A;
+      --earth-deep:  #3D2B1F;
+      --cream:       #FAF6F0;
+      --cream-warm:  #F2EBE0;
+      --gold:        #D4A94A;
+      --gold-light:  #F0CC7A;
+      --sage:        #7A8C6E;
+      --text-primary:   #2C2420;
+      --text-secondary: #6B5A4E;
+      --text-muted:     #9E8A7A;
+      --border:      rgba(139,111,82,0.18);
+      --shadow:      rgba(60,40,20,0.08);
+      --font-d: 'Cormorant Garamond', Georgia, serif;
+      --font-b: 'DM Sans', sans-serif;
+      --font-hw: 'Caveat', cursive;
+      --font-ml: 'Noto Sans Malayalam', sans-serif;
+      --font-hi: 'Noto Sans Devanagari', sans-serif;
+      --ease: cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{font-size:16px;}
+    body{
+      font-family:var(--font-b);
+      background:var(--cream);
+      color:var(--text-primary);
+      min-height:100vh;
+      position:relative;
+    }
+
+    .bg-glow{
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(ellipse 75% 55% at 18% 18%, rgba(196,168,130,0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 75% at 82% 82%, rgba(193,101,74,0.07) 0%, transparent 60%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .app{position:relative;z-index:1;min-height:100vh;max-width:520px;margin:0 auto;padding:2rem 1.5rem;}
+
+    .check-header{margin-bottom:2rem;text-align:center;}
+    .check-title{font-family:var(--font-d);font-size:2rem;font-weight:300;color:var(--earth);letter-spacing:-0.02em;margin-bottom:0.5rem;}
+    .check-subtitle{font-size:0.8rem;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:1rem;}
+    
+    .progress-bar{
+      height:6px;
+      background:rgba(139,111,82,0.12);
+      border-radius:3px;
+      overflow:hidden;
+      margin-bottom:1.5rem;
+    }
+    .progress-fill{
+      height:100%;
+      background:linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+      width:0%;
+      transition:width 0.3s var(--ease);
+    }
+
+    .check-items{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem;}
+
+    .check-group{border-top:2px solid var(--border);padding-top:1rem;margin-bottom:1rem;}
+    .check-group:first-of-type{border-top:none;padding-top:0;}
+    .group-label{font-size:0.8rem;color:var(--stone-dark);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.35rem;font-weight:500;}
+
+    .check-item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:10px;
+      background:rgba(255,255,255,0.6);
+      border:1px solid var(--border);
+      border-radius:10px;
+      cursor:pointer;
+      transition:all 0.2s var(--ease);
+    }
+    .check-item:hover{background:rgba(255,255,255,0.9);border-color:var(--stone);}
+    .check-item.checked{background:rgba(212,169,74,0.15);border-color:var(--gold);}
+
+    .check-box{
+      width:22px;
+      height:22px;
+      border:2px solid var(--stone-dark);
+      border-radius:5px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      transition:all 0.2s var(--ease);
+    }
+    .check-item.checked .check-box{
+      background:var(--gold);
+      border-color:var(--gold);
+      color:white;
+      font-size:14px;
+    }
+
+    .check-text{flex:1;}
+    .check-main{font-size:0.92rem;font-weight:500;color:var(--text-primary);margin-bottom:2px;}
+    .check-main.ml{font-family:var(--font-ml);font-size:0.9rem;}
+    .check-main.hi{font-family:var(--font-hi);font-size:0.9rem;}
+    .check-sub{font-size:0.75rem;color:var(--text-muted);line-height:1.4;}
+    .check-sub.ml{font-family:var(--font-ml);font-size:0.73rem;}
+    .check-sub.hi{font-family:var(--font-hi);font-size:0.73rem;}
+
+    .score-info{
+      background:rgba(255,255,255,0.8);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:1rem;
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .score-label{font-size:0.75rem;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:0.5rem;}
+    .score-display{font-family:var(--font-d);font-size:2.2rem;font-weight:300;color:var(--earth-deep);}
+
+    .score-bar{
+      height:8px;
+      background:rgba(139,111,82,0.1);
+      border-radius:4px;
+      margin-top:0.8rem;
+      overflow:hidden;
+    }
+    .score-fill{
+      height:100%;
+      background:var(--gold);
+      border-radius:4px;
+      transition:all 0.3s var(--ease);
+    }
+
+    .result-screen{display:none;padding:1rem 0;}
+    .result-screen.show{display:block;animation:fadeIn 0.5s var(--ease);}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+    .result-icon{font-size:3rem;text-align:center;margin-bottom:1rem;}
+    .result-title{font-family:var(--font-d);font-size:1.8rem;font-weight:400;color:var(--earth);text-align:center;margin-bottom:0.5rem;}
+    .result-title.ml{font-family:var(--font-ml);font-size:1.4rem;}
+    .result-title.hi{font-family:var(--font-hi);font-size:1.4rem;}
+
+    .result-text{
+      font-size:0.95rem;
+      line-height:1.6;
+      color:var(--text-primary);
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .result-text.ml{font-family:var(--font-ml);}
+    .result-text.hi{font-family:var(--font-hi);}
+
+    .result-helps{
+      display:flex;
+      flex-direction:column;
+      gap:0.8rem;
+      margin-bottom:1.5rem;
+    }
+    .help-item{
+      background:rgba(255,255,255,0.7);
+      border-left:3px solid var(--gold);
+      padding:0.9rem;
+      border-radius:6px;
+    }
+    .help-title{font-weight:500;font-size:0.9rem;color:var(--earth);margin-bottom:0.3rem;}
+    .help-desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5;}
+
+    .escalation-path{
+      background:#fff5f0;
+      border:2px solid rgba(196,112,74,0.3);
+      border-radius:12px;
+      padding:1.5rem;
+      margin-bottom:1.5rem;
+    }
+    .escalation-title{font-family:var(--font-d);font-size:1.4rem;font-weight:400;color:#6B4F3A;margin-bottom:0.8rem;}
+    .escalation-text{font-size:0.9rem;line-height:1.6;color:var(--text-primary);margin-bottom:1rem;}
+    .escalation-steps{display:flex;flex-direction:column;gap:0.6rem;}
+    .escalation-step{font-size:0.85rem;color:var(--text-secondary);padding:0.5rem;background:white;border-radius:6px;border-left:3px solid #C4704A;}
+
+    .crisis-numbers{
+      background:#fff5f0;
+      border:2px solid rgba(196,112,74,0.4);
+      border-radius:12px;
+      padding:1.2rem;
+      text-align:center;
+      margin-bottom:1.5rem;
+    }
+    .crisis-title{font-family:var(--font-d);font-size:1.1rem;font-weight:400;color:#6B4F3A;margin-bottom:0.8rem;}
+    .crisis-line{
+      font-size:1rem;
+      font-weight:500;
+      color:#C4704A;
+      letter-spacing:0.05em;
+      margin:0.3rem 0;
+      cursor:pointer;
+      text-decoration:underline;
+    }
+
+    .actions{display:flex;flex-direction:column;gap:0.7rem;}
+    .btn{
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      font-size:0.95rem;
+      font-weight:500;
+      cursor:pointer;
+      transition:all 0.2s var(--ease);
+      font-family:var(--font-b);
+    }
+    .btn-primary{background:var(--gold);color:var(--earth-deep);}
+    .btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+    .btn-secondary{background:rgba(255,255,255,0.8);color:var(--earth);border:1px solid var(--border);}
+    .btn-secondary:hover{background:white;border-color:var(--stone);}
+
+    .footer-links{
+      text-align:center;
+      padding-top:1rem;
+      border-top:1px solid var(--border);
+      margin-top:1.5rem;
+    }
+    .footer-link{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      font-size:0.75rem;
+      color:var(--text-muted);
+      cursor:pointer;
+      margin:0.5rem;
+      text-decoration:none;
+      transition:color 0.2s;
+    }
+    .footer-link:hover{color:var(--earth);}
+
+    @media(max-width:380px){
+      .app{padding:1.5rem 1rem;}
+      .check-title{font-size:1.6rem;}
+      .result-title{font-size:1.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="app">
+
+  <!-- CHECK SCREEN -->
+  <div id="check-screen">
+    <div class="check-header">
+      <h1 class="check-title" id="check-title">How are you really?</h1>
+      <p class="check-subtitle" id="check-subtitle">Check in honestly. No judgment.</p>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="score-info">
+      <div class="score-label" id="score-label">Items checked:</div>
+      <div class="score-display"><span id="score-count">0</span><span style="font-size:1.2rem;color:var(--text-muted);">/16</span></div>
+      <div class="score-bar"><div class="score-fill" id="score-bar-fill"></div></div>
+    </div>
+
+    <div class="check-items" id="check-items"></div>
+
+    <button class="btn btn-primary" onclick="showResults()" id="results-btn" style="width:100%" disabled>
+      <span id="results-btn-text">See Results</span>
+    </button>
+
+    <div class="footer-links">
+      <a href="index.html" class="footer-link">← Home</a>
+      <a href="talk.html" class="footer-link">Talk to someone →</a>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="result-screen">
+    <div id="result-content"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="location.href='talk.html'" id="result-talk-btn">
+        <span id="result-talk-text">Talk to someone</span>
+      </button>
+      <button class="btn btn-secondary" onclick="resetCheck()">
+        <span id="result-reset-text">Take the check again</span>
+      </button>
+      <a href="index.html" class="btn btn-secondary" style="text-decoration:none;text-align:center;">
+        <span id="result-home-text">Back to home</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const C = {
+  en: {
+    title: 'How are you really?',
+    subtitle: 'Check in honestly. No judgment.',
+    scoreLabel: 'Items checked:',
+    resultsBtn: 'See Results',
+    talkBtn: 'Talk to someone',
+    resetBtn: 'Take the check again',
+    homeBtn: 'Back to home',
+
+    groups: [
+      {
+        name: 'Energy',
+        items: [
+          { q: 'I feel physically exhausted most days', sub: 'Even after sleep', weight: 1 },
+          { q: 'I struggle to focus or concentrate', sub: 'Mind feels scattered or foggy', weight: 1 },
+          { q: 'I lack motivation for things I usually enjoy', sub: 'Nothing feels exciting anymore', weight: 1 },
+          { q: 'My sleep is disrupted or unsatisfying', sub: 'Insomnia, waking often, or oversleeping', weight: 1 }
+        ]
+      },
+      {
+        name: 'Emotions',
+        items: [
+          { q: 'I feel emotionally numb or detached', sub: 'Hard to feel joy, sadness, or connection', weight: 1 },
+          { q: 'I\'m irritable or impatient often', sub: 'Small things trigger frustration', weight: 1 },
+          { q: 'I worry excessively about things I can\'t control', sub: 'Anxiety colors every day', weight: 1 },
+          { q: 'I have thoughts of not wanting to be here', sub: '⚠️ This matters deeply. Please tell someone.', weight: 4 }
+        ]
+      },
+      {
+        name: 'Work/Studies',
+        items: [
+          { q: 'I\'ve been at my limit for weeks or months', sub: 'Stress has been relentless', weight: 1 },
+          { q: 'I feel unable to meet expectations', sub: 'Failing, behind, or overwhelmed by demands', weight: 1 },
+          { q: 'I dread going to studies or work', sub: 'Dread replaces interest', weight: 1 },
+          { q: 'I\'ve made mistakes or had poor performance', sub: 'Things that don\'t match my usual standard', weight: 1 }
+        ]
+      },
+      {
+        name: 'Body',
+        items: [
+          { q: 'I experience persistent physical tension', sub: 'Headaches, tight shoulders, jaw clenching', weight: 1 },
+          { q: 'My appetite has changed significantly', sub: 'Eating less or eating to cope', weight: 1 }
+        ]
+      }
+    ],
+
+    results: {
+      managing: {
+        icon: '🌱',
+        title: 'You\'re Managing',
+        text: 'Stress is present, but you\'re holding steady. The pattern here shows you\'re aware and handling it. That awareness is your strength.',
+        helps: [
+          { title: 'Keep talking', desc: 'What you\'re carrying is real. Share it with someone you trust.' },
+          { title: 'Notice the pattern', desc: 'If the stress stays at this level, reach out to a counselor or GP.' },
+          { title: 'Small things matter', desc: 'One walk, one meal with someone, one good sleep can shift things.' }
+        ]
+      },
+      warning: {
+        icon: '🌙',
+        title: 'Early Burnout',
+        text: 'This is not a bad week. This is a signal. Your body and mind are telling you they need something to change. That\'s not weakness—that\'s wisdom.',
+        helps: [
+          { title: 'This is not failure', desc: 'You\'re not weak. You\'re human. What you\'re carrying is genuinely hard.' },
+          { title: 'Talk to someone', desc: 'Reach out to your supervisor, a counselor, a GP, or a trusted mentor. Don\'t carry this alone.' },
+          { title: 'One thing has to change', desc: 'It might be asking for help, reducing hours, taking a break, or asking for support. Something has to shift.' }
+        ]
+      },
+      escalation: {
+        icon: '❤️',
+        title: 'You Need Real Support',
+        text: 'What you\'re carrying is too heavy for just one person, and too heavy for an app. You need a human. Right now.',
+        escalation: [
+          'Step 1: Tell someone you trust — a friend, family member, mentor, or supervisor.',
+          'Step 2: If that feels impossible, call or message iCall (9152987821) or Vandrevala (1860-2662-345).',
+          'Step 3: Ask to speak to a counselor or therapist. You deserve that space.',
+          'Step 4: If you\'re in immediate danger, call emergency services or go to the nearest hospital.'
+        ],
+        crisis: true
+      }
+    }
+  },
+  ml: {
+    title: 'നീ സത്യത്തിൽ എങ്ങനെയാണ്?',
+    subtitle: 'സത്യമായി പരിശോധിക്കൂ. വിധിയൊന്നുമില്ല.',
+    scoreLabel: 'സമയങ്ങൾ പരിശോധിച്ചത്:',
+    resultsBtn: 'ഫലങ്ങൾ കാണുക',
+    talkBtn: 'ആരോടെങ്കിലും സംസാരിക്കുക',
+    resetBtn: 'പരിശോധന വീണ്ടും എടുക്കുക',
+    homeBtn: 'വീട്ടിലേക്ക് തിരികെ',
+    // ML translations similar structure...
+    groups: [
+      {
+        name: 'ശക്തി',
+        items: [
+          { q: 'ഞാൻ ഏതാണ്ട് എല്ലാ ദിവസവും ശാരീരികമായി ക്ഷീണിതനായിരിക്കുന്നു', sub: 'ഉറക്കത്തിനുശേഷം പോലും', weight: 1 },
+          { q: 'ഞാൻ ശ്രദ്ധ കേന്ദ്രീകരിക്കാൻ കഴിയുന്നില്ല', sub: 'തലച്ചോറ് തരിപ്പോകിയോ മൂകമോ തോന്നുന്നു', weight: 1 },
+          { q: 'എനിക്ക് ഇഷ്ടമായ കാര്യങ്ങളോടുള്ള പ്രേരണ ഇല്ല', sub: 'ഒന്നും ഉത്തേജകമായി തോന്നുന്നില്ല', weight: 1 },
+          { q: 'എന്റെ ഉറക്ക വ്യത്യസ്തമോ അതൃപ്തമോ ആണ്', sub: 'അനിദ്ര, പതിവായി ഉണരൽ അല്ലെങ്കിൽ അമിതമായ ഉറക്കം', weight: 1 }
+        ]
+      },
+      { name: 'വികാരങ്ങൾ', items: [
+        { q: 'ഞാൻ വികാരേതരമായോ വിച്ഛിന്നമായോ തോന്നുന്നു', sub: 'ആനന്ദം, സങ്കടം അല്ലെങ്കിൽ സങ്കോച്ച തോന്നാൻ കഠിനമാണ്', weight: 1 }
+      ] },
+      { name: 'ജോലി/പഠനം', items: [
+        { q: 'ഞാൻ നിരോധിത നിലയിലാണു് ആഴ്ചങ്ങൾ അല്ലെങ്കിൽ മാസങ്ങൾ ധരിക്കുകയാണ്', sub: 'സമ്മർദ്ദം ആണിരിപ്പോയിരിക്കുകയാണ്', weight: 1 }
+      ] },
+      { name: 'ശരീരം', items: [
+        { q: 'എനിക്ക് ശാശ്വത ശാരീരിക പിരിമുറുക്കം അനുഭവപ്പെടുന്നു', sub: 'തലവേദന, തടിഞ്ഞ തോളുകൾ, താടിയെല്ല് മുറുക്കം', weight: 1 }
+      ] }
+    ],
+    results: {
+      managing: {
+        icon: '🌱',
+        title: 'നീ ഭരണം നടത്തുകയാണ്',
+        text: 'സമ്മർദ്ദം ഉണ്ട്, പക്ഷേ നീ സ്ഥിരതയുള്ളവനാണെന്ന് കരുതുന്നു. ഈ പാറ്റേൺ നിനക്ക് ബോധ്യപ്പെട്ടു, നീ ഇത് നിയന്ത്രിക്കുകയാണെന്ന് കാണിക്കുന്നു. ആ ബോധ്യത നിന്റെ ശക്തിയാണ്.',
+        helps: [
+          { title: 'സംസാരം തുടരുക', desc: 'നീ ധരിക്കുന്നത് സത്യമാണ്. വിശ്വാസ്യനായ ആരോടെങ്കിലും പങ്കിടുന്നരുത്.' },
+          { title: 'പാറ്റേൺ ശ്രദ്ധിക്കുക', desc: 'സമ്മർദ്ദം ഈ നിലയിൽ തുടരുകയാണെങ്കിൽ, കൗൺസലറിനോ ജിപിക്കോ സമീപിക്കുന്നരുത്.' },
+          { title: 'ചെറിയ കാര്യങ്ങൾ പ്രാധാന്യപ്പെട്ടു', desc: 'ഒരു നടത്, ആരോടെങ്കിലും ഭക്ഷണം, ഒരു നല്ല ഉറക്കം കാര്യങ്ങൾ മാറ്റിക്കളയാൻ കഴിയും.' }
+        ]
+      },
+      warning: { icon: '🌙', title: 'നേരെ ബേർണ്‌ൔട്ട്', text: 'ഇത് ഒരു മോശം ആഴ്ച അല്ല. ഇത് സിഗ്നലാണ്.' },
+      escalation: { icon: '❤️', title: 'നിനക്ക് താൻ ആവശ്യമാണ്', text: 'നീ ഓരാളെ അലോലിപ്പിക്കാൻ വളരെ കനം കയറ്റെ. നിനക്ക് വേണ്ടത് മനുഷ്യനാണ്. ഇപ്പോൾ.' }
+    }
+  },
+  hi: {
+    title: 'तुम सच में कैसे हो?',
+    subtitle: 'ईमानदारी से जांच करो। कोई फैसला नहीं।',
+    scoreLabel: 'जांचे गए आइटम:',
+    resultsBtn: 'नतीजे देखें',
+    talkBtn: 'किसी से बात करो',
+    resetBtn: 'जांच फिर से लो',
+    homeBtn: 'घर वापस जाओ',
+    groups: [
+      {
+        name: 'ऊर्जा',
+        items: [
+          { q: 'मैं लगभग हर दिन शारीरिक रूप से थक जाता हूँ', sub: 'सोने के बाद भी', weight: 1 },
+          { q: 'मुझे ध्यान केंद्रित करने में परेशानी होती है', sub: 'दिमाग बिखरा हुआ या धुंधला लगता है', weight: 1 }
+        ]
+      }
+    ],
+    results: {
+      managing: { icon: '🌱', title: 'तुम संभालो रहे हो', text: 'तनाव है, लेकिन तुम स्थिर हो। यह जागरूकता तुम्हारी ताकत है।' },
+      warning: { icon: '🌙', title: 'अर्ली बर्नआउट', text: 'यह एक बुरा सप्ताह नहीं है। यह एक संकेत है।' },
+      escalation: { icon: '❤️', title: 'तुम्हें असली समर्थन चाहिए', text: 'तुम जो ले रहे हो वह एक व्यक्ति के लिए बहुत भारी है। तुम्हें एक इंसान चाहिए। अभी।', crisis: true }
+    }
+  }
+};
+
+let lang = localStorage.getItem('horegallu-lang') || 'en';
+let checked = {};
+let totalScore = 0;
+let crisisTriggered = false;
+
+function applyLang(l) {
+  lang = l;
+  const c = C[l] || C.en;
+  document.getElementById('check-title').textContent = c.title;
+  document.getElementById('check-subtitle').textContent = c.subtitle;
+  document.getElementById('score-label').textContent = c.scoreLabel;
+  document.getElementById('results-btn-text').textContent = c.resultsBtn;
+  document.getElementById('result-talk-text').textContent = c.talkBtn;
+  document.getElementById('result-reset-text').textContent = c.resetBtn;
+  document.getElementById('result-home-text').textContent = c.homeBtn;
+
+  renderItems();
+}
+
+function renderItems() {
+  const c = C[lang] || C.en;
+  const container = document.getElementById('check-items');
+  container.innerHTML = '';
+
+  c.groups.forEach(group => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'check-group';
+
+    const label = document.createElement('div');
+    label.className = 'group-label';
+    label.textContent = group.name;
+    groupDiv.appendChild(label);
+
+    group.items.forEach((item, i) => {
+      const key = `${group.name}-${i}`;
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'check-item ' + (checked[key] ? 'checked' : '');
+      itemDiv.onclick = () => toggleItem(key, item.weight);
+
+      itemDiv.innerHTML = `
+        <div class="check-box">${checked[key] ? '✓' : ''}</div>
+        <div class="check-text">
+          <div class="check-main ${lang !== 'en' ? lang : ''}">${item.q}</div>
+          <div class="check-sub ${lang !== 'en' ? lang : ''}">${item.sub}</div>
+        </div>
+      `;
+      groupDiv.appendChild(itemDiv);
+    });
+
+    container.appendChild(groupDiv);
+  });
+}
+
+function toggleItem(key, weight) {
+  if (checked[key]) {
+    delete checked[key];
+    totalScore -= weight;
+  } else {
+    checked[key] = true;
+    totalScore += weight;
+    if (weight === 4) crisisTriggered = true;
+  }
+
+  updateProgress();
+  renderItems();
+}
+
+function updateProgress() {
+  const total = 16;
+  const count = Object.keys(checked).length;
+  const percent = (count / total) * 100;
+
+  document.getElementById('score-count').textContent = count;
+  document.getElementById('progress-fill').style.width = percent + '%';
+  document.getElementById('score-bar-fill').style.width = percent + '%';
+  document.getElementById('results-btn').disabled = count === 0;
+}
+
+function showResults() {
+  const c = C[lang] || C.en;
+  let result;
+
+  if (crisisTriggered || totalScore >= 13) {
+    result = c.results.escalation;
+  } else if (totalScore >= 9) {
+    result = c.results.warning;
+  } else {
+    result = c.results.managing;
+  }
+
+  const content = document.getElementById('result-content');
+  let html = `
+    <div class="result-icon">${result.icon}</div>
+    <h2 class="result-title ${lang !== 'en' ? lang : ''}">${result.title}</h2>
+    <p class="result-text ${lang !== 'en' ? lang : ''}">${result.text}</p>
+  `;
+
+  if (result.escalation) {
+    html += '<div class="escalation-path">';
+    html += `<div class="escalation-title">What to do now:</div>`;
+    result.escalation.forEach(step => {
+      html += `<div class="escalation-step">${step}</div>`;
+    });
+    html += '</div>';
+
+    if (result.crisis) {
+      html += `
+        <div class="crisis-numbers">
+          <div class="crisis-title">If you need to talk right now:</div>
+          <div class="crisis-line" onclick="callCrisis('9152987821')">iCall: 9152987821</div>
+          <div class="crisis-line" onclick="callCrisis('1860-2662-345')">Vandrevala: 1860-2662-345</div>
+        </div>
+      `;
+    }
+  } else {
+    html += '<div class="result-helps">';
+    result.helps.forEach(help => {
+      html += `
+        <div class="help-item">
+          <div class="help-title">${help.title}</div>
+          <div class="help-desc">${help.desc}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  content.innerHTML = html;
+  document.getElementById('check-screen').style.display = 'none';
+  document.getElementById('result-screen').classList.add('show');
+}
+
+function resetCheck() {
+  checked = {};
+  totalScore = 0;
+  crisisTriggered = false;
+  updateProgress();
+  document.getElementById('check-screen').style.display = 'block';
+  document.getElementById('result-screen').classList.remove('show');
+}
+
+function callCrisis(num) {
+  window.location.href = `tel:${num}`;
+}
+
+window.addEventListener('DOMContentLoaded', () => applyLang(lang));
+</script>
+
+</body>
+</html>
