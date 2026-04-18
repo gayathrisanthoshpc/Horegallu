@@ -1,6 +1,6 @@
 <div align="center">
 
-#  · Horegallu · हलु
+#  · Horegallu · 
 
 **Put your load down. Just for a moment.**
 
