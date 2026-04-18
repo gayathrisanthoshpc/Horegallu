@@ -1,12 +1,11 @@
 <div align="center">
 
-# ഹൊറെഗല്ല് · Horegallu · हॊरेगल्लु
+#  · Horegallu · हलु
 
 **Put your load down. Just for a moment.**
 
 *A resting stone for those who carry too much.*
 
-[Live Demo](https://gayathrisanthoshpc.github.io/Horegallu) · [Report Bug](https://github.com/gayathrisanthoshpc/Horegallu/issues) · [Share with someone who needs it](#)
 
 </div>
 
@@ -22,19 +21,19 @@ Built for nursing students and anyone overwhelmed by life — not to fix your st
 
 ---
 
-## ✨ What Makes It Different
+##  What Makes It Different
 
 Most stress apps feel corporate and cold. Horegallu was designed to feel human.
 
 | Signature | What it does |
 |---|---|
-| 🪨 **The stone breathes** | Gentle inhale-exhale animation that slows the first tap |
-| ✨ **Kintsugi gold crack** | A pulsing golden fissure that celebrates repair, not perfection |
-| 🌫️ **Dust particles** | 55 warm floating motes — the page feels alive, not flat |
-| ⬇️ **Weight drop** | Your chosen stress drops to the ground. You literally put it down |
-| 🧍 **Posture morphing** | The sitter shifts depending on your stress type |
-| ✍️ **Handwritten notes** | A personal message appears like a note left by someone who sat here before |
-| 🎨 **Earthy palette** | Stone, terracotta, cream, sage, gold — nothing clinical |
+|  **The stone breathes** | Gentle inhale-exhale animation that slows the first tap |
+|  **Kintsugi gold crack** | A pulsing golden fissure that celebrates repair, not perfection |
+|  **Dust particles** | 55 warm floating motes — the page feels alive, not flat |
+|  **Weight drop** | Your chosen stress drops to the ground. You literally put it down |
+|  **Posture morphing** | The sitter shifts depending on your stress type |
+|  **Handwritten notes** | A personal message appears like a note left by someone who sat here before |
+|  **Earthy palette** | Stone, terracotta, cream, sage, gold — nothing clinical |
 
 ---
 
@@ -42,13 +41,13 @@ Most stress apps feel corporate and cold. Horegallu was designed to feel human.
 
 Choose your language on first open. The entire app speaks only that language — no mixing, no bleed.
 
-- 🇬🇧 **English** — for everyone
-- 🌴 **മലയാളം** — written fresh, not translated
-- 🪔 **हिंदी** — written fresh, not translated
+-  **English** — for everyone
+-  **മലയാളം** — written fresh, not translated
+-  **हिंदी** — written fresh, not translated
 
 ---
 
-## 🗂️ The Ten Features
+##  The Ten Features
 
 ### 1. Opening & Language Selection
 One honest question: "What are you carrying today?" Six real stress options lead to a personal, language-native journey.
@@ -95,7 +94,7 @@ A full conversational space for what you want to say now. Warm, specific, and re
 
 ---
 
-## 🚀 How to Use
+##  How to Use
 
 1. Open `index.html` in a browser
 2. Choose your language
@@ -107,7 +106,7 @@ A full conversational space for what you want to say now. Warm, specific, and re
 
 ---
 
-## 💻 Tech & Design
+##  Tech & Design
 
 - **Built with:** HTML, CSS, vanilla JavaScript
 - **Fonts:** Cormorant Garamond, DM Sans, Caveat, Noto Sans Malayalam, Noto Sans Devanagari
@@ -125,7 +124,7 @@ A full conversational space for what you want to say now. Warm, specific, and re
 
 ---
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 Horegallu/
@@ -144,7 +143,7 @@ Horegallu/
 
 ---
 
-## 🧡 Why This Exists
+## Why This Exists
 
 Because stress tools should feel like rest — not a to-do list.
 
@@ -152,13 +151,13 @@ Horegallu is built for people who carry too much, especially nursing students an
 
 ---
 
-## 📄 License
+##  License
 
 MIT License
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Want to help? Great.
 
